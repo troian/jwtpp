@@ -39,7 +39,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${EXPORT_INCLUDES})
 
 target_link_libraries(${PROJECT_NAME}
         jsoncpp
-        curl
 )
 
 set(OPENSSL_ROOT_DIR /usr/local/opt/openssl)

@@ -24,12 +24,14 @@
 
 #pragma once
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstdio>
 #include <cstdint>
-#include <errno.h>
+#include <string>
+#include <vector>
 #include <memory>
+
+#include <errno.h>
 
 #include <json/json.h>
 
@@ -49,16 +51,26 @@ typedef enum jwt_alg {
 /**
  * \brief
  */
-class jwt {
+class jwt final {
 public:
 	/**
-	 * \brief
+	 * \brief  Constructor to sign token
 	 *
-	 * \param[in]
-	 * \param[in]
-	 * \param[in]
+	 * \param[in]  alg: Algorithm type to use for signature
+	 * \param[in]  key: secret to sign
+	 * \param[in]  len: key size
 	 */
-	explicit jwt(jwt_alg_t alg, const uint8_t *key, size_t len);
+	explicit jwt(jwt_alg_t alg);
+
+	/**
+	 * \brief  Constructor to verify token
+	 *
+	 * \param[in]  token: token in format header.payload.signature to verify
+	 * \param[in]  key: secret to check signature
+	 * \param[in]  len: key size
+	 */
+	explicit jwt(const std::string &token);
+
 	~jwt();
 
 	/**
@@ -72,19 +84,55 @@ public:
 	void add_grant(const std::string &key, const std::string &value);
 
 	/**
+	 * \brief  Verify grant value
+	 *
+	 * \param[in]  grant:
+	 * \param[in]  value: expected value
+	 *
+	 * \retval  true: verified
+	 * \retval  false: not verified
+	 * \throws  std::invalid_argument("Invalid params")
+	 * \throws  std::runtime_error("Grant not found")
+	 */
+	bool grant_verify(const std::string &key, const std::string &value);
+
+	/**
 	 * \brief
+	 *
+	 * \param[in]
+	 * \param[in]
 	 *
 	 * \return
 	 */
-	std::string encode();
+	std::string sign(const uint8_t *key, size_t key_size);
+
+	/**
+	 * \brief
+	 *
+	 * \retval  true: signature verified
+	 * \retval  false: bad signature
+	 */
+	bool verify(const uint8_t *key, size_t size);
+
+	void cleanup();
 
 private:
-	/*
-	 * \brief  Cleanup key
+	/**
+	 * \brief
 	 *
-	 * \return None
+	 * \param[in]
 	 */
-	void scrub_key();
+	void parse(const std::string &token);
+
+	/**
+	 * \brief
+	 *
+	 * \param[in]
+	 * \param[in]
+	 *
+	 * \return
+	 */
+	std::vector<std::string> split(const std::string &text, char sep);
 
 	/**
 	 * \brief   Sign data with key
@@ -94,7 +142,7 @@ private:
 	 *
 	 * \return
 	 */
-	int sign(std::string &signature, const std::string &data);
+	int gen_signature(std::string &signature, const std::string &data, const uint8_t *key, size_t key_size);
 
 private:
 	/**
@@ -145,8 +193,9 @@ private:
 	static const char *alg2str(jwt_alg_t alg);
 
 private:
-	size_t        m_key_len;
-	uint8_t      *m_key;
-	jwt_alg_t     m_alg;
-	Json::Value   m_grants;
+	jwt_alg_t                m_alg;
+	Json::Value              m_header;
+	Json::Value              m_payload;
+	std::string              m_signature;
+	std::vector<std::string> m_tokens;
 };

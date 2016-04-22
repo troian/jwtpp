@@ -35,4 +35,13 @@ std::string serialize_json(const Json::Value &json)
 	return s;
 }
 
+void str2json(const std::string &str, Json::Value &json)
+{
+	Json::Reader reader;
+
+	if (!reader.parse(str, json)) {
+		throw std::runtime_error("Invalid JSON input");
+	}
+}
+
 } // namespace tools

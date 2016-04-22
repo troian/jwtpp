@@ -38,4 +38,6 @@ namespace tools {
  */
 std::string serialize_json(const Json::Value &json);
 
+void str2json(const std::string &str, Json::Value &json);
+
 } // namespace tools

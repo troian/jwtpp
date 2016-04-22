@@ -4,6 +4,8 @@
 
 #include <tools/tools.hpp>
 
+namespace tools {
+
 std::string serialize_json(const Json::Value &json)
 {
 	Json::StreamWriterBuilder wbuilder;
@@ -12,3 +14,5 @@ std::string serialize_json(const Json::Value &json)
 
 	return s;
 }
+
+} // namespace tools

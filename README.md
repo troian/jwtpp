@@ -7,6 +7,7 @@ Dependencies:
 
 Supported features:
   - Sign
+  - Verify
   - HS256
   - HS384
   - HS512

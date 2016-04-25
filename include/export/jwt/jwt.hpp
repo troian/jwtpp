@@ -37,6 +37,14 @@
 
 #include <tools/tools.hpp>
 
+#include <openssl/hmac.h>
+#include <openssl/rsa.h>
+#include <openssl/sha.h>
+#include <openssl/objects.h>
+#include <openssl/pem.h>
+#include <openssl/err.h>
+
+
 /**
  * \brief
  */
@@ -45,6 +53,9 @@ typedef enum jwt_alg {
 	JWT_ALG_HS256,
 	JWT_ALG_HS384,
 	JWT_ALG_HS512,
+	JWT_ALG_RS256,
+	JWT_ALG_RS384,
+	JWT_ALG_RS512,
 	JWT_ALG_UKNOWN
 } jwt_alg_t;
 
@@ -143,6 +154,10 @@ private:
 	 * \return
 	 */
 	int gen_signature(std::string &signature, const std::string &data, const uint8_t *key, size_t key_size);
+
+	void do_hmac(const EVP_MD *evp_md, const uint8_t *key, size_t key_size, const uint8_t *data, size_t data_size, uint8_t **out_buf, uint32_t &out_size);
+
+	void do_rsa();
 
 private:
 	/**

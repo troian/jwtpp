@@ -29,8 +29,6 @@
 #include <jwt/jwt.hpp>
 #include <tools/base64.hpp>
 
-#include <openssl/hmac.h>
-
 jwt::jwt(jwt_alg_t alg) :
 	  m_alg(alg)
 {
@@ -51,6 +49,20 @@ jwt::~jwt()
 	cleanup();
 }
 
+void jwt::do_hmac(const EVP_MD *evp_md, const uint8_t *key, size_t key_size, const uint8_t *data, size_t data_size, uint8_t **out_buf, uint32_t &out_size)
+{
+	// First calculate len of the signature
+	HMAC(evp_md, key, key_size, data, data_size, nullptr, &out_size);
+
+	uint8_t *res = new uint8_t[out_size];
+
+	HMAC(evp_md, key, key_size, data, data_size, res, &out_size);
+
+	base64uri_encode(res, out_size);
+
+	*out_buf = res;
+}
+
 int jwt::gen_signature(std::string &signature, const std::string &data, const uint8_t *key, size_t key_size)
 {
 	if (data.empty()) {
@@ -60,6 +72,7 @@ int jwt::gen_signature(std::string &signature, const std::string &data, const ui
 	signature.clear();
 
 	uint32_t res_len;
+	uint8_t *res = new uint8_t[res_len];
 
 	const EVP_MD *alg;
 
@@ -67,27 +80,17 @@ int jwt::gen_signature(std::string &signature, const std::string &data, const ui
 	case JWT_ALG_NONE:
 		return 0;
 	case JWT_ALG_HS256:
-		alg = EVP_sha256();
+		do_hmac(EVP_sha256(), key, key_size, (const uint8_t *)data.c_str(), data.size(), &res, res_len);
 		break;
 	case JWT_ALG_HS384:
-		alg = EVP_sha384();
+		do_hmac(EVP_sha384(), key, key_size, (const uint8_t *)data.c_str(), data.size(), &res, res_len);
 		break;
 	case JWT_ALG_HS512:
-		alg = EVP_sha512();
+		do_hmac(EVP_sha512(), key, key_size, (const uint8_t *)data.c_str(), data.size(), &res, res_len);
 		break;
 	default:
-		// Should actualy never happen
-		return EINVAL;
+		break;
 	}
-
-	// First calculate len of the signature
-	HMAC(alg, key, key_size, (const uint8_t *)data.c_str(), data.size(), nullptr, &res_len);
-
-	uint8_t *res = new uint8_t[res_len];
-
-	HMAC(alg, key, key_size, (const uint8_t *)data.c_str(), data.size(), res, &res_len);
-
-	base64uri_encode(res, res_len);
 
 	signature = tools::base64::encode(res, res_len);
 

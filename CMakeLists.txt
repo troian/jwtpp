@@ -35,7 +35,7 @@ set(EXPORT_INCLUDES
 
 add_library(${PROJECT_NAME} STATIC ${LIB_SOURCES})
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${EXPORT_INCLUDES})
+target_include_directories(${PROJECT_NAME} PUBLIC ${EXPORT_INCLUDES} ${OPENSSL_INCLUDE_DIR})
 
 target_link_libraries(${PROJECT_NAME}
         jsoncpp

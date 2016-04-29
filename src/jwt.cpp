@@ -26,6 +26,8 @@
 #include <sstream>
 #include <iomanip>
 
+#include <strings.h>
+
 #include <jwt/jwt.hpp>
 #include <tools/base64.hpp>
 

@@ -35,8 +35,6 @@ set(EXPORT_INCLUDES
 
 add_library(${PROJECT_NAME} STATIC ${LIB_SOURCES})
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${EXPORT_INCLUDES} ${OPENSSL_INCLUDE_DIR})
-
 target_link_libraries(${PROJECT_NAME}
         jsoncpp
 )
@@ -44,6 +42,7 @@ target_link_libraries(${PROJECT_NAME}
 set(OPENSSL_ROOT_DIR /usr/local/opt/openssl)
 find_package(OpenSSL REQUIRED)
 
+target_include_directories(${PROJECT_NAME} PUBLIC ${EXPORT_INCLUDES} ${OPENSSL_INCLUDE_DIR})
 include_directories(${OPENSSL_INCLUDE_DIR})
 
 target_link_libraries(${PROJECT_NAME} ${OPENSSL_LIBRARIES})

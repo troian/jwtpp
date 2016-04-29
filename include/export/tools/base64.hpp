@@ -56,6 +56,13 @@ public:
 	static std::string encode(const std::string &stream);
     static std::string encode(const uint8_t *stream, size_t in_len);
 
+	/**
+	 * \brief
+	 *
+	 * \param[in]
+	 *
+	 * \return
+	 */
 	template<typename T>
 	static T decode(std::string const &stream) {
 		int in_len = stream.size();

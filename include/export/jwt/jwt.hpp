@@ -155,7 +155,26 @@ private:
 	 */
 	int gen_signature(std::string &signature, const std::string &data, const uint8_t *key, size_t key_size);
 
-	void do_hmac(const EVP_MD *evp_md, const uint8_t *key, size_t key_size, const uint8_t *data, size_t data_size, uint8_t **out_buf, uint32_t &out_size);
+	/**
+	 * \brief
+	 *
+	 * \param[in]   evp_md: SHA algorithm type
+	 * \param[in]   key: buffer containing key
+	 * \param[in]   key_size
+	 * \param[in]   data: data to be signed
+	 * \param[in]   data_size: size of param data
+	 * \param[out]  out_buf: pointer to signature buffer
+	 * \param[out]  out_size: size of signature
+	 *
+	 * \return
+	 */
+	void do_hmac(
+				  const EVP_MD *evp_md
+				, const uint8_t *key
+				, size_t key_size
+				, const uint8_t *data
+				, size_t data_size
+				, std::string &signature);
 
 	void do_rsa();
 

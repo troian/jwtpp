@@ -49,18 +49,23 @@ jwt::~jwt()
 	cleanup();
 }
 
-void jwt::do_hmac(const EVP_MD *evp_md, const uint8_t *key, size_t key_size, const uint8_t *data, size_t data_size, uint8_t **out_buf, uint32_t &out_size)
+void jwt::do_hmac(const EVP_MD *evp_md, const uint8_t *key, size_t key_size, const uint8_t *data, size_t data_size, std::string &signature)
 {
 	// First calculate len of the signature
-	HMAC(evp_md, key, key_size, data, data_size, nullptr, &out_size);
+	uint32_t size;
 
-	uint8_t *res = new uint8_t[out_size];
+	HMAC(evp_md, key, key_size, data, data_size, nullptr, &size);
 
-	HMAC(evp_md, key, key_size, data, data_size, res, &out_size);
+	uint8_t *res = new uint8_t[size];
 
-	base64uri_encode(res, out_size);
+	HMAC(evp_md, key, key_size, data, data_size, res, &size);
 
-	*out_buf = res;
+	//base64uri_encode(res, size);
+
+	signature = tools::base64::encode(res, size);
+
+	delete[] res;
+
 }
 
 int jwt::gen_signature(std::string &signature, const std::string &data, const uint8_t *key, size_t key_size)
@@ -72,7 +77,7 @@ int jwt::gen_signature(std::string &signature, const std::string &data, const ui
 	signature.clear();
 
 	uint32_t res_len;
-	uint8_t *res = new uint8_t[res_len];
+	uint8_t *res;
 
 	const EVP_MD *alg;
 
@@ -80,21 +85,17 @@ int jwt::gen_signature(std::string &signature, const std::string &data, const ui
 	case JWT_ALG_NONE:
 		return 0;
 	case JWT_ALG_HS256:
-		do_hmac(EVP_sha256(), key, key_size, (const uint8_t *)data.c_str(), data.size(), &res, res_len);
+		do_hmac(EVP_sha256(), key, key_size, (const uint8_t *)data.c_str(), data.size(), signature);
 		break;
 	case JWT_ALG_HS384:
-		do_hmac(EVP_sha384(), key, key_size, (const uint8_t *)data.c_str(), data.size(), &res, res_len);
+		do_hmac(EVP_sha384(), key, key_size, (const uint8_t *)data.c_str(), data.size(), signature);
 		break;
 	case JWT_ALG_HS512:
-		do_hmac(EVP_sha512(), key, key_size, (const uint8_t *)data.c_str(), data.size(), &res, res_len);
+		do_hmac(EVP_sha512(), key, key_size, (const uint8_t *)data.c_str(), data.size(), signature);
 		break;
 	default:
 		break;
 	}
-
-	signature = tools::base64::encode(res, res_len);
-
-	delete[] res;
 
 	return 0;
 }
@@ -116,7 +117,7 @@ std::string jwt::sign(const uint8_t *key, size_t key_size)
 	jhead = tools::serialize_json(m_payload);
 	token += tools::base64::encode(jhead);
 
-	base64uri_encode(token);
+	//base64uri_encode(token);
 
 	// Make signature
 	gen_signature(m_signature, token, key, key_size);
@@ -257,7 +258,6 @@ void jwt::base64uri_encode(std::string &str)
 
 		t++;
 	}
-
 }
 
 void jwt::base64uri_encode(uint8_t *buf, size_t len)
@@ -278,8 +278,6 @@ void jwt::base64uri_encode(uint8_t *buf, size_t len)
 
 		t++;
 	}
-
-	//buf[t] = '\0';
 }
 
 const char *jwt::alg2str(jwt_alg_t alg)

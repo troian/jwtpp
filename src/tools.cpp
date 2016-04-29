@@ -30,6 +30,8 @@ std::string serialize_json(const Json::Value &json)
 {
 	Json::StreamWriterBuilder wbuilder;
 
+	wbuilder.settings_["indentation"] = "";
+
 	std::string s = Json::writeString(wbuilder, json);
 
 	return s;

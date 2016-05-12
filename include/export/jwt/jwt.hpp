@@ -44,7 +44,6 @@
 #include <openssl/pem.h>
 #include <openssl/err.h>
 
-
 /**
  * \brief
  */
@@ -68,8 +67,6 @@ public:
 	 * \brief  Constructor to sign token
 	 *
 	 * \param[in]  alg: Algorithm type to use for signature
-	 * \param[in]  key: secret to sign
-	 * \param[in]  len: key size
 	 */
 	explicit jwt(jwt_alg_t alg);
 
@@ -77,15 +74,13 @@ public:
 	 * \brief  Constructor to verify token
 	 *
 	 * \param[in]  token: token in format header.payload.signature to verify
-	 * \param[in]  key: secret to check signature
-	 * \param[in]  len: key size
 	 */
 	explicit jwt(const std::string &token);
 
 	~jwt();
 
 	/**
-	 * \brief
+	 * \brief   Add JWT grant
 	 *
 	 * \param[in]  key:
 	 * \param[in]  value:
@@ -108,23 +103,50 @@ public:
 	bool grant_verify(const std::string &key, const std::string &value);
 
 	/**
-	 * \brief
+	 * \brief   Create JWT token using HMAC
 	 *
-	 * \param[in]
-	 * \param[in]
+	 * \param[out] token:
+	 * \param[in]  key: HMAC key buffer
+	 * \param[in]  size: HMAC key size
 	 *
-	 * \return
+	 * \return  signature
 	 */
-	std::string sign(const uint8_t *key, size_t key_size);
+	void sign(std::string &token, const uint8_t *key, size_t key_size);
 
 	/**
-	 * \brief
+	 * \brief   Create JWT token using RSA
+	 *
+	 * \param[out] token:
+	 * \param[in]  r:
+	 *
+	 * \return  None
+	 */
+	void sign(std::string &token, RSA *r);
+
+	/**
+	 * \brief   Verify token using HMAC
+	 *
+	 * \param[in]  key: Buffer containig HMAC key
+	 * \param[in]  size: HMAC key size
 	 *
 	 * \retval  true: signature verified
 	 * \retval  false: bad signature
 	 */
 	bool verify(const uint8_t *key, size_t size);
 
+	/**
+	 * \brief
+	 *
+	 * \param[in]
+	 *
+	 * \retval  true: signature verified
+	 * \retval  false: bad signature
+	 */
+	bool verify(RSA *r);
+
+	/**
+	 * \brief
+	 */
 	void cleanup();
 
 private:
@@ -134,6 +156,13 @@ private:
 	 * \param[in]
 	 */
 	void parse(const std::string &token);
+
+	/**
+	 * \brief
+	 *
+	 * \param[out]
+	 */
+	void encode_token(std::string &token);
 
 	/**
 	 * \brief
@@ -150,33 +179,23 @@ private:
 	 *
 	 * \param[out]  signature:
 	 * \param[in]   data: data to be signed
+	 * \param[in]   key:
+	 * \param[in]   key_size:
 	 *
-	 * \return
+	 * \return None
 	 */
-	int gen_signature(std::string &signature, const std::string &data, const uint8_t *key, size_t key_size);
+	void sign_hmac(std::string &signature, const std::string &data, const uint8_t *key, size_t key_size);
 
 	/**
 	 * \brief
 	 *
-	 * \param[in]   evp_md: SHA algorithm type
-	 * \param[in]   key: buffer containing key
-	 * \param[in]   key_size
-	 * \param[in]   data: data to be signed
-	 * \param[in]   data_size: size of param data
-	 * \param[out]  out_buf: pointer to signature buffer
-	 * \param[out]  out_size: size of signature
+	 * \param[out]
+	 * \param[in]
+	 * \param[in]
 	 *
-	 * \return
+	 * \return None
 	 */
-	void do_hmac(
-				  const EVP_MD *evp_md
-				, const uint8_t *key
-				, size_t key_size
-				, const uint8_t *data
-				, size_t data_size
-				, std::string &signature);
-
-	void do_rsa();
+	void sign_rsa(std::string &signature, const std::string &data, RSA *r);
 
 private:
 	/**

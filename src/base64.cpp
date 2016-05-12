@@ -36,15 +36,13 @@ const std::string base64::base64_chars =
 		"abcdefghijklmnopqrstuvwxyz"
 		"0123456789+/";
 
-std::string base64::encode(std::vector<uint8_t> &stream)
+void base64::encode(std::string &b64, const uint8_t *stream, size_t in_len)
 {
-	std::string ret;
 	int i = 0;
 	int j = 0;
 	int k = 0;
 	unsigned char char_array_3[3];
 	unsigned char char_array_4[4];
-	size_t in_len = stream.size();
 
 	while (in_len--) {
 		char_array_3[i++] = stream[k++];
@@ -55,7 +53,7 @@ std::string base64::encode(std::vector<uint8_t> &stream)
 			char_array_4[3] = char_array_3[2] & 0x3f;
 
 			for (i = 0; (i < 4); i++) {
-				ret += base64_chars[char_array_4[i]];
+				b64 += base64_chars[char_array_4[i]];
 			}
 			i = 0;
 		}
@@ -72,111 +70,24 @@ std::string base64::encode(std::vector<uint8_t> &stream)
 		char_array_4[3] = char_array_3[2] & 0x3f;
 
 		for (j = 0; (j < i + 1); j++) {
-			ret += base64_chars[char_array_4[j]];
+			b64 += base64_chars[char_array_4[j]];
 		}
 
 		while ((i++ < 3)) {
-			ret += '=';
+			b64 += '=';
 		}
 
 	}
-
-	return ret;
 }
 
-std::string base64::encode(const uint8_t *stream, size_t in_len)
+void base64::encode(std::string &b64, std::vector<uint8_t> &stream)
 {
-	std::string ret;
-	int i = 0;
-	int j = 0;
-	int k = 0;
-	unsigned char char_array_3[3];
-	unsigned char char_array_4[4];
-
-	while (in_len--) {
-		char_array_3[i++] = stream[k++];
-		if (i == 3) {
-			char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
-			char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
-			char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
-			char_array_4[3] = char_array_3[2] & 0x3f;
-
-			for (i = 0; (i < 4); i++) {
-				ret += base64_chars[char_array_4[i]];
-			}
-			i = 0;
-		}
-	}
-
-	if (i) {
-		for (j = i; j < 3; j++) {
-			char_array_3[j] = '\0';
-		}
-
-		char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
-		char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
-		char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
-		char_array_4[3] = char_array_3[2] & 0x3f;
-
-		for (j = 0; (j < i + 1); j++) {
-			ret += base64_chars[char_array_4[j]];
-		}
-
-		while ((i++ < 3)) {
-			ret += '=';
-		}
-
-	}
-
-	return ret;
+	encode(b64, reinterpret_cast<const uint8_t *>(stream.data()), stream.size());
 }
 
-std::string base64::encode(const std::string &stream)
+void base64::encode(std::string &b64, const std::string &stream)
 {
-	std::string ret;
-	int i = 0;
-	int j = 0;
-	int k = 0;
-	size_t in_len = stream.size();
-	unsigned char char_array_3[3];
-	unsigned char char_array_4[4];
-
-	while (in_len--) {
-		char_array_3[i++] = stream[k++];
-		if (i == 3) {
-			char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
-			char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
-			char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
-			char_array_4[3] = char_array_3[2] & 0x3f;
-
-			for (i = 0; (i < 4); i++) {
-				ret += base64_chars[char_array_4[i]];
-			}
-			i = 0;
-		}
-	}
-
-	if (i) {
-		for (j = i; j < 3; j++) {
-			char_array_3[j] = '\0';
-		}
-
-		char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
-		char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
-		char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
-		char_array_4[3] = char_array_3[2] & 0x3f;
-
-		for (j = 0; (j < i + 1); j++) {
-			ret += base64_chars[char_array_4[j]];
-		}
-
-		while ((i++ < 3)) {
-			ret += '=';
-		}
-
-	}
-
-	return ret;
+	encode(b64, reinterpret_cast<const uint8_t *>(stream.c_str()), stream.size());
 }
 
 } // namespace tools

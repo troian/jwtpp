@@ -34,7 +34,8 @@
 jwt::jwt(jwt_alg_t alg) :
 	  m_alg(alg)
 {
-
+	m_header["typ"] = "JWT";
+	m_header["alg"] = alg2str(m_alg);
 }
 
 jwt::jwt(const std::string &token)
@@ -51,89 +52,124 @@ jwt::~jwt()
 	cleanup();
 }
 
-void jwt::do_hmac(const EVP_MD *evp_md, const uint8_t *key, size_t key_size, const uint8_t *data, size_t data_size, std::string &signature)
+void jwt::sign_rsa(std::string &signature, const std::string &data, RSA *r)
 {
-	// First calculate len of the signature
-	uint32_t size;
+	uint8_t  digest[SHA512_DIGEST_LENGTH];
+	uint32_t digest_len;
 
-	HMAC(evp_md, key, key_size, data, data_size, nullptr, &size);
+	uint32_t type;
 
-	uint8_t *res = new uint8_t[size];
+	switch (m_alg) {
+	case JWT_ALG_RS256: {
+		SHA256_CTX sha_ctx;
 
-	HMAC(evp_md, key, key_size, data, data_size, res, &size);
+		digest_len = SHA256_DIGEST_LENGTH;
+		type = NID_sha256;
 
-	//base64uri_encode(res, size);
+		if (SHA256_Init(&sha_ctx) != 1) {
 
-	signature = tools::base64::encode(res, size);
+		}
 
-	delete[] res;
+		if (SHA256_Update(&sha_ctx, (const uint8_t *)data.c_str(), data.size()) != 1) {
+			throw std::runtime_error("Couldn't calculate hash");
+		}
 
+		if (SHA256_Final(digest, &sha_ctx) != 1) {
+
+		}
+
+		break;
+	}
+	default:
+		break;
+	}
+
+	uint32_t sig_len;
+
+	uint8_t *sig = new uint8_t[RSA_size(r)];
+
+	RSA_sign(type, digest, digest_len, sig, &sig_len, r);
+
+	delete[] sig;
 }
 
-int jwt::gen_signature(std::string &signature, const std::string &data, const uint8_t *key, size_t key_size)
+void jwt::sign_hmac(std::string &signature, const std::string &data, const uint8_t *key, size_t key_size)
 {
 	if (data.empty()) {
-		return EINVAL;
+		throw std::invalid_argument("Data is empty");
 	}
 
 	signature.clear();
 
-	uint32_t res_len;
-	uint8_t *res;
-
 	const EVP_MD *alg;
 
 	switch (m_alg) {
-	case JWT_ALG_NONE:
-		return 0;
 	case JWT_ALG_HS256:
-		do_hmac(EVP_sha256(), key, key_size, (const uint8_t *)data.c_str(), data.size(), signature);
+		alg = EVP_sha256();
+		//do_hmac(EVP_sha256(), key, key_size, (const uint8_t *)data.c_str(), data.size(), signature);
 		break;
 	case JWT_ALG_HS384:
-		do_hmac(EVP_sha384(), key, key_size, (const uint8_t *)data.c_str(), data.size(), signature);
+		alg = EVP_sha384();
 		break;
 	case JWT_ALG_HS512:
-		do_hmac(EVP_sha512(), key, key_size, (const uint8_t *)data.c_str(), data.size(), signature);
+		alg = EVP_sha512();
 		break;
 	default:
 		break;
 	}
 
-	return 0;
+	uint32_t size;
+
+	HMAC(alg, key, key_size, (const uint8_t *)data.c_str(), data.size(), nullptr, &size);
+
+	uint8_t *res = new uint8_t[size];
+
+	HMAC(alg, key, key_size, (const uint8_t *)data.c_str(), data.size(), res, &size);
+
+	tools::base64::encode(signature, res, size);
+
+	delete[] res;
 }
 
-std::string jwt::sign(const uint8_t *key, size_t key_size)
+void jwt::encode_token(std::string &token)
 {
-	m_header["typ"] = "JWT";
-	m_header["alg"] = alg2str(m_alg);
-
-	std::string token;
-
 	// Encode header into Base64
 	std::string jhead = tools::serialize_json(m_header);
-	token = tools::base64::encode(jhead);
+	tools::base64::encode(token, jhead);
 	token += ".";
 
 	// Encode parameters into Base64
 	jhead.clear();
 	jhead = tools::serialize_json(m_payload);
-	token += tools::base64::encode(jhead);
+	tools::base64::encode(token, jhead);
+}
 
-	//base64uri_encode(token);
+void jwt::sign(std::string &token, const uint8_t *key, size_t key_size)
+{
+	encode_token(token);
 
 	// Make signature
-	gen_signature(m_signature, token, key, key_size);
+	sign_hmac(m_signature, token, key, key_size);
 
 	token += ".";
 	token += m_signature;
-	return token;
+}
+
+void jwt::sign(std::string &token, RSA *r)
+{
+	encode_token(token);
+
+	sign_rsa(m_signature, token, r);
+
+	token += ".";
+	token += m_signature;
 }
 
 bool jwt::verify(const uint8_t *key, size_t size)
 {
 	// Make signature
 	std::string token = m_tokens[0] + "." + m_tokens[1];
-	gen_signature(m_signature, token, key, size);
+	sign_hmac(m_signature, token, key, size);
 
 	if (m_signature.compare(m_tokens[2]) == 0) {
 		return true;

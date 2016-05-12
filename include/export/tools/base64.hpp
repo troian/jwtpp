@@ -48,13 +48,14 @@ public:
 	/**
 	 * \brief
 	 *
+	 * \param[out]  b64: output data in base64
 	 * \param[in]
 	 *
-	 * \return
+	 * \return  None
 	 */
-	static std::string encode(std::vector<uint8_t> &stream);
-	static std::string encode(const std::string &stream);
-    static std::string encode(const uint8_t *stream, size_t in_len);
+	static void encode(std::string &b64, std::vector<uint8_t> &stream);
+	static void encode(std::string &b64, const std::string &stream);
+    static void encode(std::string &b64, const uint8_t *stream, size_t in_len);
 
 	/**
 	 * \brief

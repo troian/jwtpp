@@ -1,29 +1,27 @@
 /**
-   \file base64.h
-
-   Copyright (C) 2004-2008 Rene Nyffenegger
-
-   This source code is provided 'as-is', without any express or implied
-   warranty. In no event will the author be held liable for any damages
-   arising from the use of this software.
-
-   Permission is granted to anyone to use this software for any purpose,
-   including commercial applications, and to alter it and redistribute it
-   freely, subject to the following restrictions:
-
-   1. The origin of this source code must not be misrepresented; you must not
-      claim that you wrote the original source code. If you use this source code
-      in a product, an acknowledgment in the product documentation would be
-      appreciated but is not required.
-
-   2. Altered source versions must be plainly marked as such, and must not be
-      misrepresented as being the original source code.
-
-   3. This notice may not be removed or altered from any source distribution.
-
-   \author Rene Nyffenegger rene.nyffenegger@adp-gmbh.ch
-
-*/
+ * Copyright (C) 2004-2008 Rene Nyffenegger
+ *
+ * This source code is provided 'as-is', without any express or implied
+ * warranty. In no event will the author be held liable for any damages
+ * arising from the use of this software.
+ *
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ *
+ * 1. The origin of this source code must not be misrepresented; you must not
+ *    claim that you wrote the original source code. If you use this source code
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
+ *
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original source code.
+ *
+ * 3. This notice may not be removed or altered from any source distribution.
+ *
+ * \author Rene Nyffenegger rene.nyffenegger@adp-gmbh.ch
+ * \author Artur Troian troian.ap@gmail.com
+ */
 
 #pragma once
 
@@ -54,7 +52,26 @@ public:
 	 * \return  None
 	 */
 	static void encode(std::string &b64, std::vector<uint8_t> &stream);
+
+	/**
+	 * \brief
+	 *
+	 * \param[out]
+	 * \param[in]
+	 *
+	 * \return None
+	 */
 	static void encode(std::string &b64, const std::string &stream);
+
+	/**
+	 * \brief
+	 *
+	 * \param[out]
+	 * \param[in]
+	 * \param[in]
+	 *
+	 * \return None
+	 */
     static void encode(std::string &b64, const uint8_t *stream, size_t in_len);
 
 	/**
@@ -65,7 +82,7 @@ public:
 	 * \return
 	 */
 	template<typename T>
-	static T decode(std::string const &stream) {
+	static T decode(const std::string &stream) {
 		int in_len = stream.size();
 		int i = 0;
 		int j = 0;

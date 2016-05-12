@@ -36,7 +36,7 @@ namespace tools {
 /**
  * \brief
  */
-class base64 {
+class base64 final {
 private:
 	static const std::string base64_chars;
 

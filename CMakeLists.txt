@@ -23,14 +23,19 @@ check_include_file_cxx(stdexcept HAVE_STDEXCEPT)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 
-set(LIB_SOURCES
-        src/jwt.cpp
-        src/base64.cpp
-        src/tools.cpp
-)
-
 set(EXPORT_INCLUDES
         ${CMAKE_CURRENT_SOURCE_DIR}/include/export
+)
+
+set(LIB_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/jwt.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/base64.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/tools.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/
+
+        ${EXPORT_INCLUDES}/jwt/jwt.hpp
+        ${EXPORT_INCLUDES}/tools/base64.hpp
+        ${EXPORT_INCLUDES}/tools/tools.hpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${LIB_SOURCES})

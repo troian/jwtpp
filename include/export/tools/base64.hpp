@@ -75,9 +75,9 @@ public:
     static void encode(std::string &b64, const uint8_t *stream, size_t in_len);
 
 	/**
-	 * \brief
+	 * \brief   Decode base64 string into array. Type T must be any kind of container
 	 *
-	 * \param[in]
+	 * \param[in]  stream: base64 stream
 	 *
 	 * \return
 	 */
@@ -87,23 +87,24 @@ public:
 		int i = 0;
 		int j = 0;
 		int in_ = 0;
-		unsigned char char_array_4[4], char_array_3[3];
+		uint8_t array_4[4];
+		uint8_t array_3[3];
 		T ret;
 
 		while (in_len-- && (stream[in_] != '=') && is_base64(stream[in_])) {
-			char_array_4[i++] = stream[in_];
+			array_4[i++] = stream[in_];
 			in_++;
 			if (i == 4) {
 				for (i = 0; i < 4; i++) {
-					char_array_4[i] = base64_chars.find(char_array_4[i]);
+					array_4[i] = base64_chars.find(array_4[i]);
 				}
 
-				char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
-				char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
-				char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
+				array_3[0] = (array_4[0] << 2) + ((array_4[1] & 0x30) >> 4);
+				array_3[1] = ((array_4[1] & 0xf) << 4) + ((array_4[2] & 0x3c) >> 2);
+				array_3[2] = ((array_4[2] & 0x3) << 6) + array_4[3];
 
 				for (i = 0; (i < 3); i++) {
-					ret.push_back(char_array_3[i]);
+					ret.push_back(array_3[i]);
 				}
 
 				i = 0;
@@ -112,19 +113,19 @@ public:
 
 		if (i) {
 			for (j = i; j < 4; j++) {
-				char_array_4[j] = 0;
+				array_4[j] = 0;
 			}
 
 			for (j = 0; j < 4; j++) {
-				char_array_4[j] = base64_chars.find(char_array_4[j]);
+				array_4[j] = base64_chars.find(array_4[j]);
 			}
 
-			char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
-			char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
-			char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
+			array_3[0] = (array_4[0] << 2) + ((array_4[1] & 0x30) >> 4);
+			array_3[1] = ((array_4[1] & 0xf) << 4) + ((array_4[2] & 0x3c) >> 2);
+			array_3[2] = ((array_4[2] & 0x3) << 6) + array_4[3];
 
 			for (j = 0; (j < i - 1); j++) {
-				ret.push_back(char_array_3[j]);
+				ret.push_back(array_3[j]);
 			}
 		}
 

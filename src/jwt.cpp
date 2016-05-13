@@ -280,22 +280,7 @@ std::vector<std::string> jwt::split(const std::string &text, char sep)
 
 void jwt::base64uri_encode(std::string &str)
 {
-	size_t t;
-
-	for (size_t i = t = 0; i < str.size(); i++) {
-		switch (str[i]) {
-		case '+':
-			str[t] = '-';
-			break;
-		case '/':
-			str[t] = '_';
-			break;
-		case '=':
-			continue;
-		}
-
-		t++;
-	}
+	base64uri_encode((uint8_t *)str.data(), str.size());
 }
 
 void jwt::base64uri_encode(uint8_t *buf, size_t len)

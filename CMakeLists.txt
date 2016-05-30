@@ -47,7 +47,16 @@ target_link_libraries(${PROJECT_NAME}
 set(OPENSSL_ROOT_DIR /usr/local/opt/openssl)
 find_package(OpenSSL REQUIRED)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${EXPORT_INCLUDES} ${OPENSSL_INCLUDE_DIR})
-include_directories(${OPENSSL_INCLUDE_DIR})
+find_package(Jsoncpp REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} ${OPENSSL_LIBRARIES})
+include_directories()
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+                           ${EXPORT_INCLUDES}
+                           ${OPENSSL_INCLUDE_DIR}
+                           ${JSONCPP_INCLUDE_DIRS}
+)
+
+#include_directories(${OPENSSL_INCLUDE_DIR})
+
+target_link_libraries(${PROJECT_NAME} ${OPENSSL_LIBRARIES} ${JSONCPP_LIBRARIES})

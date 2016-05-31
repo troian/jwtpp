@@ -25,6 +25,7 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <strstream>
 
 #include <strings.h>
 
@@ -34,6 +35,9 @@
 jwt::jwt(jwt_alg_t alg) :
 	  m_alg(alg)
 {
+	if (alg >= JWT_ALG_UKNOWN)
+		throw std::invalid_argument("Unsupported algorithm");
+
 	m_header["typ"] = "JWT";
 	m_header["alg"] = alg2str(m_alg);
 }
@@ -59,6 +63,9 @@ void jwt::sign_rsa(std::string &signature, const std::string &data, RSA *r)
 
 	uint32_t type;
 
+	if (!r)
+		throw std::invalid_argument("Invalid RSA object");
+
 	switch (m_alg) {
 	case JWT_ALG_RS256: {
 		SHA256_CTX sha_ctx;
@@ -75,7 +82,7 @@ void jwt::sign_rsa(std::string &signature, const std::string &data, RSA *r)
 		}
 
 		if (SHA256_Final(digest, &sha_ctx) != 1) {
-
+			throw std::runtime_error("Couldn't finalize SHA");
 		}
 
 		break;
@@ -88,7 +95,15 @@ void jwt::sign_rsa(std::string &signature, const std::string &data, RSA *r)
 
 	uint8_t *sig = new uint8_t[RSA_size(r)];
 
-	RSA_sign(type, digest, digest_len, sig, &sig_len, r);
+	if (RSA_sign(type, digest, digest_len, sig, &sig_len, r) != 1) {
+		delete[] sig;
+		throw std::runtime_error("Couldn't sign RSA");
+	}
+
+	//signature.insert(0, (char *)sig, sig_len);
+	tools::base64::encode(signature, sig, sig_len);
+
+	base64uri_encode(signature);
 
 	delete[] sig;
 }
@@ -106,7 +121,6 @@ void jwt::sign_hmac(std::string &signature, const std::string &data, const uint8
 	switch (m_alg) {
 	case JWT_ALG_HS256:
 		alg = EVP_sha256();
-		//do_hmac(EVP_sha256(), key, key_size, (const uint8_t *)data.c_str(), data.size(), signature);
 		break;
 	case JWT_ALG_HS384:
 		alg = EVP_sha384();
@@ -115,7 +129,7 @@ void jwt::sign_hmac(std::string &signature, const std::string &data, const uint8
 		alg = EVP_sha512();
 		break;
 	default:
-		break;
+		throw std::runtime_error("Invalid alg");
 	}
 
 	uint32_t size;
@@ -146,6 +160,7 @@ void jwt::encode_token(std::string &token)
 
 void jwt::sign(std::string &token, const uint8_t *key, size_t key_size)
 {
+	token.clear();
 	encode_token(token);
 
 	// Make signature
@@ -314,6 +329,12 @@ const char *jwt::alg2str(jwt_alg_t alg)
 		return "HS384";
 	case JWT_ALG_HS512:
 		return "HS512";
+	case JWT_ALG_RS256:
+		return "RS256";
+	case JWT_ALG_RS384:
+		return "RS384";
+	case JWT_ALG_RS512:
+		return "RS512";
 	default:
 		return nullptr;
 	}

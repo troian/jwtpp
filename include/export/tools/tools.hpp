@@ -26,6 +26,7 @@
 
 #include <string>
 #include <json/json.h>
+#include <json/value.h>
 
 namespace tools {
 

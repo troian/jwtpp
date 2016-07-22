@@ -23,6 +23,8 @@
  */
 
 #include <tools/tools.hpp>
+#include <json/writer.h>
+#include <json/reader.h>
 
 namespace tools {
 

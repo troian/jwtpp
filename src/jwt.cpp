@@ -26,7 +26,6 @@
 #include <sstream>
 #include <iomanip>
 #include <strstream>
-
 #include <strings.h>
 
 #include <jwt/jwt.hpp>

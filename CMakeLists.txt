@@ -23,41 +23,37 @@ check_include_file_cxx(stdexcept HAVE_STDEXCEPT)
 check_include_file(json/json.h HAVE_JSON_H)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
 
 set(EXPORT_INCLUDES
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/export
+	${CMAKE_CURRENT_SOURCE_DIR}/include/export
 )
 
 set(LIB_SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/jwt.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/base64.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/tools.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/jwt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/base64.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/tools.cpp
 
-        ${EXPORT_INCLUDES}/jwt/jwt.hpp
-        ${EXPORT_INCLUDES}/tools/base64.hpp
-        ${EXPORT_INCLUDES}/tools/tools.hpp
+    ${EXPORT_INCLUDES}/jwt/jwt.hpp
+    ${EXPORT_INCLUDES}/jwt/buffer.hpp
+    ${EXPORT_INCLUDES}/tools/base64.hpp
+    ${EXPORT_INCLUDES}/tools/tools.hpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${LIB_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
-        jsoncpp
+	jsoncpp
 )
 
-set(OPENSSL_ROOT_DIR /usr/local/opt/openssl)
 find_package(OpenSSL REQUIRED)
 
-find_package(Jsoncpp REQUIRED)
-
-include_directories()
-
-target_include_directories(${PROJECT_NAME} PUBLIC
-                           ${EXPORT_INCLUDES}
-                           ${OPENSSL_INCLUDE_DIR}
-                           ${JSONCPP_INCLUDE_DIRS}
+target_include_directories(
+	${PROJECT_NAME}
+	PUBLIC
+		${EXPORT_INCLUDES}
+		${OPENSSL_INCLUDE_DIR}
+		${JSONCPP_INCLUDE_DIRS}
 )
-
-include_directories(${OPENSSL_INCLUDE_DIR})
 
 target_link_libraries(${PROJECT_NAME} ${OPENSSL_LIBRARIES} ${JSONCPP_LIBRARIES})

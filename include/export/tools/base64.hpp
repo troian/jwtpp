@@ -85,7 +85,6 @@ public:
 	static T decode(const std::string &stream) {
 		int in_len = stream.size();
 		int i = 0;
-		int j = 0;
 		int in_ = 0;
 		uint8_t array_4[4];
 		uint8_t array_3[3];
@@ -112,11 +111,11 @@ public:
 		}
 
 		if (i) {
-			for (j = i; j < 4; j++) {
+			for (int j = i; j < 4; j++) {
 				array_4[j] = 0;
 			}
 
-			for (j = 0; j < 4; j++) {
+			for (int j = 0; j < 4; j++) {
 				array_4[j] = base64_chars.find(array_4[j]);
 			}
 
@@ -124,7 +123,7 @@ public:
 			array_3[1] = ((array_4[1] & 0xf) << 4) + ((array_4[2] & 0x3c) >> 2);
 			array_3[2] = ((array_4[2] & 0x3) << 6) + array_4[3];
 
-			for (j = 0; (j < i - 1); j++) {
+			for (int j = 0; (j < i - 1); j++) {
 				ret.push_back(array_3[j]);
 			}
 		}

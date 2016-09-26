@@ -37,7 +37,6 @@ const std::string base64::base64_chars =
 void base64::encode(std::string &b64, const uint8_t *stream, size_t in_len)
 {
 	int i = 0;
-	int j = 0;
 	int k = 0;
 	uint8_t array_3[3];
 	uint8_t array_4[4];
@@ -58,7 +57,7 @@ void base64::encode(std::string &b64, const uint8_t *stream, size_t in_len)
 	}
 
 	if (i) {
-		for (j = i; j < 3; j++) {
+		for (int j = i; j < 3; j++) {
 			array_3[j] = '\0';
 		}
 
@@ -67,7 +66,7 @@ void base64::encode(std::string &b64, const uint8_t *stream, size_t in_len)
 		array_4[2] = ((array_3[1] & 0x0f) << 2) + ((array_3[2] & 0xc0) >> 6);
 		array_4[3] = array_3[2] & 0x3f;
 
-		for (j = 0; (j < i + 1); j++) {
+		for (int j = 0; (j < i + 1); j++) {
 			b64 += base64_chars[array_4[j]];
 		}
 

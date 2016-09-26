@@ -142,7 +142,7 @@ public:
 	 * \retval  true: signature verified
 	 * \retval  false: bad signature
 	 */
-	bool verify(RSA *r);
+//	bool verify(RSA *r);
 
 	/**
 	 * \brief

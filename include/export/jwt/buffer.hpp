@@ -53,7 +53,7 @@ public:
 	explicit key_buffer(size_t size) :
 		m_size(size) {
 
-		if (size = 0)
+		if (size == 0)
 			throw std::invalid_argument("size cannot be 0");
 
 		try {
@@ -89,14 +89,16 @@ public:
 
 public:
 	key_buffer &operator = (key_buffer &rhs) {
-		try {
-			m_data = new T[rhs.m_size];
-		} catch (...) {
-			throw;
-		}
+		if (this != &rhs) {
+			try {
+				m_data = new T[rhs.m_size];
+			} catch (...) {
+				throw;
+			}
 
-		std::memcpy(m_data, rhs.m_data, sizeof(T) * m_size);
-		m_size = rhs.m_size;
+			std::memcpy(m_data, rhs.m_data, sizeof(T) * m_size);
+			m_size = rhs.m_size;
+		}
 
 		return *this;
 	}

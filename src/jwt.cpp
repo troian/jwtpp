@@ -185,7 +185,7 @@ bool jwt::verify(const uint8_t *key, size_t size)
 	std::string token = m_tokens[0] + "." + m_tokens[1];
 	sign_hmac(m_signature, token, key, size);
 
-	if (m_signature.compare(m_tokens[2]) == 0) {
+	if (!m_signature.compare(m_tokens[2])) {
 		return true;
 	} else {
 		return false;
@@ -214,7 +214,7 @@ bool jwt::grant_verify(const std::string &grant, const std::string &value)
 	}
 
 	std::string val = m_payload.get(grant, "").asString();
-	if (val.compare(value) == 0) {
+	if (!val.compare(value)) {
 		return true;
 	} else {
 		return false;

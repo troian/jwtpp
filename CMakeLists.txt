@@ -31,19 +31,19 @@ set(EXPORT_INCLUDES
 
 set(LIB_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/jwt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/base64.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/tools.cpp
 
     ${EXPORT_INCLUDES}/jwt/jwt.hpp
     ${EXPORT_INCLUDES}/jwt/buffer.hpp
-    ${EXPORT_INCLUDES}/tools/base64.hpp
     ${EXPORT_INCLUDES}/tools/tools.hpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${LIB_SOURCES})
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(
+	${PROJECT_NAME}
 	jsoncpp
+	base64
 )
 
 find_package(OpenSSL REQUIRED)

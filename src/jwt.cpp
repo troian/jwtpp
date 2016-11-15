@@ -299,7 +299,7 @@ void jwt::base64uri_encode(std::string &str)
 
 void jwt::base64uri_encode(uint8_t *buf, size_t len)
 {
-	int i, t;
+	size_t i, t;
 
 	for (i = t = 0; i < len; i++) {
 		switch (buf[i]) {

@@ -46,14 +46,19 @@ target_link_libraries(
 	base64
 )
 
-find_package(OpenSSL REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(OpenSSL REQUIRED openssl)
 
 target_include_directories(
 	${PROJECT_NAME}
 	PUBLIC
 		${EXPORT_INCLUDES}
-		${OPENSSL_INCLUDE_DIR}
 		${JSONCPP_INCLUDE_DIRS}
 )
 
-target_link_libraries(${PROJECT_NAME} ${OPENSSL_LIBRARIES} ${JSONCPP_LIBRARIES})
+target_link_libraries(
+	${PROJECT_NAME}
+	ssl
+	crypto
+	${JSONCPP_LIBRARIES}
+)

@@ -24,43 +24,85 @@
 #pragma once
 
 #include <memory>
+#include <cstring>
 
-/**
- * \brief
- */
+/// \brief
 using sp_key_buffer = typename std::shared_ptr<class key_buffer>;
 
-/**
- * \brief
- */
+/// \brief
 using up_key_buffer = typename std::unique_ptr<class key_buffer>;
 
-/**
- * \class
- *
- * \brief
- */
+/// \tparam T
 template<typename T>
 class key_buffer final {
+private:
+	typedef T value_type;
+
 public:
 	/**
 	 * \brief
 	 *
 	 * \param[in] size
-	 *
-	 * \return
 	 */
 	explicit key_buffer(size_t size) :
-		m_size(size) {
+		size_(size)
+	{
 
 		if (size == 0)
 			throw std::invalid_argument("size cannot be 0");
 
 		try {
-			m_data = new T[size];
+			data_ = new T[size];
 		} catch (...) {
 			throw;
 		}
+	}
+
+	/**
+	 *
+	 * \param[in] rhs
+	 */
+	key_buffer(key_buffer &rhs) {
+		try {
+			data_ = new T[rhs.size_];
+		} catch (...) {
+			throw;
+		}
+
+		std::memcpy(data_, rhs.data_, sizeof(value_type) * size_);
+		size_ = rhs.size_;
+	}
+
+	/**
+	 * \brief
+	 */
+	~key_buffer() {
+		std::memset(data_, 0, sizeof(value_type) * data_);
+
+		delete[] data_;
+	}
+
+public:
+	/**
+	 * \brief
+	 *
+	 * \param[in] rhs
+	 *
+	 * \return
+	 */
+	key_buffer &operator = (key_buffer &rhs) {
+		if (this != &rhs) {
+			try {
+				data_ = new T[rhs.size_];
+			} catch (...) {
+				throw;
+			}
+
+			std::memcpy(data_, rhs.data_, sizeof(T) * size_);
+			size_ = rhs.size_;
+		}
+
+		return *this;
 	}
 
 	/**
@@ -70,82 +112,49 @@ public:
 	 *
 	 * \return
 	 */
-	key_buffer(key_buffer &rhs) {
-		try {
-			m_data = new T[rhs.m_size];
-		} catch (...) {
-			throw;
-		}
-
-		std::memcpy(m_data, rhs.m_data, sizeof(T) * m_size);
-		m_size = rhs.m_size;
-	}
-
-	~key_buffer() {
-		std::memset(m_data, 0, sizeof(T) * m_data);
-
-		delete[] m_data;
-	}
-
-public:
-	key_buffer &operator = (key_buffer &rhs) {
-		if (this != &rhs) {
-			try {
-				m_data = new T[rhs.m_size];
-			} catch (...) {
-				throw;
-			}
-
-			std::memcpy(m_data, rhs.m_data, sizeof(T) * m_size);
-			m_size = rhs.m_size;
-		}
-
-		return *this;
-	}
-
-	/**
-	 * \brief
-	 *
-	 * \param[in]
-	 *
-	 * \return
-	 */
 	bool operator == (key_buffer &rhs) {
-		if (m_size != rhs.m_size) {
+		if (size_ != rhs.size_) {
 			return false;
 		}
 
-		if (std::memcmp(m_data, rhs.m_data, sizeof(T) * m_size) == 0) {
-			return true;
-		} else {
-			return false;
-		}
+		return std::memcmp(data_, rhs.data_, sizeof(T) * size_) == 0;
 	}
 
 	/**
 	 * \brief
 	 *
-	 * \param idx
+	 * \param[in]  idx
 	 *
 	 * \return
 	 */
 	T &operator[] (size_t idx) {
-		if (idx >= m_size) {
-			throw std::out_of_range();
+		if (idx >= size_) {
+			std::string error("Index " + std::to_string(idx) + " is out ot of range");
+			throw std::out_of_range(error);
 		}
 
-		return m_data[idx];
+		return data_[idx];
 	}
 
+	/**
+	 * \brief
+	 *
+	 * \return
+	 */
 	T *data() {
-		return m_data;
+		return data_;
 	}
 
+	/**
+	 * \brief
+	 *
+	 * \return
+	 */
 	const T *data() const {
-		return m_data;
+		return data_;
 	}
 
 private:
-	T     *m_data;
-	size_t m_size;
+	T     *data_;
+	size_t size_;
 };

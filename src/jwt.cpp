@@ -185,11 +185,7 @@ bool jwt::verify(const uint8_t *key, size_t size)
 	std::string token = m_tokens[0] + "." + m_tokens[1];
 	sign_hmac(m_signature, token, key, size);
 
-	if (!m_signature.compare(m_tokens[2])) {
-		return true;
-	} else {
-		return false;
-	}
+	return !m_signature.compare(m_tokens[2]);
 }
 
 void jwt::add_grant(const std::string &grant, const std::string &value)
@@ -214,11 +210,7 @@ bool jwt::grant_verify(const std::string &grant, const std::string &value)
 	}
 
 	std::string val = m_payload.get(grant, "").asString();
-	if (!val.compare(value)) {
-		return true;
-	} else {
-		return false;
-	}
+	return !val.compare(value);
 }
 
 void jwt::cleanup()
@@ -251,7 +243,7 @@ void jwt::parse(const std::string &token)
 		std::cout << e.what();
 	}
 
-	std::string ser = tools::serialize_json(m_header);
+//	std::string ser = tools::serialize_json(m_header);
 
 	std::string typ = m_header.get("typ", "Unknown").asString();
 

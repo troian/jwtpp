@@ -23,29 +23,39 @@
  */
 
 #include <tools/tools.hpp>
+#include <jwt/b64.hpp>
 #include <json/writer.h>
 #include <json/reader.h>
 
-namespace tools {
+namespace jwt {
 
-std::string serialize_json(const Json::Value &json)
+std::string marshal(const Json::Value &json)
 {
-	Json::StreamWriterBuilder wbuilder;
-
-	wbuilder.settings_["indentation"] = "";
-
-	std::string s = Json::writeString(wbuilder, json);
-
-	return s;
+	Json::FastWriter fastWriter;
+	std::string s = fastWriter.write(json);
+	return std::move(s);
 }
 
-void str2json(const std::string &str, Json::Value &json)
+std::string marshal_b64(const Json::Value &json)
 {
-	Json::Reader reader;
+	std::string s = marshal(json);
+	std::string out;
+	b64::encode(out, s);
+	return out;
+}
 
-	if (!reader.parse(str, json)) {
+Json::Value unmarshal_b64(const std::string &b64)
+{
+	std::string decoded;
+	decoded = b64::decode<std::string>(b64);
+
+	Json::Value j;
+	Json::Reader reader;
+	if (!reader.parse(decoded, j)) {
 		throw std::runtime_error("Invalid JSON input");
 	}
+
+	return j;
 }
 
 } // namespace tools

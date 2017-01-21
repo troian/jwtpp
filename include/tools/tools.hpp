@@ -28,17 +28,12 @@
 #include <json/json.h>
 #include <json/value.h>
 
-namespace tools {
+namespace jwt {
 
-/**
- * \brief
- *
- * \param[in]
- *
- * \return
- */
-std::string serialize_json(const Json::Value &json);
+std::string marshal(const Json::Value &json);
 
-void str2json(const std::string &str, Json::Value &json);
+std::string marshal_b64(const Json::Value &json);
+
+Json::Value unmarshal_b64(const std::string &b);
 
 } // namespace tools

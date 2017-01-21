@@ -9,7 +9,7 @@ C++ API for JWT
   - Sign
   - Verify
 
-#### Supported algrorithm
+#### Supported algorithms
 |Alg|Status|
 |:---:|:------:|
 | HS256 | **Supported** |

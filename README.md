@@ -1,6 +1,8 @@
 # jwtpp
 C++ API for JWT
 
+[![Build Status](https://travis-ci.org/troian/jwtpp.svg?branch=master)](https://travis-ci.org/troian/jwtpp)
+
 #### Dependencies:
   - [jsoncpp](https://github.com/open-source-parsers/jsoncpp)
   - OpenSSL

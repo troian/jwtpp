@@ -16,8 +16,7 @@ before_script:
 - if [ $TRAVIS_OS_NAME == linux ]; then cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=/usr/local ..; fi
 script:
 - ./jwtpp_test
-- if [ $TRAVIS_OS_NAME == osx ]; then make install; fi
-- if [ $TRAVIS_OS_NAME == linux ]; then sudo make install; fi
+- sudo make install
 branches:
   only:
   - master

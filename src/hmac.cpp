@@ -2,6 +2,8 @@
 // Created by Artur Troian on 1/21/17.
 //
 
+#include <cstring>
+
 #include <jwtpp/crypto.hpp>
 
 #include <openssl/hmac.h>

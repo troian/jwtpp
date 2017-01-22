@@ -15,7 +15,6 @@ before_script:
 - if [ $TRAVIS_OS_NAME == osx ]; then cmake -Wno-dev -DBUILD_SHARED_LIBS=ON -DOPENSSL_ROOT_DIR=$(brew --prefix openssl) -DCMAKE_INSTALL_PREFIX=/usr/local ..; fi
 - if [ $TRAVIS_OS_NAME == linux ]; then cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=/usr/local ..; fi
 script:
-- make
 - ./jwtpp_test
 - sudo make install
 branches:

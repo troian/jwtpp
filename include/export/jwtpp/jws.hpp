@@ -6,9 +6,9 @@
 #include <memory>
 #include <functional>
 
-#include <jwt/crypto.hpp>
-#include <jwt/claims.hpp>
-#include <jwt/header.hpp>
+#include <jwtpp/crypto.hpp>
+#include <jwtpp/claims.hpp>
+#include <jwtpp/header.hpp>
 
 namespace jwt {
 

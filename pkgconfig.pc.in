@@ -1,0 +1,12 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=@CMAKE_INSTALL_PREFIX@
+libdir=@CMAKE_INSTALL_PREFIX@/lib
+sharedlibdir=@CMAKE_INSTALL_PREFIX@/lib
+includedir=@CMAKE_INSTALL_PREFIX@/include
+
+Name: jwtpp
+Description: JWT implementation for C++
+Version: @VERSION@
+URL: https://github.com/troian/jwtpp
+Libs: -L${libdir} -L${sharedlibdir} -ljsoncpp
+Cflags: -I${includedir}

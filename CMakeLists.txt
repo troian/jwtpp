@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.2)
 
 project(jwtpp LANGUAGES C CXX)
 
+set(VERSION 0.1.0)
+
 include(CheckCSourceCompiles)
 include(CheckCCompilerFlag)
 include(CheckCXXSourceCompiles)
@@ -12,10 +14,14 @@ include(CheckTypeSize)
 include(CheckIncludeFiles)
 include(CheckIncludeFileCXX)
 
-option(JWTPP_TESTS "Build tests" ON)
+option(LIBJWTPP_TESTS "Build tests" OFF)
+option(BUILD_SHARED_LIBS "Build shared library" OFF)
+
+set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "Installation directory for libraries")
+set(INSTALL_INC_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH "Installation directory for headers")
+set(INSTALL_PKGCONFIG_DIR "${CMAKE_INSTALL_PREFIX}/share/pkgconfig" CACHE PATH "Installation directory for pkgconfig (.pc) files")
 
 find_package(PkgConfig REQUIRED)
-
 find_package(OpenSSL REQUIRED)
 pkg_check_modules(JsonCPP REQUIRED jsoncpp)
 
@@ -36,7 +42,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
 
 set(EXPORT_INCLUDES
-	${CMAKE_CURRENT_SOURCE_DIR}/include/export
+	include/export
 )
 
 set(LIB_SOURCES
@@ -49,36 +55,84 @@ set(LIB_SOURCES
    	src/b64.cpp
     src/header.cpp
 
-    ${EXPORT_INCLUDES}/jwt/buffer.hpp
-    ${EXPORT_INCLUDES}/jwt/claims.hpp
-    ${EXPORT_INCLUDES}/jwt/header.hpp
-    ${EXPORT_INCLUDES}/jwt/crypto.hpp
+    ${EXPORT_INCLUDES}/jwtpp/claims.hpp
+    ${EXPORT_INCLUDES}/jwtpp/header.hpp
+    ${EXPORT_INCLUDES}/jwtpp/crypto.hpp
     ${EXPORT_INCLUDES}/../tools/tools.hpp
 )
 
-add_library(${PROJECT_NAME} STATIC ${LIB_SOURCES})
+include_directories(include)
+
+add_library(${PROJECT_NAME}-static STATIC ${LIB_SOURCES})
+set_target_properties(${PROJECT_NAME}-static PROPERTIES OUTPUT_NAME jwtpp CLEAN_DIRECT_OUTPUT 1)
 
 target_include_directories(
-	${PROJECT_NAME}
-    PRIVATE
-    include
-)
-target_include_directories(
-	${PROJECT_NAME}
+	${PROJECT_NAME}-static
 	PUBLIC
-		${EXPORT_INCLUDES}
-		${JsonCPP_INCLUDE_DIRS}
+	${EXPORT_INCLUDES}
+	${JsonCPP_INCLUDE_DIRS}
 )
 
 target_link_libraries(
-	${PROJECT_NAME}
+	${PROJECT_NAME}-static
 	${OPENSSL_LIBRARIES}
 	${JsonCPP_LIBRARIES}
 )
 
-if (JWTPP_TESTS)
+install(
+	TARGETS
+	jwtpp-static
+		ARCHIVE
+			DESTINATION
+				lib
+)
+
+if (BUILD_SHARED_LIBS)
+	add_library(${PROJECT_NAME}-shared SHARED ${LIB_SOURCES})
+	set_target_properties(${PROJECT_NAME}-shared PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+	set_target_properties(${PROJECT_NAME}-shared PROPERTIES OUTPUT_NAME jwtpp CLEAN_DIRECT_OUTPUT 1)
+	target_include_directories(
+		${PROJECT_NAME}-shared
+		PUBLIC
+		${EXPORT_INCLUDES}
+		${JsonCPP_INCLUDE_DIRS}
+	)
+
+	target_link_libraries(
+		${PROJECT_NAME}-shared
+		${OPENSSL_LIBRARIES}
+		${JsonCPP_LIBRARIES}
+	)
+endif()
+
+install(
+	DIRECTORY
+	${EXPORT_INCLUDES}/jwtpp
+	DESTINATION include
+	FILES_MATCHING PATTERN "*.hpp"
+)
+
+install(
+	TARGETS
+		jwtpp-shared
+	LIBRARY
+		DESTINATION
+			lib
+)
+
+set(JWTPP_PC ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc)
+
+configure_file(
+	pkgconfig.pc.in
+	${JWTPP_PC}
+	@ONLY
+)
+
+install(FILES ${JWTPP_PC} DESTINATION "${INSTALL_PKGCONFIG_DIR}")
+
+if (LIBJWTPP_TESTS)
 	enable_testing()
-	add_subdirectory(gtest)
+	add_subdirectory(gtest EXCLUDE_FROM_ALL)
 
 	include_directories(${PROJECT_SOURCE_DIR}/gtest/googletest/include)
 
@@ -89,9 +143,10 @@ if (JWTPP_TESTS)
 	target_link_libraries(
 		jwtpp_test
 		gtest_main
-		jwtpp
+		jwtpp-static
 	)
 
 	add_test(UnitTests jwtpp_test)
 endif()
+
 

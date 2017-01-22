@@ -3,7 +3,7 @@
 //
 #pragma once
 
-#include <jwt/types.hpp>
+#include <jwtpp/types.hpp>
 #include <string>
 #include <json/json.h>
 

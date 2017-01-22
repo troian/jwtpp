@@ -6,7 +6,7 @@
 #include <string>
 #include <memory>
 
-#include <jwt/types.hpp>
+#include <jwtpp/types.hpp>
 
 #include <json/json.h>
 

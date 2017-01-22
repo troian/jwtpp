@@ -2,8 +2,8 @@
 // Created by Artur Troian on 1/20/17.
 //
 
-#include <jwt/claims.hpp>
-#include <jwt/b64.hpp>
+#include <jwtpp/claims.hpp>
+#include <jwtpp/b64.hpp>
 #include <tools/tools.hpp>
 
 namespace jwt {

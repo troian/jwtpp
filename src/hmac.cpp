@@ -2,11 +2,11 @@
 // Created by Artur Troian on 1/21/17.
 //
 
-#include <jwt/crypto.hpp>
+#include <jwtpp/crypto.hpp>
 
 #include <openssl/hmac.h>
 
-#include <jwt/b64.hpp>
+#include <jwtpp/b64.hpp>
 
 namespace jwt {
 

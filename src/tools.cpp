@@ -23,7 +23,8 @@
  */
 
 #include <tools/tools.hpp>
-#include <jwt/b64.hpp>
+#include <jwtpp/b64.hpp>
+
 #include <json/writer.h>
 #include <json/reader.h>
 

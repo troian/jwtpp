@@ -33,8 +33,19 @@ C++ API for JWT
 |**_iat_**|set,verify|
 |**_jti_**|set,verify|
 
-### How to
+### How to use
 Refer to tests dir
+
+### How to build/install
+#### CMake sources deps
+add_subdirectory(<path to>)
+#### System-wide installation
+```bash
+git clone https://github.com/troian/jwtpp
+mkdir dir build && cd build
+cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=<install prefix> ..
+make install
+```
 
 ### TODO
 - Documentation

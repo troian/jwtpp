@@ -103,6 +103,14 @@ if (BUILD_SHARED_LIBS)
 		${OPENSSL_LIBRARIES}
 		${JsonCPP_LIBRARIES}
 	)
+
+	install(
+		TARGETS
+			jwtpp-shared
+		LIBRARY
+			DESTINATION
+				lib
+	)
 endif()
 
 install(
@@ -110,14 +118,6 @@ install(
 	${EXPORT_INCLUDES}/jwtpp
 	DESTINATION include
 	FILES_MATCHING PATTERN "*.hpp"
-)
-
-install(
-	TARGETS
-		jwtpp-shared
-	LIBRARY
-		DESTINATION
-			lib
 )
 
 set(JWTPP_PC ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc)

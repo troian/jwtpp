@@ -45,8 +45,6 @@ set(EXPORT_INCLUDES
 	include/export
 )
 
-#set(JWTPP_INCLUDE_DIR ${EXPORT_INCLUDES} PARENT_SCOPE)
-
 set(LIB_SOURCES
     src/tools.cpp
     src/claims.cpp
@@ -145,7 +143,7 @@ if (WITH_TESTS)
 	target_link_libraries(
 		jwtpp_test
 		gtest_main
-		jwtpp
+		jwtpp-static
 	)
 
 	add_test(UnitTests jwtpp_test)

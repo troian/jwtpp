@@ -14,7 +14,7 @@ include(CheckTypeSize)
 include(CheckIncludeFiles)
 include(CheckIncludeFileCXX)
 
-option(LIBJWTPP_TESTS "Build tests" OFF)
+option(WITH_TESTS "Build tests" OFF)
 option(BUILD_SHARED_LIBS "Build shared library" OFF)
 
 set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "Installation directory for libraries")
@@ -45,6 +45,8 @@ set(EXPORT_INCLUDES
 	include/export
 )
 
+set (JWTPP_INCLUDE_DIR ${EXPORT_INCLUDES} PARENT_SCOPE)
+
 set(LIB_SOURCES
     src/tools.cpp
     src/claims.cpp
@@ -64,7 +66,7 @@ set(LIB_SOURCES
 include_directories(include)
 
 add_library(${PROJECT_NAME}-static STATIC ${LIB_SOURCES})
-set_target_properties(${PROJECT_NAME}-static PROPERTIES OUTPUT_NAME jwtpp CLEAN_DIRECT_OUTPUT 1)
+set_target_properties(${PROJECT_NAME}-static PROPERTIES OUTPUT_NAME ${PROJECT_NAME} CLEAN_DIRECT_OUTPUT 1)
 
 target_include_directories(
 	${PROJECT_NAME}-static
@@ -81,7 +83,7 @@ target_link_libraries(
 
 install(
 	TARGETS
-	jwtpp-static
+	${PROJECT_NAME}-static
 		ARCHIVE
 			DESTINATION
 				lib
@@ -90,7 +92,7 @@ install(
 if (BUILD_SHARED_LIBS)
 	add_library(${PROJECT_NAME}-shared SHARED ${LIB_SOURCES})
 	set_target_properties(${PROJECT_NAME}-shared PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
-	set_target_properties(${PROJECT_NAME}-shared PROPERTIES OUTPUT_NAME jwtpp CLEAN_DIRECT_OUTPUT 1)
+	set_target_properties(${PROJECT_NAME}-shared PROPERTIES OUTPUT_NAME ${PROJECT_NAME} CLEAN_DIRECT_OUTPUT 1)
 	target_include_directories(
 		${PROJECT_NAME}-shared
 		PUBLIC
@@ -106,7 +108,7 @@ if (BUILD_SHARED_LIBS)
 
 	install(
 		TARGETS
-			jwtpp-shared
+			${PROJECT_NAME}-shared
 		LIBRARY
 			DESTINATION
 				lib
@@ -130,7 +132,7 @@ configure_file(
 
 install(FILES ${JWTPP_PC} DESTINATION "${INSTALL_PKGCONFIG_DIR}")
 
-if (LIBJWTPP_TESTS)
+if (WITH_TESTS)
 	enable_testing()
 	add_subdirectory(gtest EXCLUDE_FROM_ALL)
 
@@ -143,7 +145,7 @@ if (LIBJWTPP_TESTS)
 	target_link_libraries(
 		jwtpp_test
 		gtest_main
-		jwtpp-static
+		jwtpp
 	)
 
 	add_test(UnitTests jwtpp_test)

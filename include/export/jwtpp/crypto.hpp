@@ -29,7 +29,7 @@ public:
 	 */
 	explicit crypto(jwt::alg alg = jwt::alg::NONE);
 
-	virtual ~crypto();
+	virtual ~crypto() = 0;
 
 public:
 	/**
@@ -85,6 +85,12 @@ public:
 	virtual std::string sign(const std::string &data);
 	virtual bool verify(const std::string &data, const std::string &sig);
 
+public:
+	template <typename... _Args>
+	static sp_hmac make_shared(_Args&&... __args) {
+		return std::make_shared<class hmac>(__args...);
+	}
+
 private:
 	std::string secret_;
 };
@@ -97,6 +103,12 @@ public:
 public:
 	virtual std::string sign(const std::string &data);
 	virtual bool verify(const std::string &data, const std::string &sig);
+
+public:
+	template <typename... _Args>
+	static sp_rsa make_shared(_Args&&... __args) {
+		return std::make_shared<class rsa>(__args...);
+	}
 
 	static sp_rsa_key gen() {
 		sp_rsa_key key = std::shared_ptr<RSA>(RSA_new(), ::RSA_free);

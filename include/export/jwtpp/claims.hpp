@@ -11,6 +11,8 @@ namespace jwt {
 
 using sp_claims = std::shared_ptr<class claims>;
 
+using up_claims = std::unique_ptr<class claims>;
+
 /**
  * \brief
  */
@@ -156,6 +158,12 @@ public:
 	class claims::check &check() { return check_; }
 
 	std::string b64();
+
+public:
+	template <typename... _Args>
+	static sp_claims make_shared(_Args&&... __args) {
+		return std::make_shared<class claims>(__args...);
+	}
 
 private:
 	Json::Value claims_;

@@ -78,6 +78,7 @@ public:
 	 */
 	static std::string sign(class claims &cl, sp_crypto c);
 
+	static std::string bearer(class claims &cl, sp_crypto c);
 private:
 	/**
 	 * \brief

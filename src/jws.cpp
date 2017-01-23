@@ -115,6 +115,12 @@ std::string jws::sign(class claims &cl, sp_crypto c) {
 	return bearer;
 }
 
+std::string jws::bearer(class claims &cl, sp_crypto c)
+{
+	std::string bearer("Bearer ");
+	bearer += sign(cl, c);
+	return bearer;
+}
 std::vector<std::string> jws::tokenize(const std::string &text, char sep)
 {
 	std::vector<std::string> tokens;

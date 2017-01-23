@@ -53,3 +53,6 @@ make install
 - Documentation
 - Examples
 - Tests
+
+## How to contribute
+Just do it! :)

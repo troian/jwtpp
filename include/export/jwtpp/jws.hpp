@@ -54,7 +54,7 @@ public:
 	 *
 	 * \return
 	 */
-	claims &claims() {
+	class claims &claims() {
 		return *(claims_.get());
 	}
 

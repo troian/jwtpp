@@ -8,5 +8,5 @@ Name: jwtpp
 Description: JWT implementation for C++
 Version: @VERSION@
 URL: https://github.com/troian/jwtpp
-Libs: -L${libdir} -L${sharedlibdir} -ljsoncpp
+Libs: -L${libdir} -L${sharedlibdir} -ljwtpp
 Cflags: -I${includedir}

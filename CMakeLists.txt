@@ -27,7 +27,6 @@ pkg_check_modules(JsonCPP REQUIRED jsoncpp)
 
 include_directories(${OPENSSL_INCLUDE_DIR})
 include_directories(${JsonCPP_INCLUDE_DIRS})
-
 link_directories(${JsonCPP_LIBRARY_DIRS})
 
 check_include_file_cxx(memory HAVE_MEMORY)
@@ -38,7 +37,9 @@ check_include_file_cxx(mutex HAVE_MUTEX)
 check_include_file_cxx(exception HAVE_EXCEPTION)
 check_include_file_cxx(stdexcept HAVE_STDEXCEPT)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
 
 set(EXPORT_INCLUDES

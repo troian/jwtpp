@@ -4,7 +4,7 @@
 
 #include <jwtpp/claims.hpp>
 #include <jwtpp/b64.hpp>
-#include <tools/tools.hpp>
+#include <jwtpp/tools.hpp>
 
 namespace jwt {
 
@@ -31,7 +31,7 @@ claims::claims(const std::string &d, bool b64) :
 	Json::Reader reader;
 
 	if (b64) {
-		std::string decoded = b64::decode<std::string>(d);
+		std::string decoded = b64::decode_uri(d);
 
 		if (!reader.parse(decoded, claims_)) {
 			throw std::runtime_error("Invalid JSON input");

@@ -7,6 +7,7 @@
 
 #include <openssl/sha.h>
 #include <openssl/objects.h>
+#include <jwtpp/tools.hpp>
 
 namespace jwt {
 
@@ -30,8 +31,6 @@ std::string rsa::sign(const std::string &data)
 	uint32_t digest_len = SHA512_DIGEST_LENGTH;
 
 	uint32_t type = NID_sha512;
-
-	std::string signature;
 
 	switch (alg_) {
 	case jwt::alg::RS256: {
@@ -104,9 +103,7 @@ std::string rsa::sign(const std::string &data)
 		throw std::runtime_error("Couldn't sign RSA");
 	}
 
-	b64::encode(signature, sig.get(), sig_len);
-
-	return signature;
+	return std::move(b64::encode_uri(sig.get(), sig_len));
 }
 
 bool rsa::verify(const std::string &data, const std::string &sig)

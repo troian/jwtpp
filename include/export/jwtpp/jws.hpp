@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <functional>
+#include <vector>
 
 #include <jwtpp/crypto.hpp>
 #include <jwtpp/claims.hpp>
@@ -69,16 +70,18 @@ public:
 	static sp_jws parse(const std::string &b);
 
 	/**
-	 * \brief
+	 * \brief Sign content and return signature
 	 *
-	 * \param cl
-	 * \param c
+	 * \param[in]  data - data to be signed
+	 * \param[in]  c - crypto to sign with
 	 *
-	 * \return
+	 * \return signature
 	 */
-	static std::string sign(class claims &cl, sp_crypto c);
+	static std::string sign(const std::string &data, sp_crypto c);
 
-	static std::string bearer(class claims &cl, sp_crypto c);
+	static std::string sign_claims(class claims &cl, sp_crypto c);
+
+	static std::string sign_bearer(class claims &cl, sp_crypto c);
 private:
 	/**
 	 * \brief

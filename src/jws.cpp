@@ -3,7 +3,7 @@
 //
 
 #include <jwtpp/jws.hpp>
-#include <tools/tools.hpp>
+#include <jwtpp/tools.hpp>
 
 namespace jwt {
 
@@ -99,28 +99,34 @@ sp_jws jws::parse(const std::string &full_bearer)
 	return sp_jws(j);
 }
 
-std::string jws::sign(class claims &cl, sp_crypto c) {
-	std::string bearer;
+std::string jws::sign(const std::string &data, sp_crypto c)
+{
+   	return std::move(c->sign(data));
+}
+
+std::string jws::sign_claims(class claims &cl, sp_crypto c) {
+	std::string out;
 
 	hdr h(c->alg());
-	bearer = h.b64();
-	bearer += ".";
-	bearer += cl.b64();
+	out = h.b64();
+	out += ".";
+	out += cl.b64();
 
 	std::string sig;
-	sig = c->sign(bearer);
-	bearer += ".";
-	bearer += sig;
+	sig = jws::sign(out, c);
+	out += ".";
+	out += sig;
 
-	return bearer;
+	return std::move(out);
 }
 
-std::string jws::bearer(class claims &cl, sp_crypto c)
+std::string jws::sign_bearer(class claims &cl, sp_crypto c)
 {
 	std::string bearer("Bearer ");
-	bearer += sign(cl, c);
-	return bearer;
+	bearer += jws::sign_claims(cl, c);
+	return std::move(bearer);
 }
+
 std::vector<std::string> jws::tokenize(const std::string &text, char sep)
 {
 	std::vector<std::string> tokens;

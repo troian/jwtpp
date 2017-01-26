@@ -59,7 +59,7 @@ set(LIB_SOURCES
     ${EXPORT_INCLUDES}/jwtpp/claims.hpp
     ${EXPORT_INCLUDES}/jwtpp/header.hpp
     ${EXPORT_INCLUDES}/jwtpp/crypto.hpp
-    ${EXPORT_INCLUDES}/../tools/tools.hpp
+    ${EXPORT_INCLUDES}/jwtpp/tools.hpp
 )
 
 include_directories(include)

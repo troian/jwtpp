@@ -41,13 +41,15 @@ TEST(JwtPP, sign_hmac256)
 {
 	jwt::claims cl;
 
-	std::string bearer("Bearer ");
+	cl.set().iss("troian");
 
 	jwt::sp_crypto h256 = std::make_shared<jwt::hmac>(jwt::alg::HS256, "secret");
 	jwt::sp_crypto h384 = std::make_shared<jwt::hmac>(jwt::alg::HS384, "secret");
 	jwt::sp_crypto h512 = std::make_shared<jwt::hmac>(jwt::alg::HS512, "secret");
 
-	bearer += jwt::jws::sign(cl, h256);
+	std::string bearer = jwt::jws::sign_bearer(cl, h256);
+
+	std::cout << bearer << std::endl;
 
 	jwt::sp_jws jws;
 
@@ -56,7 +58,7 @@ TEST(JwtPP, sign_hmac256)
 	EXPECT_TRUE(jws->verify(h256));
 
 	auto vf = [](jwt::sp_claims cl) {
-		return !cl->check().iss("troian");
+		return cl->check().iss("troian");
 	};
 
 	EXPECT_TRUE(jws->verify(h256, std::bind<bool>(vf, std::placeholders::_1)));
@@ -78,8 +80,6 @@ TEST(JwtPP, sign_rsa256)
 {
 	jwt::claims cl;
 
-	std::string bearer("Bearer ");
-
 	RSA *r = RSA_new();
 	BIGNUM *bn = BN_new();
 
@@ -89,7 +89,7 @@ TEST(JwtPP, sign_rsa256)
 
 	jwt::sp_crypto r256 = std::make_shared<jwt::rsa>(jwt::alg::RS256, r);
 
-	bearer += jwt::jws::sign(cl, r256);
+	std::string bearer = jwt::jws::sign_bearer(cl, r256);
 
 	jwt::sp_jws jws;
 

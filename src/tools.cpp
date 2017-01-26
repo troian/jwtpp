@@ -22,7 +22,9 @@
  * SOFTWARE.
  */
 
-#include <tools/tools.hpp>
+#include <iostream>
+
+#include <jwtpp/tools.hpp>
 #include <jwtpp/b64.hpp>
 
 #include <json/writer.h>
@@ -33,22 +35,20 @@ namespace jwt {
 std::string marshal(const Json::Value &json)
 {
 	Json::FastWriter fastWriter;
-	std::string s = fastWriter.write(json);
-	return std::move(s);
+	fastWriter.omitEndingLineFeed();
+	return std::move(fastWriter.write(json));
 }
 
 std::string marshal_b64(const Json::Value &json)
 {
 	std::string s = marshal(json);
-	std::string out;
-	b64::encode(out, s);
-	return out;
+	return std::move(b64::encode_uri(s));
 }
 
 Json::Value unmarshal_b64(const std::string &b64)
 {
 	std::string decoded;
-	decoded = b64::decode<std::string>(b64);
+//	decoded = cppcodec::base64_url_unpadded::decode<std::string>(b64);
 
 	Json::Value j;
 	Json::Reader reader;

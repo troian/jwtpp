@@ -9,6 +9,7 @@
 #include <openssl/hmac.h>
 
 #include <jwtpp/b64.hpp>
+#include <jwtpp/tools.hpp>
 
 namespace jwt {
 
@@ -37,8 +38,6 @@ std::string hmac::sign(const std::string &data)
 		throw std::invalid_argument("Data is empty");
 	}
 
-	std::string sig;
-
 	const EVP_MD *alg;
 
 	switch (alg_) {
@@ -64,9 +63,7 @@ std::string hmac::sign(const std::string &data)
 
 	HMAC(alg, secret_.data(), secret_.length(), (const uint8_t *) data.c_str(), data.size(), res.get(), &size);
 
-	b64::encode(sig, res.get(), size);
-
-	return sig;
+	return std::move(b64::encode_uri(res.get(), size));
 }
 
 bool hmac::verify(const std::string &data, const std::string &sig)

@@ -34,9 +34,11 @@ namespace jwt {
 
 std::string marshal(const Json::Value &json)
 {
-	Json::FastWriter fastWriter;
-	fastWriter.omitEndingLineFeed();
-	return std::move(fastWriter.write(json));
+	Json::StreamWriterBuilder builder;
+	builder["commentStyle"] = "None";
+	builder["indentation"] = ""; // Write in one line
+	std::string out = Json::writeString(builder, json);
+	return std::move(out);
 }
 
 std::string marshal_b64(const Json::Value &json)
@@ -48,7 +50,6 @@ std::string marshal_b64(const Json::Value &json)
 Json::Value unmarshal_b64(const std::string &b64)
 {
 	std::string decoded;
-//	decoded = cppcodec::base64_url_unpadded::decode<std::string>(b64);
 
 	Json::Value j;
 	Json::Reader reader;

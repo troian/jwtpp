@@ -5,7 +5,7 @@ sharedlibdir=@CMAKE_INSTALL_PREFIX@/lib
 includedir=@CMAKE_INSTALL_PREFIX@/include
 
 Name: jwtpp
-Description: JWT implementation for C++
+Description: JSON Object Signing and Encryption library for C++
 Version: @VERSION@
 URL: https://github.com/troian/jwtpp
 Libs: -L${libdir} -L${sharedlibdir} -ljwtpp

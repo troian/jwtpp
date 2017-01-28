@@ -1,5 +1,5 @@
 # jwtpp
-C++ API for JWT
+JSON Object Signing and Encryption library for C++
 
 [![Build Status](https://travis-ci.org/troian/jwtpp.svg?branch=master)](https://travis-ci.org/troian/jwtpp)
 

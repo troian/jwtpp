@@ -2,12 +2,12 @@
 // Created by Artur Troian on 1/21/17.
 //
 
-#include <jwtpp/crypto.hpp>
-#include <jwtpp/b64.hpp>
+#include <josepp/crypto.hpp>
+#include <josepp/b64.hpp>
+#include <josepp/tools.hpp>
 
 #include <openssl/sha.h>
 #include <openssl/objects.h>
-#include <jwtpp/tools.hpp>
 
 namespace jwt {
 
@@ -27,67 +27,23 @@ rsa::~rsa()
 
 std::string rsa::sign(const std::string &data)
 {
-	uint8_t digest[SHA512_DIGEST_LENGTH];
-	uint32_t digest_len = SHA512_DIGEST_LENGTH;
-
 	uint32_t type = NID_sha512;
+	hash_type hash = hash_type::SHA512;
 
 	switch (alg_) {
 	case jwt::alg::RS256: {
-		SHA256_CTX sha_ctx;
-
-		digest_len = SHA256_DIGEST_LENGTH;
 		type = NID_sha256;
-
-		if (SHA256_Init(&sha_ctx) != 1) {
-			throw std::runtime_error("Couldn't init SHA256");
-		}
-
-		if (SHA256_Update(&sha_ctx, (const uint8_t *)data.c_str(), data.size()) != 1) {
-			throw std::runtime_error("Couldn't calculate hash");
-		}
-
-		if (SHA256_Final(digest, &sha_ctx) != 1) {
-			throw std::runtime_error("Couldn't finalize SHA");
-		}
+		hash = hash_type::SHA256;
 		break;
 	}
 	case jwt::alg::RS384: {
-		SHA512_CTX sha_ctx;
-
-		digest_len = SHA384_DIGEST_LENGTH;
 		type = NID_sha384;
-
-		if (SHA384_Init(&sha_ctx) != 1) {
-			throw std::runtime_error("Couldn't init SHA256");
-		}
-
-		if (SHA384_Update(&sha_ctx, (const uint8_t *)data.c_str(), data.size()) != 1) {
-			throw std::runtime_error("Couldn't calculate hash");
-		}
-
-		if (SHA384_Final(digest, &sha_ctx) != 1) {
-			throw std::runtime_error("Couldn't finalize SHA");
-		}
+		hash = hash_type::SHA384;
 		break;
 	}
 	case jwt::alg::RS512: {
-		SHA512_CTX sha_ctx;
-
-		digest_len = SHA512_DIGEST_LENGTH;
 		type = NID_sha512;
-
-		if (SHA512_Init(&sha_ctx) != 1) {
-			throw std::runtime_error("Couldn't init SHA256");
-		}
-
-		if (SHA512_Update(&sha_ctx, (const uint8_t *)data.c_str(), data.size()) != 1) {
-			throw std::runtime_error("Couldn't calculate hash");
-		}
-
-		if (SHA512_Final(digest, &sha_ctx) != 1) {
-			throw std::runtime_error("Couldn't finalize SHA");
-		}
+		hash = hash_type::SHA512;
 		break;
 	}
 	default:
@@ -99,7 +55,8 @@ std::string rsa::sign(const std::string &data)
 
 	std::shared_ptr<uint8_t> sig = std::shared_ptr<uint8_t>(new uint8_t[RSA_size(r_)], std::default_delete<uint8_t[]>());
 
-	if (RSA_sign(type, digest, digest_len, sig.get(), &sig_len, r_) != 1) {
+	sha2_digest digest(hash, (const uint8_t *)data.data(), data.length());
+	if (RSA_sign(type, digest.data(), digest.size(), sig.get(), &sig_len, r_) != 1) {
 		throw std::runtime_error("Couldn't sign RSA");
 	}
 

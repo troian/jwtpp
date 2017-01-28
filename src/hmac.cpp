@@ -4,12 +4,12 @@
 
 #include <cstring>
 
-#include <jwtpp/crypto.hpp>
+#include <josepp/crypto.hpp>
 
 #include <openssl/hmac.h>
 
-#include <jwtpp/b64.hpp>
-#include <jwtpp/tools.hpp>
+#include <josepp/b64.hpp>
+#include <josepp/tools.hpp>
 
 namespace jwt {
 

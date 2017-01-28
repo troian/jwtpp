@@ -2,7 +2,7 @@
 // Created by Artur Troian on 1/21/17.
 //
 
-#include <jwtpp/b64.hpp>
+#include <josepp/b64.hpp>
 
 namespace jwt {
 

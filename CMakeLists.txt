@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(jwtpp LANGUAGES C CXX)
+project(josepp LANGUAGES C CXX)
 
 set(VERSION 0.1.0)
 
@@ -55,11 +55,12 @@ set(LIB_SOURCES
     src/jws.cpp
    	src/b64.cpp
     src/header.cpp
+    src/ecdsa.cpp
 
-    ${EXPORT_INCLUDES}/jwtpp/claims.hpp
-    ${EXPORT_INCLUDES}/jwtpp/header.hpp
-    ${EXPORT_INCLUDES}/jwtpp/crypto.hpp
-    ${EXPORT_INCLUDES}/jwtpp/tools.hpp
+    ${EXPORT_INCLUDES}/josepp/claims.hpp
+    ${EXPORT_INCLUDES}/josepp/header.hpp
+    ${EXPORT_INCLUDES}/josepp/crypto.hpp
+    ${EXPORT_INCLUDES}/josepp/tools.hpp
 )
 
 include_directories(include)
@@ -116,20 +117,20 @@ endif()
 
 install(
 	DIRECTORY
-	${EXPORT_INCLUDES}/jwtpp
+	${EXPORT_INCLUDES}/josepp
 	DESTINATION include
 	FILES_MATCHING PATTERN "*.hpp"
 )
 
-set(JWTPP_PC ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc)
+set(JOSEPP_PC ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc)
 
 configure_file(
 	pkgconfig.pc.in
-	${JWTPP_PC}
+	${JOSEPP_PC}
 	@ONLY
 )
 
-install(FILES ${JWTPP_PC} DESTINATION "${INSTALL_PKGCONFIG_DIR}")
+install(FILES ${JOSEPP_PC} DESTINATION "${INSTALL_PKGCONFIG_DIR}")
 
 if (WITH_TESTS)
 	enable_testing()
@@ -137,14 +138,14 @@ if (WITH_TESTS)
 
 	include_directories(${PROJECT_SOURCE_DIR}/gtest/googletest/include)
 
-	set(JWTPP_TEST_SRS ${PROJECT_SOURCE_DIR}/tests/jwtpp_test.cpp)
+	set(JOSEPP_TEST_SRS ${PROJECT_SOURCE_DIR}/tests/josepp_test.cpp)
 
-	add_executable(jwtpp_test ${JWTPP_TEST_SRS})
+	add_executable(josepp_test ${JOSEPP_TEST_SRS})
 
 	target_link_libraries(
-		jwtpp_test
+		josepp_test
 		gtest_main
-		jwtpp-static
+		${PROJECT_NAME}-static
 	)
 
 	add_test(UnitTests jwtpp_test)

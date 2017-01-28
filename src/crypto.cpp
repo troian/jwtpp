@@ -2,9 +2,9 @@
 // Created by Artur Troian on 1/20/17.
 //
 
-#include <jwtpp/types.hpp>
-#include <jwtpp/crypto.hpp>
-#include <jwtpp/b64.hpp>
+#include <josepp/types.hpp>
+#include <josepp/crypto.hpp>
+#include <josepp/b64.hpp>
 
 namespace jwt {
 

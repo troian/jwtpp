@@ -24,8 +24,8 @@
 
 #include <iostream>
 
-#include <jwtpp/tools.hpp>
-#include <jwtpp/b64.hpp>
+#include <josepp/tools.hpp>
+#include <josepp/b64.hpp>
 
 #include <json/writer.h>
 #include <json/reader.h>

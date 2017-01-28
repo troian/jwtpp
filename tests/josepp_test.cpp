@@ -4,9 +4,9 @@
 
 #include <gtest/gtest.h>
 
-#include <jwtpp/claims.hpp>
-#include <jwtpp/crypto.hpp>
-#include <jwtpp/jws.hpp>
+#include <josepp/claims.hpp>
+#include <josepp/crypto.hpp>
+#include <josepp/jws.hpp>
 
 TEST(JwtPP, create_close_hmac_crypto)
 {

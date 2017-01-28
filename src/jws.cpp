@@ -2,8 +2,8 @@
 // Created by Artur Troian on 1/21/17.
 //
 
-#include <jwtpp/jws.hpp>
-#include <jwtpp/tools.hpp>
+#include <josepp/jws.hpp>
+#include <josepp/tools.hpp>
 
 namespace jwt {
 

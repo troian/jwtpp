@@ -7,9 +7,9 @@
 #include <functional>
 #include <vector>
 
-#include <jwtpp/crypto.hpp>
-#include <jwtpp/claims.hpp>
-#include <jwtpp/header.hpp>
+#include <josepp/crypto.hpp>
+#include <josepp/claims.hpp>
+#include <josepp/header.hpp>
 
 namespace jwt {
 

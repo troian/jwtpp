@@ -15,7 +15,6 @@ TEST(JwtPP, create_close_hmac_crypto)
 	EXPECT_NO_THROW(std::make_shared<jwt::hmac>(jwt::alg::HS512, "secret"));
 
 	EXPECT_THROW(std::make_shared<jwt::hmac>(jwt::alg::HS256, ""), std::exception);
-	EXPECT_THROW(std::make_shared<jwt::hmac>(jwt::alg::NONE, "secret"), std::exception);
 	EXPECT_THROW(std::make_shared<jwt::hmac>(jwt::alg::UNKNOWN, "secret"), std::exception);
 }
 

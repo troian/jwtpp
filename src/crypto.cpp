@@ -60,4 +60,5 @@ jwt::alg crypto::str2alg(const std::string &a)
 		return jwt::alg::UNKNOWN;
 	}
 }
+
 } // namespace jwt

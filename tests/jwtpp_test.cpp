@@ -49,8 +49,6 @@ TEST(JwtPP, sign_hmac256)
 
 	std::string bearer = jwt::jws::sign_bearer(cl, h256);
 
-	std::cout << bearer << std::endl;
-
 	jwt::sp_jws jws;
 
 	EXPECT_NO_THROW(jws = jwt::jws::parse(bearer));

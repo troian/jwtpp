@@ -40,6 +40,7 @@ protected:
 		sha2_digest(hash_type type, const uint8_t *in_data, size_t in_size) {
 			switch(type) {
 			case hash_type::SHA256:
+				size_ = SHA256_DIGEST_LENGTH;
 				break;
 			case hash_type::SHA384:
 				size_ = SHA384_DIGEST_LENGTH;

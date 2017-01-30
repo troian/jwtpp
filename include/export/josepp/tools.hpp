@@ -34,6 +34,8 @@ std::string marshal(const Json::Value &json);
 
 std::string marshal_b64(const Json::Value &json);
 
+Json::Value unmarshal(const std::string &in);
+
 Json::Value unmarshal_b64(const std::string &b);
 
 } // namespace tools

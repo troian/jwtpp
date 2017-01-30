@@ -47,17 +47,22 @@ std::string marshal_b64(const Json::Value &json)
 	return std::move(b64::encode_uri(s));
 }
 
-Json::Value unmarshal_b64(const std::string &b64)
+Json::Value unmarshal(const std::string &in)
 {
-	std::string decoded;
-	decoded = b64::decode(b64);
 	Json::Value j;
 	Json::Reader reader;
-	if (!reader.parse(decoded, j)) {
+	if (!reader.parse(in, j)) {
 		throw std::runtime_error("Invalid JSON input");
 	}
 
 	return j;
+}
+
+Json::Value unmarshal_b64(const std::string &b64)
+{
+	std::string decoded;
+	decoded = b64::decode(b64);
+	return unmarshal(decoded);
 }
 
 } // namespace tools

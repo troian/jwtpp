@@ -1,7 +1,7 @@
-# jwtpp
+# josepp
 JSON Object Signing and Encryption library for C++
 
-[![Build Status](https://travis-ci.org/troian/jwtpp.svg?branch=master)](https://travis-ci.org/troian/jwtpp)
+[![Build Status](https://travis-ci.org/troian/josepp.svg?branch=master)](https://travis-ci.org/troian/josepp)
 
 #### Dependencies:
   - [jsoncpp](https://github.com/open-source-parsers/jsoncpp)

@@ -43,7 +43,7 @@ Refer to tests dir
 add_subdirectory(<path to>)
 #### System-wide installation
 ```bash
-git clone https://github.com/troian/jwtpp
+git clone https://github.com/troian/josepp
 mkdir dir build && cd build
 cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=<install prefix> ..
 make install

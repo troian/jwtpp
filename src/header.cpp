@@ -5,9 +5,9 @@
 #include <josepp/header.hpp>
 #include <josepp/tools.hpp>
 
-namespace jwt {
+namespace jose {
 
-hdr::hdr(jwt::alg alg)
+hdr::hdr(jose::alg alg)
 {
 	h_["typ"] = "JWT";
 	h_["alg"]  = alg2str(alg);
@@ -27,26 +27,32 @@ std::string hdr::b64()
 	return marshal_b64(h_);
 }
 
-const char *hdr::alg2str(jwt::alg alg)
+const char *hdr::alg2str(jose::alg alg)
 {
 	switch (alg) {
-	case jwt::alg::NONE:
+	case jose::alg::NONE:
 		return "none";
-	case jwt::alg::HS256:
+	case jose::alg::HS256:
 		return "HS256";
-	case jwt::alg::HS384:
+	case jose::alg::HS384:
 		return "HS384";
-	case jwt::alg::HS512:
+	case jose::alg::HS512:
 		return "HS512";
-	case jwt::alg::RS256:
+	case jose::alg::RS256:
 		return "RS256";
-	case jwt::alg::RS384:
+	case jose::alg::RS384:
 		return "RS384";
-	case jwt::alg::RS512:
+	case jose::alg::RS512:
 		return "RS512";
+	case jose::alg::ES256:
+		return "ES256";
+	case jose::alg::ES384:
+		return "ES384";
+	case jose::alg::ES512:
+		return "ES512";
 	default:
 		return nullptr;
 	}
 }
 
-} // namespace jwt
+} // namespace jose

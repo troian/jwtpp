@@ -8,15 +8,18 @@
 #include <sstream>
 
 #include <josepp/types.hpp>
+#include <josepp/digest.hpp>
 
 #include <json/json.h>
 
 #include <openssl/rsa.h>
+#include <openssl/ec.h>
 #include <openssl/ecdsa.h>
 #include <openssl/sha.h>
 #include <openssl/objects.h>
+#include <openssl/pem.h>
 
-namespace jwt {
+namespace jose {
 
 using sp_crypto = typename std::shared_ptr<class crypto>;
 using sp_hmac   = typename std::shared_ptr<class hmac>;
@@ -28,102 +31,13 @@ using sp_rsa_key = typename std::shared_ptr<RSA>;
 using sp_ecdsa_key = typename std::shared_ptr<EC_KEY>;
 
 class crypto {
-protected:
-	enum class hash_type {
-		SHA256,
-		SHA384,
-		SHA512
-	};
-
-	class sha2_digest {
-	public:
-		sha2_digest(hash_type type, const uint8_t *in_data, size_t in_size) {
-			switch(type) {
-			case hash_type::SHA256:
-				size_ = SHA256_DIGEST_LENGTH;
-				break;
-			case hash_type::SHA384:
-				size_ = SHA384_DIGEST_LENGTH;
-				break;
-			case hash_type::SHA512:
-				size_ = SHA512_DIGEST_LENGTH;
-				break;
-			}
-
-			data_ = std::shared_ptr<uint8_t>(new uint8_t[size_], std::default_delete<uint8_t[]>());
-
-			switch (type) {
-			case hash_type::SHA256: {
-				SHA256_CTX sha_ctx;
-				if (SHA256_Init(&sha_ctx) != 1) {
-					throw std::runtime_error("Couldn't init SHA256");
-				}
-
-				if (SHA256_Update(&sha_ctx, in_data, in_size) != 1) {
-					throw std::runtime_error("Couldn't calculate hash");
-				}
-
-				if (SHA256_Final(data_.get(), &sha_ctx) != 1) {
-					throw std::runtime_error("Couldn't finalize SHA");
-				}
-				break;
-			}
-			case hash_type::SHA384: {
-				SHA512_CTX sha_ctx;
-
-				if (SHA384_Init(&sha_ctx) != 1) {
-					throw std::runtime_error("Couldn't init SHA384");
-				}
-
-				if (SHA384_Update(&sha_ctx, in_data, in_size) != 1) {
-					throw std::runtime_error("Couldn't calculate hash");
-				}
-
-				if (SHA384_Final(data_.get(), &sha_ctx) != 1) {
-					throw std::runtime_error("Couldn't finalize SHA");
-				}
-				break;
-			}
-			case hash_type::SHA512: {
-				SHA512_CTX sha_ctx;
-
-				if (SHA512_Init(&sha_ctx) != 1) {
-					throw std::runtime_error("Couldn't init SHA512");
-				}
-
-				if (SHA512_Update(&sha_ctx, in_data, in_size) != 1) {
-					throw std::runtime_error("Couldn't calculate hash");
-				}
-
-				if (SHA512_Final(data_.get(), &sha_ctx) != 1) {
-					throw std::runtime_error("Couldn't finalize SHA");
-				}
-				break;
-			}
-			}
-		}
-
-		size_t size() const {
-			return size_;
-		}
-
-		uint8_t *data() {
-			return data_.get();
-		}
-
-	private:
-		size_t size_;
-		int    type_;
-		std::shared_ptr<uint8_t> data_;
-	};
-
 public:
 	/**
 	 * \brief
 	 *
 	 * \param alg
 	 */
-	explicit crypto(jwt::alg alg = jwt::alg::NONE);
+	explicit crypto(jose::alg alg = jose::alg::NONE);
 
 	virtual ~crypto() = 0;
 
@@ -133,8 +47,8 @@ public:
 	 *
 	 * \return
 	 */
-	jwt::alg alg() { return alg_; }
-	jwt::alg alg() const { return alg_; }
+	jose::alg alg() { return alg_; }
+	jose::alg alg() const { return alg_; }
 
 	/**
 	 * \brief
@@ -163,18 +77,23 @@ public:
 	 *
 	 * \return
 	 */
-	static const char *alg2str(jwt::alg alg);
+	static const char *alg2str(jose::alg alg);
 
-	static jwt::alg str2alg(const std::string &a);
+	static jose::alg str2alg(const std::string &a);
+
 
 protected:
-	jwt::alg    alg_;
-	Json::Value hdr_;
+	static int hash2nid(digest::type type);
+
+protected:
+	jose::alg      alg_;
+	Json::Value    hdr_;
+	digest::type   hash_type_;
 };
 
 class hmac : public crypto {
 public:
-	explicit hmac(jwt::alg alg, const std::string &secret);
+	explicit hmac(jose::alg alg, const std::string &secret);
 
 	virtual ~hmac();
 public:
@@ -193,7 +112,7 @@ private:
 
 class rsa : public crypto {
 public:
-	explicit rsa(jwt::alg alg, RSA *r);
+	explicit rsa(jose::alg alg, sp_rsa_key key);
 
 	virtual ~rsa();
 public:
@@ -206,17 +125,26 @@ public:
 		return std::make_shared<class rsa>(__args...);
 	}
 
-	static sp_rsa_key gen() {
+	static sp_rsa_key gen(int size) {
+		// keys less than 1024 bits are insecure
+		if ((size % 1024) != 0) {
+			throw std::invalid_argument("Invalid keys size");
+		}
+
 		sp_rsa_key key = std::shared_ptr<RSA>(RSA_new(), ::RSA_free);
+		BIGNUM *bn = BN_new();
+		BN_set_word(bn, RSA_F4);
+		RSA_generate_key_ex(key.get(), size, bn, NULL);
+
 		return key;
 	}
 private:
-	RSA *r_;
+	sp_rsa_key r_;
 };
 
 class ecdsa : public crypto {
 public:
-	explicit ecdsa(jwt::alg alg, EC_KEY *e);
+	explicit ecdsa(jose::alg alg, sp_ecdsa_key key);
 
 	virtual ~ecdsa();
 public:
@@ -232,6 +160,7 @@ public:
 	static sp_ecdsa_key gen(int nid) {
 		sp_ecdsa_key key = std::shared_ptr<EC_KEY>(EC_KEY_new(), ::EC_KEY_free);
 		std::shared_ptr<EC_GROUP> group = std::shared_ptr<EC_GROUP>(EC_GROUP_new_by_curve_name(nid), ::EC_GROUP_free);
+		std::shared_ptr<EC_POINT> point = std::shared_ptr<EC_POINT>(EC_POINT_new(group.get()), ::EC_POINT_free);
 
 		if (EC_KEY_set_group(key.get(), group.get()) != 1) {
 			throw std::runtime_error("Couldn't set EC KEY group");
@@ -248,6 +177,16 @@ public:
 			throw std::runtime_error("Couldn't generate EC KEY");
 		}
 
+		const BIGNUM *priv = EC_KEY_get0_private_key(key.get());
+
+		if (EC_POINT_mul(group.get(), point.get(), priv, NULL, NULL, NULL) != 1) {
+			throw std::runtime_error("Couldn't generate EC PUB KEY");
+		}
+
+		if (EC_KEY_set_public_key(key.get(), point.get()) != 1) {
+			throw std::runtime_error("Couldn't set EC PUB KEY");
+		}
+
 		if (EC_KEY_check_key(key.get()) != 1) {
 			throw std::runtime_error("EC check failed");
 		}
@@ -255,6 +194,6 @@ public:
 		return key;
 	}
 private:
-	EC_KEY *e_;
+	sp_ecdsa_key e_;
 };
-} // namespace jwt
+} // namespace jose

@@ -6,16 +6,19 @@
 #include <josepp/b64.hpp>
 #include <josepp/tools.hpp>
 
-#include <openssl/sha.h>
 #include <openssl/objects.h>
+#include <openssl/evp.h>
 
-namespace jwt {
+#include <iostream>
+#include <openssl/err.h>
 
-rsa::rsa(jwt::alg alg, RSA *r) :
+namespace jose {
+
+rsa::rsa(jose::alg alg, sp_rsa_key key) :
 	  crypto(alg)
-	, r_(r)
+    , r_(key)
 {
-	if (alg != jwt::alg::RS256 && alg != jwt::alg::RS384 && alg != jwt::alg::RS512) {
+	if (alg != jose::alg::RS256 && alg != jose::alg::RS384 && alg != jose::alg::RS512) {
 		throw std::invalid_argument("Invalid algorithm");
 	}
 }
@@ -27,36 +30,14 @@ rsa::~rsa()
 
 std::string rsa::sign(const std::string &data)
 {
-	uint32_t type = NID_sha512;
-	hash_type hash = hash_type::SHA512;
-
-	switch (alg_) {
-	case jwt::alg::RS256: {
-		type = NID_sha256;
-		hash = hash_type::SHA256;
-		break;
-	}
-	case jwt::alg::RS384: {
-		type = NID_sha384;
-		hash = hash_type::SHA384;
-		break;
-	}
-	case jwt::alg::RS512: {
-		type = NID_sha512;
-		hash = hash_type::SHA512;
-		break;
-	}
-	default:
-		// Should never happen
-		throw std::runtime_error("Invalid alg");
-	}
-
 	uint32_t sig_len;
 
-	std::shared_ptr<uint8_t> sig = std::shared_ptr<uint8_t>(new uint8_t[RSA_size(r_)], std::default_delete<uint8_t[]>());
+	sig_len = RSA_size(r_.get());
+	std::shared_ptr<uint8_t> sig = std::shared_ptr<uint8_t>(new uint8_t[sig_len], std::default_delete<uint8_t[]>());
 
-	sha2_digest digest(hash, (const uint8_t *)data.data(), data.length());
-	if (RSA_sign(type, digest.data(), digest.size(), sig.get(), &sig_len, r_) != 1) {
+	digest d(hash_type_, (const uint8_t *)data.data(), data.length());
+
+	if (RSA_sign(hash2nid(hash_type_), d.data(), d.size(), sig.get(), &sig_len, r_.get()) != 1) {
 		throw std::runtime_error("Couldn't sign RSA");
 	}
 
@@ -65,7 +46,15 @@ std::string rsa::sign(const std::string &data)
 
 bool rsa::verify(const std::string &data, const std::string &sig)
 {
-	return sig == sign(data);
+	digest d(hash_type_, (const uint8_t *)data.data(), data.length());
+
+	std::vector<uint8_t> s = b64::decode_uri(sig.data(), sig.length());
+
+	if (RSA_verify(hash2nid(hash_type_), d.data(), d.size(), (const uint8_t *)s.data(), s.size(), r_.get()) != 1) {
+		return false;
+	}
+
+	return true;
 }
 
-} // namespace jwt
+} // namespace jose

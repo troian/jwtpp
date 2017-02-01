@@ -3,7 +3,7 @@
 //
 #pragma once
 
-namespace jwt {
+namespace jose {
 
 enum class alg {
 	NONE = 0,
@@ -19,4 +19,4 @@ enum class alg {
 	UNKNOWN
 };
 
-} // namespace jwt
+} // namespace jose

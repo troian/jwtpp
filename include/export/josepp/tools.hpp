@@ -28,7 +28,7 @@
 #include <json/json.h>
 #include <json/value.h>
 
-namespace jwt {
+namespace jose {
 
 std::string marshal(const Json::Value &json);
 
@@ -38,4 +38,4 @@ Json::Value unmarshal(const std::string &in);
 
 Json::Value unmarshal_b64(const std::string &b);
 
-} // namespace tools
+} // namespace jose

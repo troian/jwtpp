@@ -30,7 +30,7 @@
 #include <json/writer.h>
 #include <json/reader.h>
 
-namespace jwt {
+namespace jose {
 
 std::string marshal(const Json::Value &json)
 {
@@ -65,4 +65,4 @@ Json::Value unmarshal_b64(const std::string &b64)
 	return unmarshal(decoded);
 }
 
-} // namespace tools
+} // namespace jose

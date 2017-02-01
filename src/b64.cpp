@@ -4,7 +4,7 @@
 
 #include <josepp/b64.hpp>
 
-namespace jwt {
+namespace jose {
 
 const std::string b64::base64_chars =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -197,4 +197,12 @@ std::string b64::decode_uri(const std::string &in)
 	return std::move(std::string(tmpd.data(), tmpd.data() + tmpd.size()));
 }
 
+std::vector<uint8_t> b64::decode_uri(const char *in, size_t in_size)
+{
+	std::string tmp(in, in_size);
+	uri_dec((char *)tmp.data(), tmp.length());
+
+	return std::move(decode(tmp.data(), tmp.length()));
 }
+
+} // namespace jose

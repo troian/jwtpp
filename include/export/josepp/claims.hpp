@@ -7,7 +7,7 @@
 
 #include <json/json.h>
 
-namespace jwt {
+namespace jose {
 
 using sp_claims = std::shared_ptr<class claims>;
 
@@ -175,4 +175,4 @@ private:
 	class check check_;
 };
 
-} // namespace jwt
+} // namespace jose

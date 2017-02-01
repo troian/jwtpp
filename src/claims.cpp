@@ -6,7 +6,7 @@
 #include <josepp/b64.hpp>
 #include <josepp/tools.hpp>
 
-namespace jwt {
+namespace jose {
 
 void claims::set::any(const std::string &key, const std::string &value)
 {
@@ -48,4 +48,4 @@ std::string claims::b64()
 	return marshal_b64(claims_);
 }
 
-}
+} // namespace jose

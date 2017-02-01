@@ -5,11 +5,11 @@
 #include <josepp/jws.hpp>
 #include <josepp/tools.hpp>
 
-namespace jwt {
+namespace jose {
 
 static const std::string bearer_hdr("bearer ");
 
-jws::jws(jwt::alg alg, const std::string &data, sp_claims cl, const std::string &sig) :
+jws::jws(jose::alg alg, const std::string &data, sp_claims cl, const std::string &sig) :
 	  alg_(alg)
 	, data_(data)
 	, claims_(cl)
@@ -73,8 +73,8 @@ sp_jws jws::parse(const std::string &full_bearer)
 		throw std::runtime_error("Is not JWT");
 	}
 
-	jwt::alg alg = crypto::str2alg(hdr["alg"].asString());
-	if (alg >= jwt::alg::UNKNOWN) {
+	jose::alg alg = crypto::str2alg(hdr["alg"].asString());
+	if (alg >= jose::alg::UNKNOWN) {
 		throw std::runtime_error("Invalid alg");
 	}
 
@@ -143,4 +143,4 @@ std::vector<std::string> jws::tokenize(const std::string &text, char sep)
 	return std::move(tokens);
 }
 
-} // namespace jwt
+} // namespace jose

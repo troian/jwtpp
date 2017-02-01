@@ -7,19 +7,20 @@
 #include <string>
 #include <json/json.h>
 
-namespace jwt {
+namespace jose {
 
 class hdr final {
 public:
-	explicit hdr(jwt::alg alg);
+	explicit hdr(jose::alg alg);
 
 	explicit hdr(const std::string &data);
 
 	std::string b64();
 
 private:
-	static const char *alg2str(jwt::alg alg);
+	static const char *alg2str(jose::alg alg);
 private:
 	Json::Value h_;
 };
-}
+
+} // namespace jose

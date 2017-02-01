@@ -11,7 +11,7 @@
 #include <josepp/claims.hpp>
 #include <josepp/header.hpp>
 
-namespace jwt {
+namespace jose {
 
 /**
  * \brief
@@ -31,7 +31,7 @@ private:
 	 * \param cl
 	 * \param sig
 	 */
-	jws(jwt::alg alg, const std::string &data, sp_claims cl, const std::string &sig);
+	jws(jose::alg alg, const std::string &data, sp_claims cl, const std::string &sig);
 
 public:
 	/**
@@ -93,10 +93,10 @@ private:
 	static std::vector<std::string> tokenize(const std::string &text, char sep);
 
 private:
-	jwt::alg    alg_;
+	jose::alg    alg_;
 	std::string data_;
 	sp_claims   claims_;
 	std::string sig_;
 };
 
-} // namespace jwt
+} // namespace jose

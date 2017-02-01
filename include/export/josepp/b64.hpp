@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace jwt {
+namespace jose {
 
 /**
  * \brief
@@ -44,8 +44,9 @@ public:
 	static std::string encode_uri(const std::vector<uint8_t> * const stream);
 
 	static std::vector<uint8_t> decode(const char *in, size_t in_size);
+	static std::vector<uint8_t> decode_uri(const char *in, size_t in_size);
 	static std::string decode(const std::string &in);
 	static std::string decode_uri(const std::string &in);
 };
 
-} // namespace jwt
+} // namespace jose

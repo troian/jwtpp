@@ -20,9 +20,9 @@ JSON Object Signing and Encryption library for C++
 | RS256 | **Supported** |
 | RS384 | **Supported** |
 | RS512 | **Supported** |
-| ES256 | Not Supported |
-| ES384 | Not Supported |
-| ES512 | Not Supported |
+| ES256 | **Supported** |
+| ES384 | **Supported** |
+| ES512 | **Supported** |
 
 #### Claims
 |Claim|Status|

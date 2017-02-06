@@ -83,6 +83,8 @@ int crypto::hash2nid(digest::type type)
 		return NID_sha384;
 	case digest::type::SHA512:
 		return NID_sha512;
+	default:
+		return NID_sha256;
 	}
 }
 

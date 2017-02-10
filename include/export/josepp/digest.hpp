@@ -31,7 +31,6 @@ public:
 
 private:
 	size_t                   size_;
-	int                      type_;
 	std::shared_ptr<uint8_t> data_;
 };
 

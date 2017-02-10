@@ -1,6 +1,25 @@
+// The MIT License (MIT)
 //
-// Created by Artur Troian on 1/20/17.
+// Copyright (c) 2016 Artur Troian
 //
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #pragma once
 
 #include <memory>
@@ -28,7 +47,7 @@ private:
 		bool aud() { return any("aud"); }
 		bool exp() { return any("exp"); }
 		bool nbf() { return any("nbf"); }
-		bool iat() { return any("nbf"); }
+		bool iat() { return any("iat"); }
 		bool jti() { return any("jti"); }
 	private:
 		Json::Value *claims_;
@@ -48,7 +67,7 @@ private:
 		bool exp(const std::string &value) { return any("exp", value); }
 		bool nbf(const std::string &value) { return any("nbf", value); }
 		bool iat(const std::string &value) { return any("iat", value); }
-		bool jti(const std::string &value) { return any("iat", value); }
+		bool jti(const std::string &value) { return any("jti", value); }
 	private:
 		Json::Value *claims_;
 	};
@@ -84,7 +103,7 @@ private:
 		std::string exp() { return std::move(any("exp")); }
 		std::string nbf() { return std::move(any("nbf")); }
 		std::string iat() { return std::move(any("iat")); }
-		std::string jti() { return std::move(any("iat")); }
+		std::string jti() { return std::move(any("jti")); }
 	private:
 		Json::Value *claims_;
 	};

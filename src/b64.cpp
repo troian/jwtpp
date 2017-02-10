@@ -1,6 +1,24 @@
+// The MIT License (MIT)
 //
-// Created by Artur Troian on 1/21/17.
+// Copyright (c) 2016 Artur Troian
 //
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #include <josepp/b64.hpp>
 
@@ -23,7 +41,7 @@ void b64::uri_enc(char *buf, size_t len)
 		case '/':
 			buf[t] = '_';
 			break;
-		case '=':
+		default:
 			continue;
 		}
 		t++;
@@ -42,7 +60,7 @@ void b64::uri_dec(char *buf, size_t len)
 		case '_':
 			buf[t] = '/';
 			break;
-		case '=':
+		default:
 			continue;
 		}
 		t++;
@@ -124,19 +142,19 @@ std::string b64::encode_uri(const std::string &stream)
 
 std::string b64::encode_uri(const std::vector<uint8_t> &stream)
 {
-	return std::move(encode_uri((const uint8_t *)stream.data(), stream.size()));
+	return std::move(encode_uri(stream.data(), stream.size()));
 }
 
 std::string b64::encode_uri(const std::vector<uint8_t> * const stream)
 {
-	return std::move(encode_uri((const uint8_t *)stream->data(), stream->size()));
+	return std::move(encode_uri(stream->data(), stream->size()));
 }
 
 std::vector<uint8_t> b64::decode(const char *in, size_t in_size)
 {
-	int         in_len = in_size;
-	int         i = 0;
-	int         in_ = 0;
+	size_t      in_len = in_size;
+	size_t      i = 0;
+	size_t      in_ = 0;
 	uint8_t     array_4[4];
 	uint8_t     array_3[3];
 	std::vector<uint8_t> ret;
@@ -162,11 +180,11 @@ std::vector<uint8_t> b64::decode(const char *in, size_t in_size)
 	}
 
 	if (i) {
-		for (int j = i; j < 4; j++) {
+		for (size_t j = i; j < 4; j++) {
 			array_4[j] = 0;
 		}
 
-		for (int j = 0; j < 4; j++) {
+		for (size_t j = 0; j < 4; j++) {
 			array_4[j] = (uint8_t)base64_chars.find(array_4[j]);
 		}
 

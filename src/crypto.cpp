@@ -1,6 +1,24 @@
+// The MIT License (MIT)
 //
-// Created by Artur Troian on 1/20/17.
+// Copyright (c) 2016 Artur Troian
 //
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #include <josepp/types.hpp>
 #include <josepp/crypto.hpp>
@@ -76,16 +94,21 @@ jose::alg crypto::str2alg(const std::string &a)
 
 int crypto::hash2nid(digest::type type)
 {
+	int ret;
+
 	switch (type) {
 	case digest::type::SHA256:
-		return NID_sha256;
+		ret = NID_sha256;
+		break;
 	case digest::type::SHA384:
-		return NID_sha384;
+		ret = NID_sha384;
+		break;
 	case digest::type::SHA512:
-		return NID_sha512;
-	default:
-		return NID_sha256;
+		ret = NID_sha512;
+		break;
 	}
+
+	return ret;
 }
 
 } // namespace jose

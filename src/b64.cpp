@@ -41,8 +41,10 @@ void b64::uri_enc(char *buf, size_t len)
 		case '/':
 			buf[t] = '_';
 			break;
-		default:
+		case '=':
 			continue;
+		default:
+			break;
 		}
 		t++;
 	}
@@ -60,8 +62,10 @@ void b64::uri_dec(char *buf, size_t len)
 		case '_':
 			buf[t] = '/';
 			break;
-		default:
+		case '=':
 			continue;
+		default:
+			break;
 		}
 		t++;
 	}

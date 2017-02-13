@@ -94,7 +94,7 @@ jose::alg crypto::str2alg(const std::string &a)
 
 int crypto::hash2nid(digest::type type)
 {
-	int ret;
+	int ret = NID_sha256;
 
 	switch (type) {
 	case digest::type::SHA256:

@@ -196,7 +196,7 @@ std::vector<uint8_t> b64::decode(const char *in, size_t in_size)
 		array_3[1] = (uint8_t)((uint8_t)(((array_4[1] & 0xf) << 4) + ((array_4[2] & 0x3c) >> 2)));
 		array_3[2] = (uint8_t)((uint8_t)(((array_4[2] & 0x3) << 6) + array_4[3]));
 
-		for (int j = 0; (j < i - 1); j++) {
+		for (size_t j = 0; (j < i - 1); j++) {
 			ret.push_back(array_3[j]);
 		}
 	}

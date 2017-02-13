@@ -61,13 +61,7 @@ bool ecdsa::verify(const std::string &data, const std::string &sig)
 
 	std::vector<uint8_t> s = b64::decode_uri(sig.data(), sig.length());
 
-//	return ECDSA_verify(0, d.data(), (int)d.size(), (const uint8_t *)s.data(), (int)s.size(), e_.get()) == 1;
-
-	if (ECDSA_verify(0, d.data(), (int)d.size(), (const uint8_t *)s.data(), (int)s.size(), e_.get()) != 1) {
-		ERR_print_errors_fp(stdout);
-		return false;
-	}
-	return true;
+	return ECDSA_verify(0, d.data(), (int)d.size(), (const uint8_t *)s.data(), (int)s.size(), e_.get()) == 1;
 }
 
 } // namespace jose

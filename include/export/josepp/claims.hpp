@@ -22,9 +22,10 @@
 
 #pragma once
 
-#include <memory>
-
 #include <json/json.h>
+
+#include <memory>
+#include <string>
 
 namespace jose {
 

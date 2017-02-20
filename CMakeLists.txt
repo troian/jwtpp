@@ -15,6 +15,7 @@ include(CheckIncludeFiles)
 include(CheckIncludeFileCXX)
 
 option(WITH_TESTS "Build tests" OFF)
+option(WITH_INSTALL "Allow root targets to not issue install" ON)
 option(BUILD_SHARED_LIBS "Build shared library" OFF)
 
 set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "Installation directory for libraries")
@@ -83,13 +84,15 @@ target_link_libraries(
 	${JsonCPP_LIBRARIES}
 )
 
-install(
-	TARGETS
-	${PROJECT_NAME}-static
-		ARCHIVE
-			DESTINATION
-				lib
-)
+if (WITH_INSTALL)
+	install(
+		TARGETS
+		${PROJECT_NAME}-static
+			ARCHIVE
+				DESTINATION
+					lib
+	)
+endif()
 
 if (BUILD_SHARED_LIBS)
 	add_library(${PROJECT_NAME}-shared SHARED ${LIB_SOURCES})
@@ -108,21 +111,25 @@ if (BUILD_SHARED_LIBS)
 		${JsonCPP_LIBRARIES}
 	)
 
-	install(
-		TARGETS
-			${PROJECT_NAME}-shared
-		LIBRARY
-			DESTINATION
-				lib
-	)
+	if (WITH_INSTALL)
+		install(
+			TARGETS
+				${PROJECT_NAME}-shared
+			LIBRARY
+				DESTINATION
+					lib
+		)
+	endif ()
 endif()
 
-install(
-	DIRECTORY
-	${EXPORT_INCLUDES}/josepp
-	DESTINATION include
-	FILES_MATCHING PATTERN "*.hpp"
-)
+if (WITH_INSTALL)
+	install(
+		DIRECTORY
+		${EXPORT_INCLUDES}/josepp
+		DESTINATION include
+		FILES_MATCHING PATTERN "*.hpp"
+	)
+endif ()
 
 set(JOSEPP_PC ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc)
 
@@ -132,7 +139,9 @@ configure_file(
 	@ONLY
 )
 
-install(FILES ${JOSEPP_PC} DESTINATION "${INSTALL_PKGCONFIG_DIR}")
+if (WITH_INSTALL)
+	install(FILES ${JOSEPP_PC} DESTINATION "${INSTALL_PKGCONFIG_DIR}")
+endif()
 
 if (WITH_TESTS)
 	enable_testing()

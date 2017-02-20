@@ -20,9 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <openssl/err.h>
+
 #include <josepp/crypto.hpp>
 #include <josepp/b64.hpp>
-#include <openssl/err.h>
 
 namespace jose {
 
@@ -44,11 +45,11 @@ std::string ecdsa::sign(const std::string &data)
 {
 	std::shared_ptr<uint8_t> sig = std::shared_ptr<uint8_t>(new uint8_t[ECDSA_size(e_.get())], std::default_delete<uint8_t[]>());
 
-	digest d(hash_type_, (const uint8_t *)data.data(), data.length());
+	digest d(hash_type_, reinterpret_cast<const uint8_t *>(data.data()), data.length());
 
 	uint32_t sig_len;
 
-	if (ECDSA_sign(0, d.data(), (int)d.size(), sig.get(), &sig_len, e_.get()) != 1) {
+	if (ECDSA_sign(0, d.data(), static_cast<int>(d.size()), sig.get(), &sig_len, e_.get()) != 1) {
 		throw std::runtime_error("Couldn't sign ECDSA");
 	}
 
@@ -57,11 +58,11 @@ std::string ecdsa::sign(const std::string &data)
 
 bool ecdsa::verify(const std::string &data, const std::string &sig)
 {
-	digest d(hash_type_, (const uint8_t *)data.data(), data.length());
+	digest d(hash_type_, reinterpret_cast<const uint8_t *>(data.data()), data.length());
 
 	std::vector<uint8_t> s = b64::decode_uri(sig.data(), sig.length());
 
-	return ECDSA_verify(0, d.data(), (int)d.size(), (const uint8_t *)s.data(), (int)s.size(), e_.get()) == 1;
+	return ECDSA_verify(0, d.data(), static_cast<int>(d.size()), reinterpret_cast<const uint8_t *>(s.data()), static_cast<int>(s.size()), e_.get()) == 1;
 }
 
 } // namespace jose

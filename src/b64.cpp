@@ -82,10 +82,10 @@ std::string b64::encode(const uint8_t * const stream, size_t in_len)
 	while (in_len--) {
 		array_3[i++] = stream[k++];
 		if (i == 3) {
-			array_4[0] = (uint8_t)(array_3[0] & 0xfc) >> 2;
-			array_4[1] = (uint8_t)(((array_3[0] & 0x03) << 4) + ((array_3[1] & 0xf0) >> 4));
-			array_4[2] = (uint8_t)(((array_3[1] & 0x0f) << 2) + ((array_3[2] & 0xc0) >> 6));
-			array_4[3] = (uint8_t)(array_3[2] & 0x3f);
+			array_4[0] = static_cast<uint8_t>((array_3[0] & 0xfc) >> 2);
+			array_4[1] = static_cast<uint8_t>((((array_3[0] & 0x03) << 4) + ((array_3[1] & 0xf0) >> 4)));
+			array_4[2] = static_cast<uint8_t>((((array_3[1] & 0x0f) << 2) + ((array_3[2] & 0xc0) >> 6)));
+			array_4[3] = static_cast<uint8_t>((array_3[2] & 0x3f));
 
 			for (i = 0; (i < 4); i++) {
 				out += base64_chars[array_4[i]];
@@ -99,10 +99,10 @@ std::string b64::encode(const uint8_t * const stream, size_t in_len)
 			array_3[j] = '\0';
 		}
 
-		array_4[0] = (uint8_t)((array_3[0] & 0xfc) >> 2);
-		array_4[1] = (uint8_t)(((array_3[0] & 0x03) << 4) + ((array_3[1] & 0xf0) >> 4));
-		array_4[2] = (uint8_t)(((array_3[1] & 0x0f) << 2) + ((array_3[2] & 0xc0) >> 6));
-		array_4[3] = (uint8_t)(array_3[2] & 0x3f);
+		array_4[0] = static_cast<uint8_t>(((array_3[0] & 0xfc) >> 2));
+		array_4[1] = static_cast<uint8_t>((((array_3[0] & 0x03) << 4) + ((array_3[1] & 0xf0) >> 4)));
+		array_4[2] = static_cast<uint8_t>((((array_3[1] & 0x0f) << 2) + ((array_3[2] & 0xc0) >> 6)));
+		array_4[3] = static_cast<uint8_t>((array_3[2] & 0x3f));
 
 		for (int j = 0; (j < i + 1); j++) {
 			out += base64_chars[array_4[j]];
@@ -134,14 +134,14 @@ std::string b64::encode(const std::string &stream)
 std::string b64::encode_uri(const uint8_t * const stream, size_t in_len)
 {
 	std::string out = encode(stream, in_len);
-	uri_enc((char *)out.data(), out.length());
+	uri_enc(const_cast<char *>(out.data()), out.length());
 
 	return std::move(out);
 }
 
 std::string b64::encode_uri(const std::string &stream)
 {
-	return std::move(encode_uri((const uint8_t *)stream.data(), stream.length()));
+	return std::move(encode_uri(reinterpret_cast<const uint8_t *>(stream.data()), stream.length()));
 }
 
 std::string b64::encode_uri(const std::vector<uint8_t> &stream)
@@ -163,17 +163,17 @@ std::vector<uint8_t> b64::decode(const char *in, size_t in_size)
 	uint8_t     array_3[3];
 	std::vector<uint8_t> ret;
 
-	while (in_len-- && (in[in_] != '=') && is_base64((uint8_t)in[in_])) {
-		array_4[i++] = (uint8_t)in[in_];
+	while (in_len-- && (in[in_] != '=') && is_base64(static_cast<uint8_t>(in[in_]))) {
+		array_4[i++] = static_cast<uint8_t>(in[in_]);
 		in_++;
 		if (i == 4) {
 			for (i = 0; i < 4; i++) {
-				array_4[i] = (uint8_t)base64_chars.find(array_4[i]);
+				array_4[i] = static_cast<uint8_t>(base64_chars.find(array_4[i]));
 			}
 
-			array_3[0] = (uint8_t)((array_4[0] << 2) + ((array_4[1] & 0x30) >> 4));
-			array_3[1] = (uint8_t)(((array_4[1] & 0xf) << 4) + ((array_4[2] & 0x3c) >> 2));
-			array_3[2] = (uint8_t)(((array_4[2] & 0x3) << 6) + array_4[3]);
+			array_3[0] = static_cast<uint8_t>((array_4[0] << 2) + ((array_4[1] & 0x30) >> 4));
+			array_3[1] = static_cast<uint8_t>(((array_4[1] & 0xf) << 4) + ((array_4[2] & 0x3c) >> 2));
+			array_3[2] = static_cast<uint8_t>(((array_4[2] & 0x3) << 6) + array_4[3]);
 
 			for (i = 0; (i < 3); i++) {
 				ret.push_back(array_3[i]);
@@ -189,12 +189,12 @@ std::vector<uint8_t> b64::decode(const char *in, size_t in_size)
 		}
 
 		for (size_t j = 0; j < 4; j++) {
-			array_4[j] = (uint8_t)base64_chars.find(array_4[j]);
+			array_4[j] = static_cast<uint8_t>(base64_chars.find(array_4[j]));
 		}
 
-		array_3[0] = (uint8_t)((array_4[0] << 2) + ((array_4[1] & 0x30) >> 4));
-		array_3[1] = (uint8_t)((uint8_t)(((array_4[1] & 0xf) << 4) + ((array_4[2] & 0x3c) >> 2)));
-		array_3[2] = (uint8_t)((uint8_t)(((array_4[2] & 0x3) << 6) + array_4[3]));
+		array_3[0] = static_cast<uint8_t>((array_4[0] << 2) + ((array_4[1] & 0x30) >> 4));
+		array_3[1] = static_cast<uint8_t>(static_cast<uint8_t>(((array_4[1] & 0xf) << 4) + ((array_4[2] & 0x3c) >> 2)));
+		array_3[2] = static_cast<uint8_t>(static_cast<uint8_t>(((array_4[2] & 0x3) << 6) + array_4[3]));
 
 		for (size_t j = 0; (j < i - 1); j++) {
 			ret.push_back(array_3[j]);
@@ -213,7 +213,7 @@ std::string b64::decode(const std::string &in)
 std::string b64::decode_uri(const std::string &in)
 {
 	std::string tmp(in);
-	uri_dec((char *)tmp.data(), tmp.length());
+	uri_dec(const_cast<char *>(tmp.data()), tmp.length());
 
 	std::vector<uint8_t> tmpd = decode(tmp.data(), tmp.length());
 	return std::move(std::string(tmpd.data(), tmpd.data() + tmpd.size()));
@@ -222,7 +222,7 @@ std::string b64::decode_uri(const std::string &in)
 std::vector<uint8_t> b64::decode_uri(const char *in, size_t in_size)
 {
 	std::string tmp(in, in_size);
-	uri_dec((char *)tmp.data(), tmp.length());
+	uri_dec(const_cast<char *>(tmp.data()), tmp.length());
 
 	return std::move(decode(tmp.data(), tmp.length()));
 }

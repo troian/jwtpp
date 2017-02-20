@@ -22,9 +22,11 @@
 
 #pragma once
 
-#include <josepp/types.hpp>
-#include <string>
 #include <json/json.h>
+
+#include <string>
+
+#include <josepp/types.hpp>
 
 namespace jose {
 
@@ -38,6 +40,7 @@ public:
 
 private:
 	static const char *alg2str(jose::alg alg);
+
 private:
 	Json::Value h_;
 };

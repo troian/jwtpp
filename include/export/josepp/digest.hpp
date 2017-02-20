@@ -34,4 +34,4 @@ private:
 	std::shared_ptr<uint8_t> data_;
 };
 
-}
+} // namespace jose

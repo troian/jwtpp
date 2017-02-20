@@ -25,6 +25,7 @@
 #include <memory>
 #include <functional>
 #include <vector>
+#include <string>
 
 #include <josepp/crypto.hpp>
 #include <josepp/claims.hpp>
@@ -113,9 +114,9 @@ private:
 
 private:
 	jose::alg    alg_;
-	std::string data_;
-	sp_claims   claims_;
-	std::string sig_;
+	std::string  data_;
+	sp_claims    claims_;
+	std::string  sig_;
 };
 
 } // namespace jose

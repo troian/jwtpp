@@ -22,13 +22,6 @@
 
 #pragma once
 
-#include <string>
-#include <memory>
-#include <sstream>
-
-#include <josepp/types.hpp>
-#include <josepp/digest.hpp>
-
 #include <json/json.h>
 
 #include <openssl/rsa.h>
@@ -37,6 +30,13 @@
 #include <openssl/sha.h>
 #include <openssl/objects.h>
 #include <openssl/pem.h>
+
+#include <string>
+#include <memory>
+#include <sstream>
+
+#include <josepp/types.hpp>
+#include <josepp/digest.hpp>
 
 namespace jose {
 

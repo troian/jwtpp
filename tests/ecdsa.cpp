@@ -21,12 +21,11 @@
 // SOFTWARE.
 
 #include <gtest/gtest.h>
+#include <openssl/err.h>
 
 #include <josepp/claims.hpp>
 #include <josepp/crypto.hpp>
 #include <josepp/jws.hpp>
-
-#include <openssl/err.h>
 
 TEST(JosePP, sign_ecdsa256)
 {

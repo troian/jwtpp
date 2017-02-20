@@ -27,7 +27,9 @@
 namespace jose {
 
 crypto::crypto(jose::alg alg) :
-	alg_(alg)
+	  alg_(alg)
+	, hdr_()
+	, hash_type_(digest::type::SHA256)
 {
 	if (alg == jose::alg::HS256 || alg == jose::alg::RS256 || alg == jose::alg::ES256) {
 		hash_type_ = digest::type::SHA256;

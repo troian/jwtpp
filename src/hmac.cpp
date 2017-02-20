@@ -20,12 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <openssl/hmac.h>
+
 #include <cstring>
 
 #include <josepp/crypto.hpp>
-
-#include <openssl/hmac.h>
-
 #include <josepp/b64.hpp>
 #include <josepp/tools.hpp>
 
@@ -46,8 +45,7 @@ hmac::hmac(jose::alg alg, const std::string &secret) :
 
 hmac::~hmac()
 {
-	// clear out secret
-	std::memset((void *)secret_.data(), 0 , secret_.length());
+	std::memset(const_cast<char *>(secret_.data()), 0 , secret_.length());
 }
 
 std::string hmac::sign(const std::string &data)
@@ -69,8 +67,8 @@ std::string hmac::sign(const std::string &data)
 
 	HMAC_CTX hmac;
 	HMAC_CTX_init(&hmac);
-	HMAC_Init_ex(&hmac, secret_.data(), (int)secret_.length(), evp, NULL);
-	HMAC_Update(&hmac, (const uint8_t *)data.c_str(), data.size());
+	HMAC_Init_ex(&hmac, secret_.data(), static_cast<int>(secret_.length()), evp, NULL);
+	HMAC_Update(&hmac, reinterpret_cast<const uint8_t *>(data.c_str()), data.size());
 
 	std::shared_ptr<uint8_t> res = std::shared_ptr<uint8_t>(new uint8_t[EVP_MD_size(evp)], std::default_delete<uint8_t[]>());
 	uint32_t size;

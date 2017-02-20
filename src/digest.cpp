@@ -26,7 +26,9 @@
 
 namespace jose {
 
-digest::digest(digest::type type, const uint8_t *in_data, size_t in_size)
+digest::digest(digest::type type, const uint8_t *in_data, size_t in_size) :
+	  size_(SHA256_DIGEST_LENGTH)
+	, data_(nullptr)
 {
 	try {
 		data_ = std::shared_ptr<uint8_t>(new uint8_t[SHA512_DIGEST_LENGTH], std::default_delete<uint8_t[]>());

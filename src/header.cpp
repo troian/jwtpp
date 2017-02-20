@@ -25,13 +25,15 @@
 
 namespace jose {
 
-hdr::hdr(jose::alg alg)
+hdr::hdr(jose::alg alg) :
+	h_()
 {
 	h_["typ"] = "JWT";
 	h_["alg"]  = alg2str(alg);
 }
 
-hdr::hdr(const std::string &data)
+hdr::hdr(const std::string &data) :
+	h_()
 {
 	Json::Reader reader;
 

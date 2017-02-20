@@ -39,5 +39,5 @@ TEST(JosePP, create_close_claims)
 	EXPECT_NO_THROW(cl->set().iss("troian"));
 	EXPECT_FALSE(cl->has().aud());
 
-	EXPECT_TRUE("troian" == cl->get().iss());
+	EXPECT_EQ("troian", cl->get().iss());
 }

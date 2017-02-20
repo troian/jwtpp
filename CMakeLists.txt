@@ -26,8 +26,8 @@ find_package(PkgConfig REQUIRED)
 find_package(OpenSSL REQUIRED)
 pkg_check_modules(JsonCPP REQUIRED jsoncpp)
 
-include_directories(${OPENSSL_INCLUDE_DIR})
-include_directories(${JsonCPP_INCLUDE_DIRS})
+include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
+include_directories(SYSTEM ${JsonCPP_INCLUDE_DIRS})
 link_directories(${JsonCPP_LIBRARY_DIRS})
 
 check_include_file_cxx(memory HAVE_MEMORY)
@@ -65,8 +65,6 @@ set(LIB_SOURCES
     ${EXPORT_INCLUDES}/josepp/crypto.hpp
     ${EXPORT_INCLUDES}/josepp/tools.hpp
 )
-
-include_directories(include)
 
 add_library(${PROJECT_NAME}-static STATIC ${LIB_SOURCES})
 set_target_properties(${PROJECT_NAME}-static PROPERTIES OUTPUT_NAME ${PROJECT_NAME} CLEAN_DIRECT_OUTPUT 1)

@@ -131,13 +131,13 @@ endif ()
 
 set(JOSEPP_PC ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc)
 
-configure_file(
-	pkgconfig.pc.in
-	${JOSEPP_PC}
-	@ONLY
-)
-
 if (WITH_INSTALL)
+	configure_file(
+		pkgconfig.pc.in
+		${JOSEPP_PC}
+		@ONLY
+	)
+
 	install(FILES ${JOSEPP_PC} DESTINATION "${INSTALL_PKGCONFIG_DIR}")
 endif()
 

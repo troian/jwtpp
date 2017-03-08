@@ -1,6 +1,8 @@
 language: cpp
 sudo: required
 dist: trusty
+git:
+  depth: 1
 compiler:
 - clang
 - gcc

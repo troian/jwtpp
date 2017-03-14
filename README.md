@@ -26,15 +26,15 @@ JSON Object Signing and Encryption library for C++
 | ES512 | **Supported** |
 
 #### Claims
-|Claim|Status|
-|:---:|:----:|
-|**_ess_**|set,verify|
-|**_sub_**|set,verify|
-|**_aud_**|set,verify|
-|**_exp_**|set,verify|
-|**_nbf_**|set,verify|
-|**_iat_**|set,verify|
-|**_jti_**|set,verify|
+|Claim|Options|Status|
+|:---:|:---:|:----:|
+|**_ess_**|set,verify| **Supported** 
+|**_sub_**|set,verify| **Supported** 
+|**_aud_**|set,verify| **Supported** 
+|**_exp_**|set,verify| **Supported** 
+|**_nbf_**|set,verify| **Supported** 
+|**_iat_**|set,verify| **Supported** 
+|**_jti_**|set,verify| **Supported** 
 
 ### How to use
 Refer to tests dir

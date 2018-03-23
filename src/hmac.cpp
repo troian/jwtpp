@@ -82,9 +82,10 @@ std::string hmac::sign(const std::string &data)
 	uint32_t size;
 
 	HMAC_Final(hmac, res.get(), &size);
-	HMAC_CTX_cleanup(hmac);
 
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+	HMAC_CTX_cleanup(hmac);
+#else
 	HMAC_CTX_free(hmac);
 #endif
 

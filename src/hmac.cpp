@@ -65,16 +65,29 @@ std::string hmac::sign(const std::string &data)
 		throw std::runtime_error("Invalid alg");
 	}
 
-	HMAC_CTX hmac;
-	HMAC_CTX_init(&hmac);
-	HMAC_Init_ex(&hmac, secret_.data(), static_cast<int>(secret_.length()), evp, NULL);
-	HMAC_Update(&hmac, reinterpret_cast<const uint8_t *>(data.c_str()), data.size());
+	HMAC_CTX *hmac;
+
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+	HMAC_CTX hmac_l;
+	HMAC_CTX_init(&hmac_l);
+	hmac = &hmac_l;
+#else
+	hmac = HMAC_CTX_new();
+#endif
+
+	HMAC_Init_ex(hmac, secret_.data(), static_cast<int>(secret_.length()), evp, nullptr);
+	HMAC_Update(hmac, reinterpret_cast<const uint8_t *>(data.c_str()), data.size());
 
 	std::shared_ptr<uint8_t> res = std::shared_ptr<uint8_t>(new uint8_t[EVP_MD_size(evp)], std::default_delete<uint8_t[]>());
 	uint32_t size;
 
-	HMAC_Final(&hmac, res.get(), &size);
-	HMAC_CTX_cleanup(&hmac);
+	HMAC_Final(hmac, res.get(), &size);
+
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+	HMAC_CTX_cleanup(hmac);
+#else
+	HMAC_CTX_free(hmac);
+#endif
 
 	return std::move(b64::encode_uri(res.get(), size));
 }

@@ -49,6 +49,11 @@ mkdir build && cd build
 cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=<install prefix> ..
 make install
 ```
+#### Homebrew
+```
+brew tap troian/tap
+brew install josepp
+```
 
 ### TODO
 - Documentation

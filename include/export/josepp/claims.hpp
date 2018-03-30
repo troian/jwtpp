@@ -95,16 +95,15 @@ private:
 		explicit get(Json::Value *c) : claims_(c) {}
 	public:
 		std::string any(const std::string &key) {
-			std::string s = claims_->operator[](key).asString();
-			return std::move(s);
+			return claims_->operator[](key).asString();
 		}
-		std::string iss() { return std::move(any("iss")); }
-		std::string sub() { return std::move(any("sub")); }
-		std::string aud() { return std::move(any("aud")); }
-		std::string exp() { return std::move(any("exp")); }
-		std::string nbf() { return std::move(any("nbf")); }
-		std::string iat() { return std::move(any("iat")); }
-		std::string jti() { return std::move(any("jti")); }
+		std::string iss() { return any("iss"); }
+		std::string sub() { return any("sub"); }
+		std::string aud() { return any("aud"); }
+		std::string exp() { return any("exp"); }
+		std::string nbf() { return any("nbf"); }
+		std::string iat() { return any("iat"); }
+		std::string jti() { return any("jti"); }
 	private:
 		Json::Value *claims_;
 	};

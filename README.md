@@ -8,6 +8,8 @@ JSON Object Signing and Encryption library for C++
   - [jsoncpp](https://github.com/open-source-parsers/jsoncpp)
   - OpenSSL
 
+Built and tested with GCC, C++11
+
 #### Supported features:
   - Sign
   - Verify

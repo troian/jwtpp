@@ -167,7 +167,7 @@ if (WITH_TESTS)
 		${PROJECT_NAME}-static
 	)
 
-	add_test(UnitTests jwtpp_test)
+	add_test(UnitTests josepp_test)
 endif()
 
 

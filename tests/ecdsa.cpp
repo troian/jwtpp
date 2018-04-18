@@ -72,7 +72,11 @@ TEST(JosePP, sign_ecdsa256)
 		return !cl->check().iss("troian");
 	};
 
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
+    EXPECT_TRUE(jws->verify(e256_pub, vf));
+#else
 	EXPECT_TRUE(jws->verify(e256_pub, std::bind<bool>(vf, std::placeholders::_1)));
+#endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 
 	bearer = "ghdfgddf";
 	EXPECT_THROW(jws = jose::jws::parse(bearer), std::exception);

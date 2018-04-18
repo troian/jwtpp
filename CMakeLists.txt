@@ -165,10 +165,15 @@ if (WITH_TESTS)
 
 	add_executable(josepp_test ${JOSEPP_TEST_SRS})
 
+    if (WIN32)
+        set(WIN32_DEP_LIBS crypt32.lib ws2_32.lib)
+    endif (WIN32)
+    
 	target_link_libraries(
 		josepp_test
 		gtest_main
 		${PROJECT_NAME}-static
+        ${WIN32_DEP_LIBS}
 	)
 
 	add_test(UnitTests josepp_test)

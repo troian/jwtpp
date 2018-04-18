@@ -24,6 +24,7 @@
 
 #include <algorithm>
 #include <random>
+#include <functional>
 
 #include <josepp/b64.hpp>
 

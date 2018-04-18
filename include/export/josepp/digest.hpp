@@ -8,6 +8,10 @@
 #include <memory>
 #include <stdexcept>
 
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
+#define final
+#endif // defined(_MSC_VER) && (_MSC_VER < 1700)
+
 namespace jose {
 
 /**
@@ -15,7 +19,11 @@ namespace jose {
  */
 class digest final {
 public:
-	enum class type {
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
+    enum type {
+#else
+    enum class type {
+#endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 		SHA256,
 		SHA384,
 		SHA512

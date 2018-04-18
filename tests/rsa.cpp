@@ -74,9 +74,15 @@ TEST(JosePP, sign_rsa256)
 		return !cl->check().iss("troian");
 	};
 
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
+	EXPECT_TRUE(jws->verify(r256_pub, vf));
+	EXPECT_THROW(jws->verify(r384_pub, vf), std::exception);
+	EXPECT_THROW(jws->verify(r512_pub, vf), std::exception);
+#else
 	EXPECT_TRUE(jws->verify(r256_pub, std::bind<bool>(vf, std::placeholders::_1)));
 	EXPECT_THROW(jws->verify(r384_pub, std::bind<bool>(vf, std::placeholders::_1)), std::exception);
 	EXPECT_THROW(jws->verify(r512_pub, std::bind<bool>(vf, std::placeholders::_1)), std::exception);
+#endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 
 	bearer = "ghdfgddf";
 	EXPECT_THROW(jws = jose::jws::parse(bearer), std::exception);
@@ -122,9 +128,15 @@ TEST(JosePP, sign_rsa384)
 		return !cl->check().iss("troian");
 	};
 
-	EXPECT_TRUE(jws->verify(r384_pub, std::bind<bool>(vf, std::placeholders::_1)));
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
+	EXPECT_TRUE(jws->verify(r384_pub, vf));
+	EXPECT_THROW(jws->verify(r256_pub, vf), std::exception);
+	EXPECT_THROW(jws->verify(r512_pub, vf), std::exception);
+#else	
+    EXPECT_TRUE(jws->verify(r384_pub, std::bind<bool>(vf, std::placeholders::_1)));
 	EXPECT_THROW(jws->verify(r256_pub, std::bind<bool>(vf, std::placeholders::_1)), std::exception);
 	EXPECT_THROW(jws->verify(r512_pub, std::bind<bool>(vf, std::placeholders::_1)), std::exception);
+#endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 
 	bearer = "ghdfgddf";
 	EXPECT_THROW(jws = jose::jws::parse(bearer), std::exception);
@@ -170,9 +182,15 @@ TEST(JosePP, sign_rsa512)
 		return !cl->check().iss("troian");
 	};
 
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
+	EXPECT_TRUE(jws->verify(r512_pub, vf));
+	EXPECT_THROW(jws->verify(r384_pub, vf), std::exception);
+	EXPECT_THROW(jws->verify(r256_pub, vf), std::exception);
+#else
 	EXPECT_TRUE(jws->verify(r512_pub, std::bind<bool>(vf, std::placeholders::_1)));
 	EXPECT_THROW(jws->verify(r384_pub, std::bind<bool>(vf, std::placeholders::_1)), std::exception);
 	EXPECT_THROW(jws->verify(r256_pub, std::bind<bool>(vf, std::placeholders::_1)), std::exception);
+#endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 
 	bearer = "ghdfgddf";
 	EXPECT_THROW(jws = jose::jws::parse(bearer), std::exception);

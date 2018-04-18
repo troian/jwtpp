@@ -53,21 +53,25 @@ set(EXPORT_INCLUDES
 )
 
 set(LIB_SOURCES
-    src/tools.cpp
+   	src/b64.cpp
     src/claims.cpp
     src/crypto.cpp
-    src/hmac.cpp
-    src/rsa.cpp
-    src/jws.cpp
-   	src/b64.cpp
-    src/header.cpp
-    src/ecdsa.cpp
     src/digest.cpp
+    src/ecdsa.cpp
+    src/header.cpp
+    src/hmac.cpp
+    src/jws.cpp
+    src/rsa.cpp
+    src/tools.cpp
 
+    ${EXPORT_INCLUDES}/josepp/b64.hpp
     ${EXPORT_INCLUDES}/josepp/claims.hpp
-    ${EXPORT_INCLUDES}/josepp/header.hpp
     ${EXPORT_INCLUDES}/josepp/crypto.hpp
+    ${EXPORT_INCLUDES}/josepp/digest.hpp
+    ${EXPORT_INCLUDES}/josepp/header.hpp
+    ${EXPORT_INCLUDES}/josepp/jws.hpp
     ${EXPORT_INCLUDES}/josepp/tools.hpp
+    ${EXPORT_INCLUDES}/josepp/types.hpp
 )
 
 add_library(${PROJECT_NAME}-static STATIC ${LIB_SOURCES})
@@ -152,9 +156,9 @@ if (WITH_TESTS)
 	include_directories(${PROJECT_SOURCE_DIR}/gtest/googletest/include)
 
 	set(JOSEPP_TEST_SRS
-	    tests/ecdsa.cpp
 	    tests/b64.cpp
 	    tests/claims.cpp
+	    tests/ecdsa.cpp
 	    tests/hmac.cpp
 	    tests/rsa.cpp
 	)

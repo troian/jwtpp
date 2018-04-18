@@ -22,9 +22,11 @@ set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "Installation direc
 set(INSTALL_INC_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH "Installation directory for headers")
 set(INSTALL_PKGCONFIG_DIR "${CMAKE_INSTALL_PREFIX}/share/pkgconfig" CACHE PATH "Installation directory for pkgconfig (.pc) files")
 
-find_package(PkgConfig REQUIRED)
 find_package(OpenSSL REQUIRED)
-pkg_check_modules(JsonCPP REQUIRED jsoncpp)
+if (NOT WIN32)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(JsonCPP REQUIRED jsoncpp)
+endif (NOT WIN32)
 
 include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
 include_directories(SYSTEM ${JsonCPP_INCLUDE_DIRS})
@@ -41,7 +43,9 @@ check_include_file_cxx(stdexcept HAVE_STDEXCEPT)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
+if (NOT MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
+endif (NOT MSVC)
 #add_compile_options("-DOPENSSL_NO_DEPRECATED")
 
 set(EXPORT_INCLUDES

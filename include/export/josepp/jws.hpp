@@ -36,11 +36,19 @@ namespace jose {
 /**
  * \brief
  */
-using sp_jws = typename std::shared_ptr<class jws>;
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
+    typedef std::shared_ptr<class jws> sp_jws;
+#else
+    using sp_jws = typename std::shared_ptr<class jws>;
+#endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 
 class jws final {
 public:
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
+    typedef std::function<bool (sp_claims cl)> verify_cb;
+#else
 	using verify_cb = typename std::function<bool (sp_claims cl)>;
+#endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 
 private:
 	/**

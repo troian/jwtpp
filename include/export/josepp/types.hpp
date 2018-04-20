@@ -24,7 +24,11 @@
 
 namespace jose {
 
-enum class alg {
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
+    enum alg {
+#else
+    enum class alg {
+#endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 	NONE = 0,
 	HS256,
 	HS384,

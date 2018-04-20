@@ -40,14 +40,21 @@
 
 namespace jose {
 
-using sp_crypto = typename std::shared_ptr<class crypto>;
-using sp_hmac   = typename std::shared_ptr<class hmac>;
-using sp_rsa    = typename std::shared_ptr<class rsa>;
-using sp_ecdsa  = typename std::shared_ptr<class ecdsa>;
-
-using sp_rsa_key = typename std::shared_ptr<RSA>;
-
-using sp_ecdsa_key = typename std::shared_ptr<EC_KEY>;
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
+    typedef std::shared_ptr<class crypto>   sp_crypto;
+    typedef std::shared_ptr<class hmac>     sp_hmac;
+    typedef std::shared_ptr<class rsa>      sp_rsa;
+    typedef std::shared_ptr<class ecdsa>    sp_ecdsa;
+    typedef std::shared_ptr<RSA>            sp_rsa_key;
+    typedef std::shared_ptr<EC_KEY>         sp_ecdsa_key;
+#else
+    using sp_crypto = typename std::shared_ptr<class crypto>;
+    using sp_hmac   = typename std::shared_ptr<class hmac>;
+    using sp_rsa    = typename std::shared_ptr<class rsa>;
+    using sp_ecdsa  = typename std::shared_ptr<class ecdsa>;
+    using sp_rsa_key = typename std::shared_ptr<RSA>;
+    using sp_ecdsa_key = typename std::shared_ptr<EC_KEY>;
+#endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 
 class crypto {
 public:
@@ -119,11 +126,13 @@ public:
 	virtual std::string sign(const std::string &data);
 	virtual bool verify(const std::string &data, const std::string &sig);
 
+#if !(defined(_MSC_VER) && (_MSC_VER < 1700))
 public:
 	template <typename... _Args>
 	static sp_hmac make_shared(_Args&&... __args) {
 		return std::make_shared<class hmac>(__args...);
 	}
+#endif // !(defined(_MSC_VER) && (_MSC_VER < 1700))
 
 private:
 	std::string secret_;
@@ -139,10 +148,13 @@ public:
 	virtual bool verify(const std::string &data, const std::string &sig);
 
 public:
+
+#if !(defined(_MSC_VER) && (_MSC_VER < 1700))
 	template <typename... _Args>
 	static sp_rsa make_shared(_Args&&... __args) {
 		return std::make_shared<class rsa>(__args...);
 	}
+#endif // !(defined(_MSC_VER) && (_MSC_VER < 1700))
 
 	static sp_rsa_key gen(int size) {
 		// keys less than 1024 bits are insecure
@@ -171,10 +183,13 @@ public:
 	virtual bool verify(const std::string &data, const std::string &sig);
 
 public:
+
+#if !(defined(_MSC_VER) && (_MSC_VER < 1700))
 	template <typename... _Args>
 	static sp_ecdsa make_shared(_Args&&... __args) {
 		return std::make_shared<class ecdsa>(__args...);
 	}
+#endif // !(defined(_MSC_VER) && (_MSC_VER < 1700))
 
 	static sp_ecdsa_key gen(int nid) {
 		sp_ecdsa_key key = std::shared_ptr<EC_KEY>(EC_KEY_new(), ::EC_KEY_free);

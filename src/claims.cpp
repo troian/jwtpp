@@ -44,7 +44,16 @@ claims::claims() :
 {}
 
 claims::claims(const std::string &d, bool b64) :
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
+      claims_()
+	, set_(&claims_)
+	, get_(&claims_)
+	, has_(&claims_)
+	, del_(&claims_)
+	, check_(&claims_)
+#else
 	claims()
+#endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 {
 	Json::Reader reader;
 

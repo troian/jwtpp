@@ -29,9 +29,15 @@
 
 namespace jose {
 
-using sp_claims = std::shared_ptr<class claims>;
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
+    #define final
 
-using up_claims = std::unique_ptr<class claims>;
+    typedef std::shared_ptr<class claims> sp_claims;
+    typedef std::unique_ptr<class claims> up_claims;
+#else
+    using sp_claims = std::shared_ptr<class claims>;
+    using up_claims = std::unique_ptr<class claims>;
+#endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 
 /**
  * \brief
@@ -178,11 +184,13 @@ public:
 
 	std::string b64();
 
+#if !(defined(_MSC_VER) && (_MSC_VER < 1700))
 public:
 	template <typename... _Args>
 	static sp_claims make_shared(_Args&&... __args) {
 		return std::make_shared<class claims>(__args...);
 	}
+#endif // !(defined(_MSC_VER) && (_MSC_VER < 1700))
 
 private:
 	Json::Value claims_;

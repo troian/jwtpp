@@ -25,6 +25,11 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <cstdint>
+
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
+    #define final
+#endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 
 namespace jose {
 

@@ -64,7 +64,11 @@ TEST(JosePP, sign_verify_hmac256)
 		return cl->check().iss("troian");
 	};
 
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
+    EXPECT_TRUE(jws->verify(h256, vf));
+#else
 	EXPECT_TRUE(jws->verify(h256, std::bind<bool>(vf, std::placeholders::_1)));
+#endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 
 	EXPECT_THROW(jws->verify(h384), std::exception);
 	EXPECT_THROW(jws->verify(h512), std::exception);
@@ -101,7 +105,11 @@ TEST(JosePP, sign_verify_hmac384)
 		return cl->check().iss("troian");
 	};
 
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
+    EXPECT_TRUE(jws->verify(h384, vf));
+#else
 	EXPECT_TRUE(jws->verify(h384, std::bind<bool>(vf, std::placeholders::_1)));
+#endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 
 	EXPECT_THROW(jws->verify(h256), std::exception);
 	EXPECT_THROW(jws->verify(h512), std::exception);
@@ -138,7 +146,11 @@ TEST(JosePP, sign_verify_hmac512)
 		return cl->check().iss("troian");
 	};
 
-	EXPECT_TRUE(jws->verify(h512, std::bind<bool>(vf, std::placeholders::_1)));
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
+    EXPECT_TRUE(jws->verify(h512, vf));
+#else
+    EXPECT_TRUE(jws->verify(h512, std::bind<bool>(vf, std::placeholders::_1)));
+#endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 
 	EXPECT_THROW(jws->verify(h384), std::exception);
 	EXPECT_THROW(jws->verify(h256), std::exception);

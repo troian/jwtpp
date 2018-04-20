@@ -22,9 +22,11 @@ set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "Installation direc
 set(INSTALL_INC_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH "Installation directory for headers")
 set(INSTALL_PKGCONFIG_DIR "${CMAKE_INSTALL_PREFIX}/share/pkgconfig" CACHE PATH "Installation directory for pkgconfig (.pc) files")
 
-find_package(PkgConfig REQUIRED)
 find_package(OpenSSL REQUIRED)
-pkg_check_modules(JsonCPP REQUIRED jsoncpp)
+if (NOT WIN32)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(JsonCPP REQUIRED jsoncpp)
+endif (NOT WIN32)
 
 include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
 include_directories(SYSTEM ${JsonCPP_INCLUDE_DIRS})
@@ -41,7 +43,9 @@ check_include_file_cxx(stdexcept HAVE_STDEXCEPT)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
+if (NOT MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
+endif (NOT MSVC)
 #add_compile_options("-DOPENSSL_NO_DEPRECATED")
 
 set(EXPORT_INCLUDES
@@ -49,21 +53,25 @@ set(EXPORT_INCLUDES
 )
 
 set(LIB_SOURCES
-    src/tools.cpp
+   	src/b64.cpp
     src/claims.cpp
     src/crypto.cpp
-    src/hmac.cpp
-    src/rsa.cpp
-    src/jws.cpp
-   	src/b64.cpp
-    src/header.cpp
-    src/ecdsa.cpp
     src/digest.cpp
+    src/ecdsa.cpp
+    src/header.cpp
+    src/hmac.cpp
+    src/jws.cpp
+    src/rsa.cpp
+    src/tools.cpp
 
+    ${EXPORT_INCLUDES}/josepp/b64.hpp
     ${EXPORT_INCLUDES}/josepp/claims.hpp
-    ${EXPORT_INCLUDES}/josepp/header.hpp
     ${EXPORT_INCLUDES}/josepp/crypto.hpp
+    ${EXPORT_INCLUDES}/josepp/digest.hpp
+    ${EXPORT_INCLUDES}/josepp/header.hpp
+    ${EXPORT_INCLUDES}/josepp/jws.hpp
     ${EXPORT_INCLUDES}/josepp/tools.hpp
+    ${EXPORT_INCLUDES}/josepp/types.hpp
 )
 
 add_library(${PROJECT_NAME}-static STATIC ${LIB_SOURCES})
@@ -148,22 +156,27 @@ if (WITH_TESTS)
 	include_directories(${PROJECT_SOURCE_DIR}/gtest/googletest/include)
 
 	set(JOSEPP_TEST_SRS
-	    tests/ecdsa.cpp
 	    tests/b64.cpp
 	    tests/claims.cpp
+	    tests/ecdsa.cpp
 	    tests/hmac.cpp
 	    tests/rsa.cpp
 	)
 
 	add_executable(josepp_test ${JOSEPP_TEST_SRS})
 
+    if (WIN32)
+        set(WIN32_DEP_LIBS crypt32.lib ws2_32.lib)
+    endif (WIN32)
+    
 	target_link_libraries(
 		josepp_test
 		gtest_main
 		${PROJECT_NAME}-static
+        ${WIN32_DEP_LIBS}
 	)
 
-	add_test(UnitTests jwtpp_test)
+	add_test(UnitTests josepp_test)
 endif()
 
 

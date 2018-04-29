@@ -30,16 +30,11 @@ namespace jose {
 
 rsa::rsa(jose::alg alg, sp_rsa_key key) :
 	  crypto(alg)
-    , r_(key)
+	, r_(key)
 {
 	if (alg != jose::alg::RS256 && alg != jose::alg::RS384 && alg != jose::alg::RS512) {
 		throw std::invalid_argument("Invalid algorithm");
 	}
-}
-
-rsa::~rsa()
-{
-
 }
 
 std::string rsa::sign(const std::string &data)

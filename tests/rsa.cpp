@@ -201,3 +201,16 @@ TEST(JosePP, sign_rsa512)
 	bearer = "Bearer bla.bla.bla";
 	EXPECT_THROW(jws = jose::jws::parse(bearer), std::exception);
 }
+
+TEST(JosePP, load_rsa_from_file)
+{
+	jose::sp_rsa_key key;
+
+	EXPECT_NO_THROW(key = jose::rsa::load_from_file("./private.pem", [](jose::secure_string &pass, int rwflag) {
+		pass.assign("12345");
+	}));
+
+	EXPECT_THROW(key = jose::rsa::load_from_file("./private.pem", [](jose::secure_string &pass, int rwflag) {
+		pass.assign("123456");
+	}), std::exception);
+}

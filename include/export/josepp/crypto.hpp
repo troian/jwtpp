@@ -34,9 +34,12 @@
 #include <string>
 #include <memory>
 #include <sstream>
+#include <cstdio>
+#include <iostream>
 
 #include <josepp/types.hpp>
 #include <josepp/digest.hpp>
+#include <josepp/string.hh>
 
 namespace jose {
 
@@ -48,11 +51,11 @@ namespace jose {
     typedef std::shared_ptr<RSA>            sp_rsa_key;
     typedef std::shared_ptr<EC_KEY>         sp_ecdsa_key;
 #else
-    using sp_crypto = typename std::shared_ptr<class crypto>;
-    using sp_hmac   = typename std::shared_ptr<class hmac>;
-    using sp_rsa    = typename std::shared_ptr<class rsa>;
-    using sp_ecdsa  = typename std::shared_ptr<class ecdsa>;
-    using sp_rsa_key = typename std::shared_ptr<RSA>;
+    using sp_crypto    = typename std::shared_ptr<class crypto>;
+    using sp_hmac      = typename std::shared_ptr<class hmac>;
+    using sp_rsa       = typename std::shared_ptr<class rsa>;
+    using sp_ecdsa     = typename std::shared_ptr<class ecdsa>;
+    using sp_rsa_key   = typename std::shared_ptr<RSA>;
     using sp_ecdsa_key = typename std::shared_ptr<EC_KEY>;
 #endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 
@@ -140,9 +143,13 @@ private:
 
 class rsa : public crypto {
 public:
+	using password_cb = std::function<void(secure_string &pass, int rwflag)>;
+
+public:
 	explicit rsa(jose::alg alg, sp_rsa_key key);
 
-	virtual ~rsa();
+	virtual ~rsa() = default;
+
 public:
 	virtual std::string sign(const std::string &data);
 	virtual bool verify(const std::string &data, const std::string &sig);
@@ -169,6 +176,43 @@ public:
 
 		return key;
 	}
+
+	static sp_rsa_key load_from_file(const std::string &path, password_cb on_password) {
+		RSA *r;
+
+		auto pass_loader = [](char *buf, int size, int rwflag, void *u) -> int {
+			auto cb = reinterpret_cast<password_cb *>(u);
+
+			if ((*cb) == nullptr) {
+				return 0;
+			}
+
+			secure_string pass;
+			int pass_size = 0;
+			try {
+				(*cb)(pass, rwflag);
+				pass_size = pass.copy(buf, secure_string::size_type(size), 0);
+			} catch (...) {
+				pass_size = 0;
+			}
+
+			std::cout << "pass: " << pass;
+			return pass_size;
+		};
+
+		auto f = std::fopen(path.c_str(), "r");
+		if (!f) {
+			throw std::runtime_error("cannot open file");
+		}
+
+		r = PEM_read_RSAPrivateKey(f, NULL, pass_loader, &on_password);
+		if (r == nullptr) {
+			throw std::runtime_error("read rsa key");
+		}
+
+		return std::shared_ptr<RSA>(r, ::RSA_free);
+	}
+
 private:
 	sp_rsa_key r_;
 };

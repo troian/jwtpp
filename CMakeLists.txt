@@ -24,8 +24,8 @@ set(INSTALL_PKGCONFIG_DIR "${CMAKE_INSTALL_PREFIX}/share/pkgconfig" CACHE PATH "
 
 find_package(OpenSSL REQUIRED)
 if (NOT WIN32)
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(JsonCPP REQUIRED jsoncpp)
+	find_package(PkgConfig REQUIRED)
+	pkg_check_modules(JsonCPP REQUIRED jsoncpp)
 endif (NOT WIN32)
 
 include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
@@ -40,11 +40,11 @@ check_include_file_cxx(mutex HAVE_MUTEX)
 check_include_file_cxx(exception HAVE_EXCEPTION)
 check_include_file_cxx(stdexcept HAVE_STDEXCEPT)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (NOT MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
 endif (NOT MSVC)
 #add_compile_options("-DOPENSSL_NO_DEPRECATED")
 
@@ -53,25 +53,26 @@ set(EXPORT_INCLUDES
 )
 
 set(LIB_SOURCES
-   	src/b64.cpp
-    src/claims.cpp
-    src/crypto.cpp
-    src/digest.cpp
-    src/ecdsa.cpp
-    src/header.cpp
-    src/hmac.cpp
-    src/jws.cpp
-    src/rsa.cpp
-    src/tools.cpp
+	src/b64.cpp
+	src/claims.cpp
+	src/crypto.cpp
+	src/digest.cpp
+	src/ecdsa.cpp
+	src/header.cpp
+	src/hmac.cpp
+	src/jws.cpp
+	src/rsa.cpp
+	src/tools.cpp
 
-    ${EXPORT_INCLUDES}/josepp/b64.hpp
-    ${EXPORT_INCLUDES}/josepp/claims.hpp
-    ${EXPORT_INCLUDES}/josepp/crypto.hpp
-    ${EXPORT_INCLUDES}/josepp/digest.hpp
-    ${EXPORT_INCLUDES}/josepp/header.hpp
-    ${EXPORT_INCLUDES}/josepp/jws.hpp
-    ${EXPORT_INCLUDES}/josepp/tools.hpp
-    ${EXPORT_INCLUDES}/josepp/types.hpp
+	${EXPORT_INCLUDES}/josepp/b64.hpp
+	${EXPORT_INCLUDES}/josepp/claims.hpp
+	${EXPORT_INCLUDES}/josepp/crypto.hpp
+	${EXPORT_INCLUDES}/josepp/digest.hpp
+	${EXPORT_INCLUDES}/josepp/header.hpp
+	${EXPORT_INCLUDES}/josepp/jws.hpp
+	${EXPORT_INCLUDES}/josepp/tools.hpp
+	${EXPORT_INCLUDES}/josepp/types.hpp
+	${EXPORT_INCLUDES}/josepp/string.hh
 )
 
 add_library(${PROJECT_NAME}-static STATIC ${LIB_SOURCES})
@@ -94,11 +95,11 @@ if (WITH_INSTALL)
 	install(
 		TARGETS
 		${PROJECT_NAME}-static
-			ARCHIVE
-				DESTINATION
-					lib
+		ARCHIVE
+		DESTINATION
+		lib
 	)
-endif()
+endif ()
 
 if (BUILD_SHARED_LIBS)
 	add_library(${PROJECT_NAME}-shared SHARED ${LIB_SOURCES})
@@ -120,13 +121,13 @@ if (BUILD_SHARED_LIBS)
 	if (WITH_INSTALL)
 		install(
 			TARGETS
-				${PROJECT_NAME}-shared
+			${PROJECT_NAME}-shared
 			LIBRARY
-				DESTINATION
-					lib
+			DESTINATION
+			lib
 		)
 	endif ()
-endif()
+endif ()
 
 if (WITH_INSTALL)
 	install(
@@ -147,36 +148,37 @@ if (WITH_INSTALL)
 	)
 
 	install(FILES ${JOSEPP_PC} DESTINATION "${INSTALL_PKGCONFIG_DIR}")
-endif()
+endif ()
 
 if (WITH_TESTS)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/tests/private.pem ${CMAKE_CURRENT_BINARY_DIR}/)
 	enable_testing()
 	add_subdirectory(gtest EXCLUDE_FROM_ALL)
 
 	include_directories(${PROJECT_SOURCE_DIR}/gtest/googletest/include)
 
 	set(JOSEPP_TEST_SRS
-	    tests/b64.cpp
-	    tests/claims.cpp
-	    tests/ecdsa.cpp
-	    tests/hmac.cpp
-	    tests/rsa.cpp
-	)
+		tests/b64.cpp
+		tests/claims.cpp
+		tests/ecdsa.cpp
+		tests/hmac.cpp
+		tests/rsa.cpp
+		)
 
 	add_executable(josepp_test ${JOSEPP_TEST_SRS})
 
-    if (WIN32)
-        set(WIN32_DEP_LIBS crypt32.lib ws2_32.lib)
-    endif (WIN32)
-    
+	if (WIN32)
+		set(WIN32_DEP_LIBS crypt32.lib ws2_32.lib)
+	endif (WIN32)
+
 	target_link_libraries(
 		josepp_test
 		gtest_main
 		${PROJECT_NAME}-static
-        ${WIN32_DEP_LIBS}
+		${WIN32_DEP_LIBS}
 	)
 
 	add_test(UnitTests josepp_test)
-endif()
+endif ()
 
 

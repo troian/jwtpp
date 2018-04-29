@@ -210,7 +210,5 @@ TEST(JosePP, load_rsa_from_file)
 		pass.assign("12345");
 	}));
 
-	EXPECT_THROW(key = jose::rsa::load_from_file("./private.pem", [](jose::secure_string &pass, int rwflag) {
-		pass.assign("123456");
-	}), std::exception);
+	EXPECT_THROW(key = jose::rsa::load_from_file("./private.pem"), std::exception);
 }

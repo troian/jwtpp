@@ -61,6 +61,20 @@ namespace jose {
 
 class crypto {
 public:
+	using password_cb = std::function<void(secure_string &pass, int rwflag)>;
+
+protected:
+	struct on_password_wrap {
+		explicit on_password_wrap(password_cb cb) :
+			  cb(cb)
+			, required(false)
+		{}
+
+		password_cb cb;
+		bool        required;
+	};
+
+public:
 	/**
 	 * \brief
 	 *
@@ -143,9 +157,6 @@ private:
 
 class rsa : public crypto {
 public:
-	using password_cb = std::function<void(secure_string &pass, int rwflag)>;
-
-public:
 	explicit rsa(jose::alg alg, sp_rsa_key key);
 
 	virtual ~rsa() = default;
@@ -177,20 +188,21 @@ public:
 		return key;
 	}
 
-	static sp_rsa_key load_from_file(const std::string &path, password_cb on_password) {
+	static sp_rsa_key load_from_file(const std::string &path, password_cb on_password = nullptr) {
 		RSA *r;
 
 		auto pass_loader = [](char *buf, int size, int rwflag, void *u) -> int {
-			auto cb = reinterpret_cast<password_cb *>(u);
+			auto wrap = reinterpret_cast<on_password_wrap *>(u);
 
-			if ((*cb) == nullptr) {
+			if (wrap->cb == nullptr) {
+				wrap->required = true;
 				return 0;
 			}
 
 			secure_string pass;
 			int pass_size = 0;
 			try {
-				(*cb)(pass, rwflag);
+				wrap->cb(pass, rwflag);
 				pass_size = pass.copy(buf, secure_string::size_type(size), 0);
 			} catch (...) {
 				pass_size = 0;
@@ -205,8 +217,12 @@ public:
 			throw std::runtime_error("cannot open file");
 		}
 
-		r = PEM_read_RSAPrivateKey(f, NULL, pass_loader, &on_password);
-		if (r == nullptr) {
+		on_password_wrap wrap(on_password);
+
+		r = PEM_read_RSAPrivateKey(f, nullptr, pass_loader, &wrap);
+		if (wrap.required) {
+			throw std::runtime_error("password required");
+		} else if (r == nullptr) {
 			throw std::runtime_error("read rsa key");
 		}
 

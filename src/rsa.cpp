@@ -56,7 +56,7 @@ std::string rsa::sign(const std::string &data)
 		throw std::runtime_error("Couldn't sign RSA");
 	}
 
-	return std::move(b64::encode_uri(sig.get(), sig_len));
+	return b64::encode_uri(sig.get(), sig_len);
 }
 
 bool rsa::verify(const std::string &data, const std::string &sig)

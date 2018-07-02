@@ -53,7 +53,7 @@ std::string ecdsa::sign(const std::string &data)
 		throw std::runtime_error("Couldn't sign ECDSA");
 	}
 
-	return std::move(b64::encode_uri(sig.get(), sig_len));
+	return b64::encode_uri(sig.get(), sig_len);
 }
 
 bool ecdsa::verify(const std::string &data, const std::string &sig)

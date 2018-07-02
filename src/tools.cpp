@@ -36,13 +36,13 @@ std::string marshal(const Json::Value &json)
 	builder["commentStyle"] = "None";
 	builder["indentation"] = ""; // Write in one line
 	std::string out = Json::writeString(builder, json);
-	return std::move(out);
+	return out;
 }
 
 std::string marshal_b64(const Json::Value &json)
 {
 	std::string s = marshal(json);
-	return std::move(b64::encode_uri(s));
+	return b64::encode_uri(s);
 }
 
 Json::Value unmarshal(const std::string &in)

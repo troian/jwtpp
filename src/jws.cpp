@@ -121,7 +121,7 @@ sp_jws jws::parse(const std::string &full_bearer)
 
 std::string jws::sign(const std::string &data, sp_crypto c)
 {
-   	return std::move(c->sign(data));
+	return c->sign(data);
 }
 
 std::string jws::sign_claims(class claims &cl, sp_crypto c) {
@@ -137,14 +137,14 @@ std::string jws::sign_claims(class claims &cl, sp_crypto c) {
 	out += ".";
 	out += sig;
 
-	return std::move(out);
+	return out;
 }
 
 std::string jws::sign_bearer(class claims &cl, sp_crypto c)
 {
 	std::string bearer("Bearer ");
 	bearer += jws::sign_claims(cl, c);
-	return std::move(bearer);
+	return bearer;
 }
 
 std::vector<std::string> jws::tokenize(const std::string &text, char sep)
@@ -160,7 +160,7 @@ std::vector<std::string> jws::tokenize(const std::string &text, char sep)
 
 	tokens.push_back(text.substr(start));
 
-	return std::move(tokens);
+	return tokens;
 }
 
 } // namespace jose

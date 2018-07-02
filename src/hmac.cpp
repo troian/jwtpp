@@ -89,7 +89,7 @@ std::string hmac::sign(const std::string &data)
 	HMAC_CTX_free(hmac);
 #endif
 
-	return std::move(b64::encode_uri(res.get(), size));
+	return b64::encode_uri(res.get(), size);
 }
 
 bool hmac::verify(const std::string &data, const std::string &sig)

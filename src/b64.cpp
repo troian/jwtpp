@@ -113,22 +113,22 @@ std::string b64::encode(const uint8_t * const stream, size_t in_len)
 		}
 	}
 
-	return std::move(out);
+	return out;
 }
 
 std::string b64::encode(const std::vector<uint8_t> &stream)
 {
-	return std::move(encode(stream.data(), stream.size()));
+	return encode(stream.data(), stream.size());
 }
 
 std::string b64::encode(const std::vector<uint8_t> * const stream)
 {
-	return std::move(encode(stream->data(), stream->size()));
+	return encode(stream->data(), stream->size());
 }
 
 std::string b64::encode(const std::string &stream)
 {
-	return std::move(encode(reinterpret_cast<const uint8_t *>(stream.c_str()), stream.size()));
+	return encode(reinterpret_cast<const uint8_t *>(stream.c_str()), stream.size());
 }
 
 std::string b64::encode_uri(const uint8_t * const stream, size_t in_len)
@@ -136,22 +136,22 @@ std::string b64::encode_uri(const uint8_t * const stream, size_t in_len)
 	std::string out = encode(stream, in_len);
 	uri_enc(const_cast<char *>(out.data()), out.length());
 
-	return std::move(out);
+	return out;
 }
 
 std::string b64::encode_uri(const std::string &stream)
 {
-	return std::move(encode_uri(reinterpret_cast<const uint8_t *>(stream.data()), stream.length()));
+	return encode_uri(reinterpret_cast<const uint8_t *>(stream.data()), stream.length());
 }
 
 std::string b64::encode_uri(const std::vector<uint8_t> &stream)
 {
-	return std::move(encode_uri(stream.data(), stream.size()));
+	return encode_uri(stream.data(), stream.size());
 }
 
 std::string b64::encode_uri(const std::vector<uint8_t> * const stream)
 {
-	return std::move(encode_uri(stream->data(), stream->size()));
+	return encode_uri(stream->data(), stream->size());
 }
 
 std::vector<uint8_t> b64::decode(const char *in, size_t in_size)
@@ -201,13 +201,13 @@ std::vector<uint8_t> b64::decode(const char *in, size_t in_size)
 		}
 	}
 
-	return std::move(ret);
+	return ret;
 }
 
 std::string b64::decode(const std::string &in)
 {
 	std::vector<uint8_t> tmp = decode(in.data(), in.length());
-	return std::move(std::string(tmp.data(), tmp.data() + tmp.size()));
+	return std::string(tmp.data(), tmp.data() + tmp.size());
 }
 
 std::string b64::decode_uri(const std::string &in)
@@ -216,7 +216,7 @@ std::string b64::decode_uri(const std::string &in)
 	uri_dec(const_cast<char *>(tmp.data()), tmp.length());
 
 	std::vector<uint8_t> tmpd = decode(tmp.data(), tmp.length());
-	return std::move(std::string(tmpd.data(), tmpd.data() + tmpd.size()));
+	return std::string(tmpd.data(), tmpd.data() + tmpd.size());
 }
 
 std::vector<uint8_t> b64::decode_uri(const char *in, size_t in_size)
@@ -224,7 +224,7 @@ std::vector<uint8_t> b64::decode_uri(const char *in, size_t in_size)
 	std::string tmp(in, in_size);
 	uri_dec(const_cast<char *>(tmp.data()), tmp.length());
 
-	return std::move(decode(tmp.data(), tmp.length()));
+	return decode(tmp.data(), tmp.length());
 }
 
 } // namespace jose

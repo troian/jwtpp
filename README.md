@@ -3,6 +3,7 @@ JSON Object Signing and Encryption library for C++
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/da9665fd01ba4c759cef755d1ff03d2c)](https://www.codacy.com/app/troian/josepp?utm_source=github.com&utm_medium=referral&utm_content=troian/josepp&utm_campaign=badger)
 [![Build Status](https://travis-ci.org/troian/josepp.svg?branch=master)](https://travis-ci.org/troian/josepp)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftroian%2Fjosepp.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Ftroian%2Fjosepp?ref=badge_shield)
 
 #### Dependencies:
   - [jsoncpp](https://github.com/open-source-parsers/jsoncpp)
@@ -66,3 +67,7 @@ brew install josepp
 
 ## How to contribute
 Just do it! :)
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftroian%2Fjosepp.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Ftroian%2Fjosepp?ref=badge_large)

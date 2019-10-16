@@ -29,40 +29,76 @@ namespace jose {
 
 ecdsa::ecdsa(jose::alg alg, sp_ecdsa_key key) :
 	  crypto(alg)
-	, e_(key)
+	, _e(key)
 {
 	if (alg != jose::alg::ES256 && alg != jose::alg::ES384 && alg != jose::alg::ES512) {
 		throw std::invalid_argument("Invalid algorithm");
 	}
 }
 
-ecdsa::~ecdsa()
-{
+std::string ecdsa::sign(const std::string &data) {
+	auto sig = std::shared_ptr<uint8_t>(new uint8_t[ECDSA_size(_e.get())], std::default_delete<uint8_t[]>());
 
-}
-
-std::string ecdsa::sign(const std::string &data)
-{
-	std::shared_ptr<uint8_t> sig = std::shared_ptr<uint8_t>(new uint8_t[ECDSA_size(e_.get())], std::default_delete<uint8_t[]>());
-
-	digest d(hash_type_, reinterpret_cast<const uint8_t *>(data.data()), data.length());
+	digest d(_hash_type, reinterpret_cast<const uint8_t *>(data.data()), data.length());
 
 	uint32_t sig_len;
 
-	if (ECDSA_sign(0, d.data(), static_cast<int>(d.size()), sig.get(), &sig_len, e_.get()) != 1) {
+	if (ECDSA_sign(0, d.data(), static_cast<int>(d.size()), sig.get(), &sig_len, _e.get()) != 1) {
 		throw std::runtime_error("Couldn't sign ECDSA");
 	}
 
 	return b64::encode_uri(sig.get(), sig_len);
 }
 
-bool ecdsa::verify(const std::string &data, const std::string &sig)
-{
-	digest d(hash_type_, reinterpret_cast<const uint8_t *>(data.data()), data.length());
+bool ecdsa::verify(const std::string &data, const std::string &sig) {
+	digest d(_hash_type, reinterpret_cast<const uint8_t *>(data.data()), data.length());
 
-	std::vector<uint8_t> s = b64::decode_uri(sig.data(), sig.length());
+	auto s = b64::decode_uri(sig.data(), sig.length());
 
-	return ECDSA_verify(0, d.data(), static_cast<int>(d.size()), reinterpret_cast<const uint8_t *>(s.data()), static_cast<int>(s.size()), e_.get()) == 1;
+	return ECDSA_verify(
+		0
+		, d.data()
+		, static_cast<int>(d.size())
+		, reinterpret_cast<const uint8_t *>(s.data())
+		, static_cast<int>(s.size())
+		, _e.get()) == 1;
+}
+
+sp_ecdsa_key ecdsa::gen(int nid) {
+	sp_ecdsa_key key = std::shared_ptr<EC_KEY>(EC_KEY_new(), ::EC_KEY_free);
+	std::shared_ptr<EC_GROUP> group = std::shared_ptr<EC_GROUP>(EC_GROUP_new_by_curve_name(nid), ::EC_GROUP_free);
+	std::shared_ptr<EC_POINT> point = std::shared_ptr<EC_POINT>(EC_POINT_new(group.get()), ::EC_POINT_free);
+
+	if (EC_KEY_set_group(key.get(), group.get()) != 1) {
+		throw std::runtime_error("Couldn't set EC KEY group");
+	}
+
+	int degree = EC_GROUP_get_degree(EC_KEY_get0_group(key.get()));
+	if (degree < 160) {
+		std::stringstream str;
+		str << "Skip the curve [" << OBJ_nid2sn(nid) << "] (degree = " << degree << ")";
+		throw std::runtime_error(str.str());
+	}
+
+	if (EC_KEY_generate_key(key.get()) != 1) {
+		throw std::runtime_error("Couldn't generate EC KEY");
+	}
+
+	const BIGNUM *priv = EC_KEY_get0_private_key(key.get());
+
+	if (EC_POINT_mul(group.get(), point.get(), priv, nullptr, nullptr, nullptr) != 1) {
+		throw std::runtime_error("Couldn't generate EC PUB KEY");
+	}
+
+	if (EC_KEY_set_public_key(key.get(), point.get()) != 1) {
+		throw std::runtime_error("Couldn't set EC PUB KEY");
+	}
+
+	if (EC_KEY_check_key(key.get()) != 1) {
+		throw std::runtime_error("EC check failed");
+	}
+
+	return key;
 }
 
 } // namespace jose

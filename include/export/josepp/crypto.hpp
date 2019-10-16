@@ -37,6 +37,7 @@
 
 #include <josepp/types.hpp>
 #include <josepp/digest.hpp>
+#include <josepp/sstring.hh>
 
 namespace jose {
 
@@ -48,15 +49,29 @@ namespace jose {
     typedef std::shared_ptr<RSA>            sp_rsa_key;
     typedef std::shared_ptr<EC_KEY>         sp_ecdsa_key;
 #else
-    using sp_crypto = typename std::shared_ptr<class crypto>;
-    using sp_hmac   = typename std::shared_ptr<class hmac>;
-    using sp_rsa    = typename std::shared_ptr<class rsa>;
-    using sp_ecdsa  = typename std::shared_ptr<class ecdsa>;
-    using sp_rsa_key = typename std::shared_ptr<RSA>;
+    using sp_crypto    = typename std::shared_ptr<class crypto>;
+    using sp_hmac      = typename std::shared_ptr<class hmac>;
+    using sp_rsa       = typename std::shared_ptr<class rsa>;
+    using sp_ecdsa     = typename std::shared_ptr<class ecdsa>;
+    using sp_rsa_key   = typename std::shared_ptr<RSA>;
     using sp_ecdsa_key = typename std::shared_ptr<EC_KEY>;
 #endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 
 class crypto {
+public:
+	using password_cb = std::function<void(secure_string &pass, int rwflag)>;
+
+protected:
+	struct on_password_wrap {
+		explicit on_password_wrap(password_cb cb)
+			: cb(cb)
+			, required(false)
+		{}
+
+		password_cb cb;
+		bool        required;
+	};
+
 public:
 	/**
 	 * \brief
@@ -73,8 +88,8 @@ public:
 	 *
 	 * \return
 	 */
-	jose::alg alg() { return alg_; }
-	jose::alg alg() const { return alg_; }
+	jose::alg alg() { return _alg; }
+	jose::alg alg() const { return _alg; }
 
 	/**
 	 * \brief
@@ -112,16 +127,17 @@ protected:
 	static int hash2nid(digest::type type);
 
 protected:
-	jose::alg      alg_;
-	Json::Value    hdr_;
-	digest::type   hash_type_;
+	jose::alg      _alg;
+	Json::Value    _hdr;
+	digest::type   _hash_type;
 };
 
 class hmac : public crypto {
 public:
-	explicit hmac(jose::alg alg, const std::string &secret);
+	explicit hmac(jose::alg alg, const secure_string &secret);
 
-	virtual ~hmac();
+	virtual ~hmac() = default;
+
 public:
 	virtual std::string sign(const std::string &data);
 	virtual bool verify(const std::string &data, const std::string &sig);
@@ -135,7 +151,7 @@ public:
 #endif // !(defined(_MSC_VER) && (_MSC_VER < 1700))
 
 private:
-	std::string secret_;
+	secure_string _secret;
 };
 
 class rsa : public crypto {
@@ -143,12 +159,12 @@ public:
 	explicit rsa(jose::alg alg, sp_rsa_key key);
 
 	virtual ~rsa();
+
 public:
 	virtual std::string sign(const std::string &data);
 	virtual bool verify(const std::string &data, const std::string &sig);
 
 public:
-
 #if !(defined(_MSC_VER) && (_MSC_VER < 1700))
 	template <typename... _Args>
 	static sp_rsa make_shared(_Args&&... __args) {
@@ -156,28 +172,30 @@ public:
 	}
 #endif // !(defined(_MSC_VER) && (_MSC_VER < 1700))
 
-	static sp_rsa_key gen(int size) {
-		// keys less than 1024 bits are insecure
-		if ((size % 1024) != 0) {
-			throw std::invalid_argument("Invalid keys size");
-		}
+	static sp_rsa_key gen(int size);
 
-		sp_rsa_key key = std::shared_ptr<RSA>(RSA_new(), ::RSA_free);
-		BIGNUM *bn = BN_new();
-		BN_set_word(bn, RSA_F4);
-		RSA_generate_key_ex(key.get(), size, bn, NULL);
+	static sp_rsa_key load_from_file(const std::string &path, password_cb on_password = nullptr);
+
+	static sp_rsa_key load_from_string(const std::string &str) {
+		auto key = std::shared_ptr<RSA>(RSA_new(), ::RSA_free);
 
 		return key;
 	}
+
 private:
-	sp_rsa_key r_;
+	static int password_loader(char *buf, int size, int rwflag, void *u);
+
+private:
+	sp_rsa_key   _r;
+	unsigned int _key_size;
 };
 
 class ecdsa : public crypto {
 public:
 	explicit ecdsa(jose::alg alg, sp_ecdsa_key key);
 
-	virtual ~ecdsa();
+	virtual ~ecdsa() = default;
+
 public:
 	virtual std::string sign(const std::string &data);
 	virtual bool verify(const std::string &data, const std::string &sig);
@@ -191,43 +209,26 @@ public:
 	}
 #endif // !(defined(_MSC_VER) && (_MSC_VER < 1700))
 
-	static sp_ecdsa_key gen(int nid) {
-		sp_ecdsa_key key = std::shared_ptr<EC_KEY>(EC_KEY_new(), ::EC_KEY_free);
-		std::shared_ptr<EC_GROUP> group = std::shared_ptr<EC_GROUP>(EC_GROUP_new_by_curve_name(nid), ::EC_GROUP_free);
-		std::shared_ptr<EC_POINT> point = std::shared_ptr<EC_POINT>(EC_POINT_new(group.get()), ::EC_POINT_free);
+	static sp_ecdsa_key gen(int nid);
 
-		if (EC_KEY_set_group(key.get(), group.get()) != 1) {
-			throw std::runtime_error("Couldn't set EC KEY group");
-		}
-
-		int degree = EC_GROUP_get_degree(EC_KEY_get0_group(key.get()));
-		if (degree < 160) {
-			std::stringstream str;
-			str << "Skip the curve [" << OBJ_nid2sn(nid) << "] (degree = " << degree << ")";
-			throw std::runtime_error(str.str());
-		}
-
-		if (EC_KEY_generate_key(key.get()) != 1) {
-			throw std::runtime_error("Couldn't generate EC KEY");
-		}
-
-		const BIGNUM *priv = EC_KEY_get0_private_key(key.get());
-
-		if (EC_POINT_mul(group.get(), point.get(), priv, NULL, NULL, NULL) != 1) {
-			throw std::runtime_error("Couldn't generate EC PUB KEY");
-		}
-
-		if (EC_KEY_set_public_key(key.get(), point.get()) != 1) {
-			throw std::runtime_error("Couldn't set EC PUB KEY");
-		}
-
-		if (EC_KEY_check_key(key.get()) != 1) {
-			throw std::runtime_error("EC check failed");
-		}
-
-		return key;
-	}
 private:
-	sp_ecdsa_key e_;
+	sp_ecdsa_key _e;
 };
+
+class pss : public crypto {
+public:
+	explicit pss(jose::alg alg, sp_rsa_key key);
+
+	~pss() override = default;
+
+public:
+	std::string sign(const std::string &data) override;
+
+	bool verify(const std::string &data, const std::string &sig) override;
+
+private:
+	sp_rsa_key _r;
+	size_t     _key_size;
+};
+
 } // namespace jose

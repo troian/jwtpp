@@ -25,23 +25,21 @@
 #include <josepp/claims.hpp>
 #include <josepp/crypto.hpp>
 #include <josepp/jws.hpp>
-#include <openssl/err.h>
 
-TEST(JosePP, create_close_rsa_crypto)
-{
+TEST(JosePP, create_close_pss_crypto) {
 	jose::sp_rsa_key key;
 
 	EXPECT_NO_THROW(key = jose::rsa::gen(1024));
 
-	EXPECT_NO_THROW(std::make_shared<jose::rsa>(jose::alg::RS256, key));
-	EXPECT_NO_THROW(std::make_shared<jose::rsa>(jose::alg::RS384, key));
-	EXPECT_NO_THROW(std::make_shared<jose::rsa>(jose::alg::RS512, key));
+	EXPECT_NO_THROW(std::make_shared<jose::pss>(jose::alg::PS256, key));
+	EXPECT_NO_THROW(std::make_shared<jose::pss>(jose::alg::PS384, key));
+	EXPECT_THROW(std::make_shared<jose::pss>(jose::alg::PS512, key), std::exception);
 
-	EXPECT_THROW(std::make_shared<jose::rsa>(jose::alg::HS256, key), std::exception);
-	EXPECT_THROW(std::make_shared<jose::rsa>(jose::alg::ES384, key), std::exception);
+	EXPECT_THROW(std::make_shared<jose::pss>(jose::alg::HS256, key), std::exception);
+	EXPECT_THROW(std::make_shared<jose::pss>(jose::alg::ES384, key), std::exception);
 }
 
-TEST(JosePP, sign_verify_rsa256) {
+TEST(JosePP, sign_verify_pss256) {
 	jose::claims cl;
 
 	jose::sp_rsa_key key;
@@ -55,12 +53,12 @@ TEST(JosePP, sign_verify_rsa256) {
 
 	EXPECT_NO_THROW(key = jose::rsa::gen(1024));
 	EXPECT_NO_THROW(pubkey = jose::sp_rsa_key(RSAPublicKey_dup(key.get()), ::RSA_free));
-	EXPECT_NO_THROW(r256 = std::make_shared<jose::rsa>(jose::alg::RS256, key));
-	EXPECT_NO_THROW(r256_pub = std::make_shared<jose::rsa>(jose::alg::RS256, pubkey));
-	EXPECT_NO_THROW(r384 = std::make_shared<jose::rsa>(jose::alg::RS384, key));
-	EXPECT_NO_THROW(r384_pub = std::make_shared<jose::rsa>(jose::alg::RS384, pubkey));
-	EXPECT_NO_THROW(r512 = std::make_shared<jose::rsa>(jose::alg::RS512, key));
-	EXPECT_NO_THROW(r512_pub = std::make_shared<jose::rsa>(jose::alg::RS512, pubkey));
+	EXPECT_NO_THROW(r256 = std::make_shared<jose::pss>(jose::alg::PS256, key));
+	EXPECT_NO_THROW(r256_pub = std::make_shared<jose::pss>(jose::alg::PS256, pubkey));
+	EXPECT_NO_THROW(r384 = std::make_shared<jose::pss>(jose::alg::PS384, key));
+	EXPECT_NO_THROW(r384_pub = std::make_shared<jose::pss>(jose::alg::PS384, pubkey));
+	EXPECT_THROW(r512 = std::make_shared<jose::pss>(jose::alg::PS512, key), std::exception);
+	EXPECT_THROW(r512_pub = std::make_shared<jose::pss>(jose::alg::PS512, pubkey), std::exception);
 
 	std::string bearer = jose::jws::sign_bearer(cl, r256);
 
@@ -68,6 +66,7 @@ TEST(JosePP, sign_verify_rsa256) {
 
 	EXPECT_NO_THROW(jws = jose::jws::parse(bearer));
 
+	EXPECT_TRUE(jws->verify(r256));
 	EXPECT_TRUE(jws->verify(r256_pub));
 
 	auto vf = [](jose::sp_claims cl) {
@@ -88,7 +87,7 @@ TEST(JosePP, sign_verify_rsa256) {
 	EXPECT_THROW(jws = jose::jws::parse(bearer), std::exception);
 }
 
-TEST(JosePP, sign_verify_rsa384) {
+TEST(JosePP, sign_verify_pss384) {
 	jose::claims cl;
 
 	jose::sp_rsa_key key;
@@ -102,12 +101,12 @@ TEST(JosePP, sign_verify_rsa384) {
 
 	EXPECT_NO_THROW(key = jose::rsa::gen(1024));
 	EXPECT_NO_THROW(pubkey = jose::sp_rsa_key(RSAPublicKey_dup(key.get()), ::RSA_free));
-	EXPECT_NO_THROW(r256 = std::make_shared<jose::rsa>(jose::alg::RS256, key));
-	EXPECT_NO_THROW(r256_pub = std::make_shared<jose::rsa>(jose::alg::RS256, pubkey));
-	EXPECT_NO_THROW(r384 = std::make_shared<jose::rsa>(jose::alg::RS384, key));
-	EXPECT_NO_THROW(r384_pub = std::make_shared<jose::rsa>(jose::alg::RS384, pubkey));
-	EXPECT_NO_THROW(r512 = std::make_shared<jose::rsa>(jose::alg::RS512, key));
-	EXPECT_NO_THROW(r512_pub = std::make_shared<jose::rsa>(jose::alg::RS512, pubkey));
+	EXPECT_NO_THROW(r256 = std::make_shared<jose::pss>(jose::alg::PS256, key));
+	EXPECT_NO_THROW(r256_pub = std::make_shared<jose::pss>(jose::alg::PS256, pubkey));
+	EXPECT_NO_THROW(r384 = std::make_shared<jose::pss>(jose::alg::PS384, key));
+	EXPECT_NO_THROW(r384_pub = std::make_shared<jose::pss>(jose::alg::PS384, pubkey));
+	EXPECT_THROW(r512 = std::make_shared<jose::pss>(jose::alg::PS512, key), std::exception);
+	EXPECT_THROW(r512_pub = std::make_shared<jose::pss>(jose::alg::PS512, pubkey), std::exception);
 
 	std::string bearer = jose::jws::sign_bearer(cl, r384);
 
@@ -135,7 +134,7 @@ TEST(JosePP, sign_verify_rsa384) {
 	EXPECT_THROW(jws = jose::jws::parse(bearer), std::exception);
 }
 
-TEST(JosePP, sign_verify_rsa512) {
+TEST(JosePP, sign_verify_pss512) {
 	jose::claims cl;
 
 	jose::sp_rsa_key key;
@@ -147,14 +146,14 @@ TEST(JosePP, sign_verify_rsa512) {
 	jose::sp_crypto r512;
 	jose::sp_crypto r512_pub;
 
-	EXPECT_NO_THROW(key = jose::rsa::gen(1024));
+	EXPECT_NO_THROW(key = jose::rsa::gen(2048));
 	EXPECT_NO_THROW(pubkey = jose::sp_rsa_key(RSAPublicKey_dup(key.get()), ::RSA_free));
-	EXPECT_NO_THROW(r256 = std::make_shared<jose::rsa>(jose::alg::RS256, key));
-	EXPECT_NO_THROW(r256_pub = std::make_shared<jose::rsa>(jose::alg::RS256, pubkey));
-	EXPECT_NO_THROW(r384 = std::make_shared<jose::rsa>(jose::alg::RS384, key));
-	EXPECT_NO_THROW(r384_pub = std::make_shared<jose::rsa>(jose::alg::RS384, pubkey));
-	EXPECT_NO_THROW(r512 = std::make_shared<jose::rsa>(jose::alg::RS512, key));
-	EXPECT_NO_THROW(r512_pub = std::make_shared<jose::rsa>(jose::alg::RS512, pubkey));
+	EXPECT_NO_THROW(r256 = std::make_shared<jose::pss>(jose::alg::PS256, key));
+	EXPECT_NO_THROW(r256_pub = std::make_shared<jose::pss>(jose::alg::PS256, pubkey));
+	EXPECT_NO_THROW(r384 = std::make_shared<jose::pss>(jose::alg::PS384, key));
+	EXPECT_NO_THROW(r384_pub = std::make_shared<jose::pss>(jose::alg::PS384, pubkey));
+	EXPECT_NO_THROW(r512 = std::make_shared<jose::pss>(jose::alg::PS512, key));
+	EXPECT_NO_THROW(r512_pub = std::make_shared<jose::pss>(jose::alg::PS512, pubkey));
 
 	std::string bearer = jose::jws::sign_bearer(cl, r512);
 
@@ -180,14 +179,4 @@ TEST(JosePP, sign_verify_rsa512) {
 
 	bearer = "Bearer bla.bla.bla";
 	EXPECT_THROW(jws = jose::jws::parse(bearer), std::exception);
-}
-
-TEST(JosePP, load_rsa_from_file) {
-	jose::sp_rsa_key key;
-
-	EXPECT_NO_THROW(key = jose::rsa::load_from_file("./tests/private.pem", [](jose::secure_string &pass, int rwflag) {
-		pass.assign("12345");
-	}));
-
-	EXPECT_THROW(key = jose::rsa::load_from_file("./tests/private.pem"), std::exception);
 }

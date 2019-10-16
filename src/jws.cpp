@@ -27,39 +27,40 @@ namespace jose {
 
 static const std::string bearer_hdr("bearer ");
 
-jws::jws(jose::alg alg, const std::string &data, sp_claims cl, const std::string &sig) :
-	  alg_(alg)
-	, data_(data)
-	, claims_(cl)
-	, sig_(sig)
-{
+jws::jws(jose::alg alg, const std::string &data, sp_claims cl, const std::string &sig)
+	: _alg(alg)
+	, _data(data)
+	, _claims(cl)
+	, _sig(sig) {
 
 }
 
-bool jws::verify(sp_crypto c, verify_cb v)
-{
-	if (c->alg() != alg_) {
-		throw std::runtime_error("Invalid Crypto Alg");
+bool jws::verify(sp_crypto c, verify_cb v) {
+	if (!c) {
+		throw std::runtime_error("uninitialized crypto");
 	}
 
-	if (!c->verify(data_, sig_)) {
+	if (c->alg() != _alg) {
+		throw std::runtime_error("invalid crypto alg");
+	}
+
+	if (!c->verify(_data, _sig)) {
 		return false;
 	}
 
 	if (v) {
-		return v(claims_);
+		return v(_claims);
 	}
 
 	return true;
 }
 
-sp_jws jws::parse(const std::string &full_bearer)
-{
+sp_jws jws::parse(const std::string &full_bearer) {
 	if (full_bearer.empty() || full_bearer.length() < bearer_hdr.length()) {
 		throw std::invalid_argument("Bearer is invalid or empty");
 	}
 
-	for(size_t i = 0; i < bearer_hdr.length(); i++) {
+	for (size_t i = 0; i < bearer_hdr.length(); i++) {
 
 		if (bearer_hdr[i] != tolower(full_bearer[i])) {
 			throw std::invalid_argument("Bearer header is invalid");
@@ -78,7 +79,7 @@ sp_jws jws::parse(const std::string &full_bearer)
 	Json::Value hdr;
 
 	try {
-	 	hdr = unmarshal_b64(tokens[0]);
+		hdr = unmarshal_b64(tokens[0]);
 	} catch (...) {
 		throw;
 	}
@@ -119,8 +120,7 @@ sp_jws jws::parse(const std::string &full_bearer)
 	return sp_jws(j);
 }
 
-std::string jws::sign(const std::string &data, sp_crypto c)
-{
+std::string jws::sign(const std::string &data, sp_crypto c) {
 	return c->sign(data);
 }
 
@@ -140,15 +140,13 @@ std::string jws::sign_claims(class claims &cl, sp_crypto c) {
 	return out;
 }
 
-std::string jws::sign_bearer(class claims &cl, sp_crypto c)
-{
+std::string jws::sign_bearer(class claims &cl, sp_crypto c) {
 	std::string bearer("Bearer ");
 	bearer += jws::sign_claims(cl, c);
 	return bearer;
 }
 
-std::vector<std::string> jws::tokenize(const std::string &text, char sep)
-{
+std::vector<std::string> jws::tokenize(const std::string &text, char sep) {
 	std::vector<std::string> tokens;
 	std::size_t start = 0;
 	std::size_t end = 0;

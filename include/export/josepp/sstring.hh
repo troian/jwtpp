@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2016 Artur Troian
+// Copyright (c) 2019 Artur Troian
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,32 +19,34 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+#pragma once
 
-#include <josepp/header.hpp>
-#include <josepp/tools.hpp>
-#include <josepp/crypto.hpp>
+#include <openssl/crypto.h>
+#include <string>
 
 namespace jose {
 
-hdr::hdr(jose::alg alg)
-	: _h()
-{
-	_h["typ"] = "JWT";
-	_h["alg"]  = crypto::alg2str(alg);
-}
+template <class T>
+class secure_allocator : public std::allocator<T> {
+public:
+	template <class U>
+	struct rebind {
+		typedef secure_allocator<U> other;
+	};
 
-hdr::hdr(const std::string &data)
-	: _h()
-{
-	Json::Reader reader;
+	secure_allocator() noexcept = default;
 
-	if (!reader.parse(data, _h)) {
-		throw std::runtime_error("Invalid JSON input");
+	secure_allocator(const secure_allocator &) noexcept {}
+
+	template <class U>
+	explicit secure_allocator(const secure_allocator<U> &) noexcept {}
+
+	void deallocate(T *p, std::size_t n) noexcept {
+		OPENSSL_cleanse(p, n);
+		std::allocator<T>::deallocate(p, n);
 	}
-}
+};
 
-std::string hdr::b64() {
-	return marshal_b64(_h);
-}
+using secure_string = std::basic_string<char, std::char_traits<char>, secure_allocator<char>>;
 
 } // namespace jose

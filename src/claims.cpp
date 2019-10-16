@@ -31,26 +31,26 @@ void claims::set::any(const std::string &key, const std::string &value)
 	if (key.empty() || value.empty())
 		throw std::invalid_argument("Invalid params");
 
-	claims_->operator[](key) = value;
+	_claims->operator[](key) = value;
 }
 
-claims::claims() :
-	  claims_()
-	, set_(&claims_)
-	, get_(&claims_)
-	, has_(&claims_)
-	, del_(&claims_)
-	, check_(&claims_)
+claims::claims()
+	: _claims()
+	, _set(&_claims)
+	, _get(&_claims)
+	, _has(&_claims)
+	, _del(&_claims)
+	, _check(&_claims)
 {}
 
 claims::claims(const std::string &d, bool b64) :
 #if defined(_MSC_VER) && (_MSC_VER < 1700)
-      claims_()
-	, set_(&claims_)
-	, get_(&claims_)
-	, has_(&claims_)
-	, del_(&claims_)
-	, check_(&claims_)
+	  _claims()
+	, _set(&_claims)
+	, _get(&_claims)
+	, _has(&_claims)
+	, _del(&_claims)
+	, _check(&_claims)
 #else
 	claims()
 #endif // defined(_MSC_VER) && (_MSC_VER < 1700)
@@ -60,11 +60,11 @@ claims::claims(const std::string &d, bool b64) :
 	if (b64) {
 		std::string decoded = b64::decode_uri(d);
 
-		if (!reader.parse(decoded, claims_)) {
+		if (!reader.parse(decoded, _claims)) {
 			throw std::runtime_error("Invalid JSON input");
 		}
 	} else {
-		if (!reader.parse(d, claims_)) {
+		if (!reader.parse(d, _claims)) {
 			throw std::runtime_error("Invalid JSON input");
 		}
 	}
@@ -72,7 +72,7 @@ claims::claims(const std::string &d, bool b64) :
 
 std::string claims::b64()
 {
-	return marshal_b64(claims_);
+	return marshal_b64(_claims);
 }
 
 } // namespace jose

@@ -30,9 +30,9 @@
 
 namespace jose {
 
-hmac::hmac(jose::alg alg, const std::string &secret) :
-	  crypto(alg)
-	, secret_(secret)
+hmac::hmac(jose::alg alg, const secure_string &secret)
+	: crypto(alg)
+	, _secret(secret)
 {
 	if (alg != jose::alg::HS256 && alg != jose::alg::HS384 && alg != jose::alg::HS512) {
 		throw std::invalid_argument("Invalid algorithm");
@@ -43,20 +43,14 @@ hmac::hmac(jose::alg alg, const std::string &secret) :
 	}
 }
 
-hmac::~hmac()
-{
-	std::memset(const_cast<char *>(secret_.data()), 0 , secret_.length());
-}
-
-std::string hmac::sign(const std::string &data)
-{
+std::string hmac::sign(const std::string &data) {
 	if (data.empty()) {
 		throw std::invalid_argument("Data is empty");
 	}
 
 	const EVP_MD *evp;
 
-	switch (alg_) {
+	switch (_alg) {
 	case jose::alg::HS256: evp = EVP_sha256(); break;
 	case jose::alg::HS384: evp = EVP_sha384(); break;
 	case jose::alg::HS512: evp = EVP_sha512(); break;
@@ -75,10 +69,10 @@ std::string hmac::sign(const std::string &data)
 	hmac = HMAC_CTX_new();
 #endif
 
-	HMAC_Init_ex(hmac, secret_.data(), static_cast<int>(secret_.length()), evp, nullptr);
+	HMAC_Init_ex(hmac, _secret.data(), static_cast<int>(_secret.length()), evp, nullptr);
 	HMAC_Update(hmac, reinterpret_cast<const uint8_t *>(data.c_str()), data.size());
 
-	std::shared_ptr<uint8_t> res = std::shared_ptr<uint8_t>(new uint8_t[EVP_MD_size(evp)], std::default_delete<uint8_t[]>());
+	auto res = std::shared_ptr<uint8_t>(new uint8_t[EVP_MD_size(evp)], std::default_delete<uint8_t[]>());
 	uint32_t size;
 
 	HMAC_Final(hmac, res.get(), &size);
@@ -92,8 +86,7 @@ std::string hmac::sign(const std::string &data)
 	return b64::encode_uri(res.get(), size);
 }
 
-bool hmac::verify(const std::string &data, const std::string &sig)
-{
+bool hmac::verify(const std::string &data, const std::string &sig) {
 	return sig == sign(data);
 }
 

@@ -26,27 +26,25 @@
 
 namespace jose {
 
-crypto::crypto(jose::alg alg) :
-	  alg_(alg)
-	, hdr_()
-	, hash_type_(digest::type::SHA256)
+crypto::crypto(jose::alg alg)
+	: _alg(alg)
+	, _hdr()
+	, _hash_type(digest::type::SHA256)
 {
-	if (alg == jose::alg::HS256 || alg == jose::alg::RS256 || alg == jose::alg::ES256) {
-		hash_type_ = digest::type::SHA256;
-	} else if (alg == jose::alg::HS384 || alg == jose::alg::RS384 || alg == jose::alg::ES384) {
-		hash_type_ = digest::type::SHA384;
-	} else if (alg == jose::alg::HS512 || alg == jose::alg::RS512 || alg == jose::alg::ES512) {
-		hash_type_ = digest::type::SHA512;
+	if (alg == jose::alg::HS256 || alg == jose::alg::RS256 || alg == jose::alg::ES256 || alg == jose::alg::PS256) {
+		_hash_type = digest::type::SHA256;
+	} else if (alg == jose::alg::HS384 || alg == jose::alg::RS384 || alg == jose::alg::ES384 || alg == jose::alg::PS384) {
+		_hash_type = digest::type::SHA384;
+	} else if (alg == jose::alg::HS512 || alg == jose::alg::RS512 || alg == jose::alg::ES512 || alg == jose::alg::PS512) {
+		_hash_type = digest::type::SHA512;
+	} else {
+		throw std::runtime_error("invalid algorithm");
 	}
 }
 
-crypto::~crypto()
-{
+crypto::~crypto() {}
 
-}
-
-const char *crypto::alg2str(jose::alg alg)
-{
+const char *crypto::alg2str(jose::alg alg) {
 	switch (alg) {
 	case jose::alg::NONE:
 		return "none";
@@ -62,13 +60,24 @@ const char *crypto::alg2str(jose::alg alg)
 		return "RS384";
 	case jose::alg::RS512:
 		return "RS512";
+	case jose::alg::ES256:
+		return "ES256";
+	case jose::alg::ES384:
+		return "ES384";
+	case jose::alg::ES512:
+		return "ES512";
+	case jose::alg::PS256:
+		return "PS256";
+	case jose::alg::PS384:
+		return "PS384";
+	case jose::alg::PS512:
+		return "PS512";
 	default:
 		return nullptr;
 	}
 }
 
-jose::alg crypto::str2alg(const std::string &a)
-{
+jose::alg crypto::str2alg(const std::string &a) {
 	if (a == "none") {
 		return jose::alg::NONE;
 	} else if (a == "HS256") {
@@ -89,13 +98,18 @@ jose::alg crypto::str2alg(const std::string &a)
 		return jose::alg::ES384;
 	} else if (a == "ES512") {
 		return jose::alg::ES512;
+	} else if (a == "PS256") {
+		return jose::alg::PS256;
+	} else if (a == "PS384") {
+		return jose::alg::PS384;
+	} else if (a == "PS512") {
+		return jose::alg::PS512;
 	} else {
 		return jose::alg::UNKNOWN;
 	}
 }
 
-int crypto::hash2nid(digest::type type)
-{
+int crypto::hash2nid(digest::type type) {
 	int ret = NID_sha256;
 
 	switch (type) {

@@ -25,21 +25,24 @@
 namespace jose {
 
 #if defined(_MSC_VER) && (_MSC_VER < 1700)
-    enum alg {
+	enum alg {
 #else
-    enum class alg {
+	enum class alg {
 #endif // defined(_MSC_VER) && (_MSC_VER < 1700)
-	NONE = 0,
-	HS256,
-	HS384,
-	HS512,
-	RS256,
-	RS384,
-	RS512,
-	ES256,
-	ES384,
-	ES512,
-	UNKNOWN
+		NONE = 0,
+		HS256,
+		HS384,
+		HS512,
+		RS256,
+		RS384,
+		RS512,
+		ES256,
+		ES384,
+		ES512,
+		PS256,
+		PS384,
+		PS512,
+		UNKNOWN
 };
 
 } // namespace jose

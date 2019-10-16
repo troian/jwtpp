@@ -46,9 +46,9 @@ class claims final {
 private:
 	class has {
 	public:
-		explicit has(Json::Value *c) : claims_(c) {}
+		explicit has(Json::Value *c) : _claims(c) {}
 	public:
-		bool any(const std::string &key) { return claims_->isMember(key); }
+		bool any(const std::string &key) { return _claims->isMember(key); }
 		bool iss() { return any("iss"); }
 		bool sub() { return any("sub"); }
 		bool aud() { return any("aud"); }
@@ -57,15 +57,15 @@ private:
 		bool iat() { return any("iat"); }
 		bool jti() { return any("jti"); }
 	private:
-		Json::Value *claims_;
+		Json::Value *_claims;
 	};
 
 	class check {
 	public:
-		explicit check(Json::Value *c) : claims_(c) {}
+		explicit check(Json::Value *c) : _claims(c) {}
 	public:
 		bool any(const std::string &key, const std::string &value) {
-			std::string s = claims_->operator[](key).asString();
+			std::string s = _claims->operator[](key).asString();
 			return s == value;
 		}
 		bool iss(const std::string &value) { return any("iss", value); }
@@ -76,14 +76,14 @@ private:
 		bool iat(const std::string &value) { return any("iat", value); }
 		bool jti(const std::string &value) { return any("jti", value); }
 	private:
-		Json::Value *claims_;
+		Json::Value *_claims;
 	};
 
 	class del {
 	public:
-		explicit del(Json::Value *c) : claims_(c) {}
+		explicit del(Json::Value *c) : _claims(c) {}
 	public:
-		void any(const std::string &key) { claims_->removeMember(key); }
+		void any(const std::string &key) { _claims->removeMember(key); }
 		void iss() { any("iss"); }
 		void sub() { any("sub"); }
 		void aud() { any("aud"); }
@@ -92,16 +92,16 @@ private:
 		void iat() { any("nbf"); }
 		void jti() { any("jti"); }
 	private:
-		Json::Value *claims_;
+		Json::Value *_claims;
 	};
 
 
 	class get {
 	public:
-		explicit get(Json::Value *c) : claims_(c) {}
+		explicit get(Json::Value *c) : _claims(c) {}
 	public:
 		std::string any(const std::string &key) {
-			return claims_->operator[](key).asString();
+			return _claims->operator[](key).asString();
 		}
 		std::string iss() { return any("iss"); }
 		std::string sub() { return any("sub"); }
@@ -111,12 +111,12 @@ private:
 		std::string iat() { return any("iat"); }
 		std::string jti() { return any("jti"); }
 	private:
-		Json::Value *claims_;
+		Json::Value *_claims;
 	};
 
 	class set {
 	public:
-		explicit set(Json::Value *c) : claims_(c) {}
+		explicit set(Json::Value *c) : _claims(c) {}
 	public:
 		void any(const std::string &key, const std::string &value);
 		void iss(const std::string &value) { any("iss", value); }
@@ -128,7 +128,7 @@ private:
 		void jti(const std::string &value) { any("jti", value); }
 
 	private:
-		Json::Value *claims_;
+		Json::Value *_claims;
 	};
 public:
 	/**
@@ -151,7 +151,7 @@ public:
 	 *
 	 * \return
 	 */
-	class claims::set &set() { return set_; }
+	class claims::set &set() { return _set; }
 
 	/**
 	 * \brief
@@ -160,7 +160,7 @@ public:
 	 *
 	 * \return
 	 */
-	class claims::has &has() { return has_; }
+	class claims::has &has() { return _has; }
 
 	/**
 	 * \brief
@@ -169,7 +169,7 @@ public:
 	 *
 	 * \return
 	 */
-	class claims::del &del() { return del_; }
+	class claims::del &del() { return _del; }
 
 	/**
 	 * \brief
@@ -178,9 +178,9 @@ public:
 	 *
 	 * \return
 	 */
-	class claims::get &get() { return get_; }
+	class claims::get &get() { return _get; }
 
-	class claims::check &check() { return check_; }
+	class claims::check &check() { return _check; }
 
 	std::string b64();
 
@@ -193,13 +193,13 @@ public:
 #endif // !(defined(_MSC_VER) && (_MSC_VER < 1700))
 
 private:
-	Json::Value claims_;
+	Json::Value _claims;
 
-	class set   set_;
-	class get   get_;
-	class has   has_;
-	class del   del_;
-	class check check_;
+	class set   _set;
+	class get   _get;
+	class has   _has;
+	class del   _del;
+	class check _check;
 };
 
 } // namespace jose

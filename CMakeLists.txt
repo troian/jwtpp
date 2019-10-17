@@ -108,23 +108,26 @@ if (BUILD_SHARED_LIBS)
 	target_include_directories(
 		${PROJECT_NAME}-shared
 		PUBLIC
-		${EXPORT_INCLUDES}
-		${JsonCPP_INCLUDE_DIRS}
+			include/export
+			${JsonCPP_INCLUDE_DIRS}
+		PRIVATE
+			include/local
 	)
 
 	target_link_libraries(
 		${PROJECT_NAME}-shared
-		${OPENSSL_LIBRARIES}
-		${JsonCPP_LIBRARIES}
+		PUBLIC
+			${OPENSSL_LIBRARIES}
+			${JsonCPP_LIBRARIES}
 	)
 
 	if (WITH_INSTALL)
 		install(
 			TARGETS
-			${PROJECT_NAME}-shared
+				${PROJECT_NAME}-shared
 			LIBRARY
 			DESTINATION
-			lib
+				lib
 		)
 	endif ()
 endif ()
@@ -132,7 +135,7 @@ endif ()
 if (WITH_INSTALL)
 	install(
 		DIRECTORY
-		${EXPORT_INCLUDES}/josepp
+		include/export/josepp
 		DESTINATION include
 		FILES_MATCHING PATTERN "*.hpp"
 	)

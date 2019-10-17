@@ -20,16 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <sstream>
+#include <iomanip>
+
 #include <josepp/digest.hpp>
 
 #include <openssl/sha.h>
 
 namespace jose {
 
-digest::digest(digest::type type, const uint8_t *in_data, size_t in_size) :
-	  _size(SHA256_DIGEST_LENGTH)
-	, _data(nullptr)
-{
+digest::digest(digest::type type, const uint8_t *in_data, size_t in_size)
+	: _size(SHA256_DIGEST_LENGTH)
+	, _data(nullptr) {
 	try {
 		_data = std::shared_ptr<uint8_t>(new uint8_t[SHA512_DIGEST_LENGTH], std::default_delete<uint8_t[]>());
 	} catch (...) {
@@ -90,19 +92,25 @@ digest::digest(digest::type type, const uint8_t *in_data, size_t in_size) :
 	}
 }
 
-digest::~digest()
-{
+digest::~digest() {
 	std::memset(_data.get(), 0, _size);
 }
 
-size_t digest::size() const
-{
+size_t digest::size() const {
 	return _size;
 }
 
-uint8_t *digest::data()
-{
+uint8_t *digest::data() {
 	return _data.get();
+}
+
+std::string digest::to_string() const {
+	std::stringstream s;
+	for (size_t i = 0; i < size() / 2; ++i) {
+		s << std::hex << std::setfill('0') << std::setw(2) << (_data.get()[i * 2] << 8 | _data.get()[(i * 2) + 1]);
+	}
+
+	return s.str();
 }
 
 } // namespace jose

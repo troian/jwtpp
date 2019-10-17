@@ -23,10 +23,10 @@ set(INSTALL_INC_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH "Installation d
 set(INSTALL_PKGCONFIG_DIR "${CMAKE_INSTALL_PREFIX}/share/pkgconfig" CACHE PATH "Installation directory for pkgconfig (.pc) files")
 
 find_package(OpenSSL REQUIRED)
-if (NOT WIN32)
+if (NOT WIN32 AND NOT JsonCPP_FOUND)
 	find_package(PkgConfig REQUIRED)
 	pkg_check_modules(JsonCPP REQUIRED jsoncpp)
-endif (NOT WIN32)
+endif ()
 
 include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
 include_directories(SYSTEM ${JsonCPP_INCLUDE_DIRS})

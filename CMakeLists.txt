@@ -47,10 +47,6 @@ if (NOT MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
 endif ()
 
-set(EXPORT_INCLUDES
-	include/export
-)
-
 set(LIB_SOURCES
 	src/b64.cpp
 	src/claims.cpp
@@ -65,15 +61,15 @@ set(LIB_SOURCES
 	src/pss.cpp
 	src/statics.cpp
 
-	${EXPORT_INCLUDES}/josepp/b64.hpp
-	${EXPORT_INCLUDES}/josepp/claims.hpp
-	${EXPORT_INCLUDES}/josepp/crypto.hpp
-	${EXPORT_INCLUDES}/josepp/digest.hpp
-	${EXPORT_INCLUDES}/josepp/header.hpp
-	${EXPORT_INCLUDES}/josepp/jws.hpp
-	${EXPORT_INCLUDES}/josepp/tools.hpp
-	${EXPORT_INCLUDES}/josepp/types.hpp
-	${EXPORT_INCLUDES}/josepp/sstring.hh
+	include/export/josepp/b64.hpp
+	include/export/josepp/claims.hpp
+	include/export/josepp/crypto.hpp
+	include/export/josepp/digest.hpp
+	include/export/josepp/header.hpp
+	include/export/josepp/jws.hpp
+	include/export/josepp/tools.hpp
+	include/export/josepp/types.hpp
+	include/export/josepp/sstring.hh
 	include/local/josepp/statics.hh
 )
 
@@ -83,7 +79,7 @@ set_target_properties(${PROJECT_NAME}-static PROPERTIES OUTPUT_NAME ${PROJECT_NA
 target_include_directories(
 	${PROJECT_NAME}-static
 	PUBLIC
-		${EXPORT_INCLUDES}
+		include/export
 		${JsonCPP_INCLUDE_DIRS}
 	PRIVATE
 		include/local
@@ -98,10 +94,10 @@ target_link_libraries(
 if (WITH_INSTALL)
 	install(
 		TARGETS
-		${PROJECT_NAME}-static
+			${PROJECT_NAME}-static
 		ARCHIVE
 		DESTINATION
-		lib
+			lib
 	)
 endif ()
 

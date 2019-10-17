@@ -36,11 +36,7 @@ hdr::hdr(jose::alg alg)
 hdr::hdr(const std::string &data)
 	: _h()
 {
-	Json::Reader reader;
-
-	if (!reader.parse(data, _h)) {
-		throw std::runtime_error("Invalid JSON input");
-	}
+	std::stringstream(data) >> _h;
 }
 
 std::string hdr::b64() {

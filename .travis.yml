@@ -94,7 +94,9 @@ before_script:
   - if [ $TRAVIS_OS_NAME == linux ]; then cmake -DWITH_TESTS=ON -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=/usr/local ..; fi
 script:
   - make
-  - ./josepp_test
+  - cd ..
+  - ./build/josepp_test
+  - cd build
   - sudo make install
 branches:
   only:

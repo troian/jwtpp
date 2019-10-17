@@ -36,7 +36,9 @@ public:
 
 	secure_allocator() noexcept = default;
 
-	secure_allocator(const secure_allocator &) noexcept {}
+	secure_allocator(const secure_allocator &) noexcept
+		: std::allocator<T>()
+	{}
 
 	template <class U>
 	explicit secure_allocator(const secure_allocator<U> &) noexcept {}

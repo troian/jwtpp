@@ -5,6 +5,8 @@
 #pragma once
 
 #include <new>
+#include <utility>
+#include <cstdint>
 
 #include <openssl/ssl.h>
 #include <openssl/err.h>

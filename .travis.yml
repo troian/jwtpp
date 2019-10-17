@@ -66,6 +66,7 @@ before_install:
   - if [ $TRAVIS_OS_NAME == linux ]; then make && sudo make install && cd $BLD_PATH; fi
   - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install openssl --force && brew install jsoncpp; brew install cmake; fi
 before_script:
+  - cd ${TRAVIS_BUILD_DIR}
   - git submodule update --init --recursive
   - mkdir build
   - cd build

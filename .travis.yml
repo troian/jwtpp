@@ -1,14 +1,44 @@
-language: cpp
 sudo: required
 dist: trusty
+os:
+  - linux
+  - osx
+
+matrix:
+  include:
+    - compiler: gcc
+      env:
+        - COMPILER_PACKAGE=g++-6
+        - C_COMPILER=gcc-6
+        - CXX_COMPILER=g++-6
+
+    - compiler: gcc
+      env:
+        - COMPILER_PACKAGE=g++-7
+        - C_COMPILER=gcc-7
+        - CXX_COMPILER=g++-7
+
+    - compiler: gcc
+      env:
+        - COMPILER_PACKAGE=g++-8
+        - C_COMPILER=gcc-8
+        - CXX_COMPILER=g++-8
+
+    - compiler: clang
+      env:
+        - COMPILER_PACKAGE=clang-5.0
+        - C_COMPILER=clang-5.0
+        - CXX_COMPILER=clang++-5.0
+
+    - compiler: clang
+      env:
+        - COMPILER_PACKAGE=clang-6.0
+        - C_COMPILER=clang-6.0
+        - CXX_COMPILER=clang++-6.0
+
 git:
   depth: 1
-compiler:
-- clang
-- gcc
-os:
-- linux
-- osx
+
 before_install:
 - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update && sudo apt-get install libssl-dev; fi
 - if [ $TRAVIS_OS_NAME == linux ]; then git clone https://github.com/open-source-parsers/jsoncpp.git ~/jsoncpp; fi

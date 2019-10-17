@@ -1,5 +1,8 @@
 sudo: required
 dist: trusty
+
+language: cpp
+
 os:
   - linux
   - osx
@@ -63,15 +66,15 @@ before_install:
   - if [ $TRAVIS_OS_NAME == linux ]; then make && sudo make install && cd $BLD_PATH; fi
   - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install openssl --force && brew install jsoncpp; brew install cmake; fi
 before_script:
-- git submodule update --init --recursive
-- mkdir build
-- cd build
-- if [ $TRAVIS_OS_NAME == osx ]; then cmake -Wno-dev -DWITH_TESTS=ON -DBUILD_SHARED_LIBS=ON -DOPENSSL_ROOT_DIR=$(brew --prefix openssl) -DCMAKE_INSTALL_PREFIX=/usr/local ..; fi
-- if [ $TRAVIS_OS_NAME == linux ]; then cmake -DWITH_TESTS=ON -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=/usr/local ..; fi
+  - git submodule update --init --recursive
+  - mkdir build
+  - cd build
+  - if [ $TRAVIS_OS_NAME == osx ]; then cmake -Wno-dev -DWITH_TESTS=ON -DBUILD_SHARED_LIBS=ON -DOPENSSL_ROOT_DIR=$(brew --prefix openssl) -DCMAKE_INSTALL_PREFIX=/usr/local ..; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then cmake -DWITH_TESTS=ON -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=/usr/local ..; fi
 script:
-- make
-- ./josepp_test
-- sudo make install
+  - make
+  - ./josepp_test
+  - sudo make install
 branches:
   only:
   - master

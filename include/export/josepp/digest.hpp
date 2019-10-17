@@ -39,6 +39,8 @@ public:
 
 	uint8_t *data();
 
+	std::string to_string() const;
+
 public:
 	static const EVP_MD *md(digest::type t) {
 		switch (t) {

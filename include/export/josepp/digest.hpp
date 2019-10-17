@@ -44,6 +44,8 @@ public:
 public:
 	static const EVP_MD *md(digest::type t) {
 		switch (t) {
+		default:
+			[[fallthrough]];
 		case type::SHA256:
 			return EVP_sha256();
 		case type::SHA384:

@@ -34,6 +34,7 @@
 #include <string>
 #include <memory>
 #include <sstream>
+#include <functional>
 
 #include <josepp/types.hpp>
 #include <josepp/digest.hpp>

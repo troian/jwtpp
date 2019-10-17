@@ -42,10 +42,7 @@ std::string marshal_b64(const Json::Value &json) {
 
 Json::Value unmarshal(const std::string &in) {
 	Json::Value j;
-	Json::Reader reader;
-	if (!reader.parse(in, j)) {
-		throw std::runtime_error("Invalid JSON input");
-	}
+	std::stringstream(in) >> j;
 
 	return j;
 }

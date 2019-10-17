@@ -55,18 +55,12 @@ claims::claims(const std::string &d, bool b64) :
 	claims()
 #endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 {
-	Json::Reader reader;
-
 	if (b64) {
 		std::string decoded = b64::decode_uri(d);
 
-		if (!reader.parse(decoded, _claims)) {
-			throw std::runtime_error("Invalid JSON input");
-		}
+		std::stringstream(decoded) >> _claims;
 	} else {
-		if (!reader.parse(d, _claims)) {
-			throw std::runtime_error("Invalid JSON input");
-		}
+		std::stringstream(d) >> _claims;
 	}
 }
 

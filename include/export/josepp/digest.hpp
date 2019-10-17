@@ -7,6 +7,8 @@
 #include <cstdint>
 #include <memory>
 #include <stdexcept>
+#include <openssl/ossl_typ.h>
+#include <openssl/evp.h>
 
 #if defined(_MSC_VER) && (_MSC_VER < 1700)
 #define final
@@ -20,9 +22,9 @@ namespace jose {
 class digest final {
 public:
 #if defined(_MSC_VER) && (_MSC_VER < 1700)
-    enum type {
+	enum type {
 #else
-    enum class type {
+	enum class type {
 #endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 		SHA256,
 		SHA384,
@@ -37,9 +39,21 @@ public:
 
 	uint8_t *data();
 
+public:
+	static const EVP_MD *md(digest::type t) {
+		switch (t) {
+		case type::SHA256:
+			return EVP_sha256();
+		case type::SHA384:
+			return EVP_sha384();
+		case type::SHA512:
+			return EVP_sha512();
+		}
+	}
+
 private:
-	size_t                   size_;
-	std::shared_ptr<uint8_t> data_;
+	size_t                   _size;
+	std::shared_ptr<uint8_t> _data;
 };
 
 } // namespace jose

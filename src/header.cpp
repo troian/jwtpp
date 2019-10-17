@@ -22,57 +22,25 @@
 
 #include <josepp/header.hpp>
 #include <josepp/tools.hpp>
+#include <josepp/crypto.hpp>
 
 namespace jose {
 
-hdr::hdr(jose::alg alg) :
-	h_()
+hdr::hdr(jose::alg alg)
+	: _h()
 {
-	h_["typ"] = "JWT";
-	h_["alg"]  = alg2str(alg);
+	_h["typ"] = "JWT";
+	_h["alg"]  = crypto::alg2str(alg);
 }
 
-hdr::hdr(const std::string &data) :
-	h_()
+hdr::hdr(const std::string &data)
+	: _h()
 {
-	Json::Reader reader;
-
-	if (!reader.parse(data, h_)) {
-		throw std::runtime_error("Invalid JSON input");
-	}
+	std::stringstream(data) >> _h;
 }
 
-std::string hdr::b64()
-{
-	return marshal_b64(h_);
-}
-
-const char *hdr::alg2str(jose::alg alg)
-{
-	switch (alg) {
-	case jose::alg::NONE:
-		return "none";
-	case jose::alg::HS256:
-		return "HS256";
-	case jose::alg::HS384:
-		return "HS384";
-	case jose::alg::HS512:
-		return "HS512";
-	case jose::alg::RS256:
-		return "RS256";
-	case jose::alg::RS384:
-		return "RS384";
-	case jose::alg::RS512:
-		return "RS512";
-	case jose::alg::ES256:
-		return "ES256";
-	case jose::alg::ES384:
-		return "ES384";
-	case jose::alg::ES512:
-		return "ES512";
-	default:
-		return nullptr;
-	}
+std::string hdr::b64() {
+	return marshal_b64(_h);
 }
 
 } // namespace jose

@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2016 Artur Troian
+// Copyright (c) 2019 Artur Troian
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,54 +19,34 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+#pragma once
 
-#include <josepp/claims.hpp>
-#include <josepp/b64.hpp>
-#include <josepp/tools.hpp>
+#include <openssl/crypto.h>
+#include <string>
 
 namespace jose {
 
-void claims::set::any(const std::string &key, const std::string &value)
-{
-	if (key.empty() || value.empty())
-		throw std::invalid_argument("Invalid params");
+template <class T>
+class secure_allocator : public std::allocator<T> {
+public:
+	template <class U>
+	struct rebind {
+		typedef secure_allocator<U> other;
+	};
 
-	_claims->operator[](key) = value;
-}
+	secure_allocator() noexcept = default;
 
-claims::claims()
-	: _claims()
-	, _set(&_claims)
-	, _get(&_claims)
-	, _has(&_claims)
-	, _del(&_claims)
-	, _check(&_claims)
-{}
+	secure_allocator(const secure_allocator &) noexcept {}
 
-claims::claims(const std::string &d, bool b64) :
-#if defined(_MSC_VER) && (_MSC_VER < 1700)
-	  _claims()
-	, _set(&_claims)
-	, _get(&_claims)
-	, _has(&_claims)
-	, _del(&_claims)
-	, _check(&_claims)
-#else
-	claims()
-#endif // defined(_MSC_VER) && (_MSC_VER < 1700)
-{
-	if (b64) {
-		std::string decoded = b64::decode_uri(d);
+	template <class U>
+	explicit secure_allocator(const secure_allocator<U> &) noexcept {}
 
-		std::stringstream(decoded) >> _claims;
-	} else {
-		std::stringstream(d) >> _claims;
+	void deallocate(T *p, std::size_t n) noexcept {
+		OPENSSL_cleanse(p, n);
+		std::allocator<T>::deallocate(p, n);
 	}
-}
+};
 
-std::string claims::b64()
-{
-	return marshal_b64(_claims);
-}
+using secure_string = std::basic_string<char, std::char_traits<char>, secure_allocator<char>>;
 
 } // namespace jose

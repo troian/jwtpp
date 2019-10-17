@@ -1,31 +1,103 @@
-language: cpp
 sudo: required
 dist: trusty
+
+language: cpp
+
+os: linux
+
+matrix:
+  include:
+    - compiler: gcc
+      env:
+        - COMPILER_PACKAGE=g++-7
+        - C_COMPILER=gcc-7
+        - CXX_COMPILER=g++-7
+
+    - compiler: gcc
+      os: osx
+      env:
+        - COMPILER_PACKAGE=g++-7
+        - C_COMPILER=gcc-7
+        - CXX_COMPILER=g++-7
+
+    - compiler: gcc
+      env:
+        - COMPILER_PACKAGE=g++-8
+        - C_COMPILER=gcc-8
+        - CXX_COMPILER=g++-8
+
+    - compiler: gcc
+      os: osx
+      env:
+        - COMPILER_PACKAGE=g++-8
+        - C_COMPILER=gcc-8
+        - CXX_COMPILER=g++-8
+
+    - compiler: clang
+      env:
+        - COMPILER_PACKAGE=clang-5.0
+        - C_COMPILER=clang-5.0
+        - CXX_COMPILER=clang++-5.0
+
+    - compiler: clang
+      os: osx
+      env:
+        - COMPILER_PACKAGE=clang-5.0
+        - C_COMPILER=clang-5.0
+        - CXX_COMPILER=clang++-5.0
+
+    - compiler: clang
+      env:
+        - COMPILER_PACKAGE=clang-6.0
+        - C_COMPILER=clang-6.0
+        - CXX_COMPILER=clang++-6.0
+
+    - compiler: clang
+      os: osx
+      env:
+        - COMPILER_PACKAGE=clang-6.0
+        - C_COMPILER=clang-6.0
+        - CXX_COMPILER=clang++-6.0
+
 git:
   depth: 1
-compiler:
-- clang
-- gcc
-os:
-- linux
-- osx
+
 before_install:
-- if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update && sudo apt-get install libssl-dev; fi
-- if [ $TRAVIS_OS_NAME == linux ]; then git clone https://github.com/open-source-parsers/jsoncpp.git ~/jsoncpp; fi
-- if [ $TRAVIS_OS_NAME == linux ]; then export BLD_PATH=`pwd`; cd ~/jsoncpp; mkdir build && cd build; fi
-- if [ $TRAVIS_OS_NAME == linux ]; then cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release ..; fi
-- if [ $TRAVIS_OS_NAME == linux ]; then make && sudo make install && cd $BLD_PATH; fi
-- if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install openssl --force && brew install jsoncpp; fi
+  # Dependencies required by the CI are installed in ${TRAVIS_BUILD_DIR}/deps/
+  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+  - mkdir -p "${DEPS_DIR}"
+  - cd "${DEPS_DIR}"
+  ############################################################################
+  # Install a recent CMake (unless already installed on OS X)
+  ############################################################################
+  - CMAKE_VERSION=3.15.4
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      CMAKE_URL="https://cmake.org/files/v${CMAKE_VERSION%.[0-9]}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz"
+      mkdir cmake && travis_retry wget --no-check-certificate -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+      export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+    else
+      brew install cmake || brew upgrade cmake
+    fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update && sudo apt-get install libssl-dev; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then git clone https://github.com/open-source-parsers/jsoncpp.git ~/jsoncpp; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then export BLD_PATH=`pwd`; cd ~/jsoncpp; mkdir build && cd build; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then cmake -DJSONCPP_WITH_TESTS=OFF -DJSONCPP_WITH_POST_BUILD_UNITTEST=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release ..; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then make && sudo make install && cd $BLD_PATH; fi
+  - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install openssl --force && brew install jsoncpp; brew install cmake; fi
 before_script:
-- git submodule update --init --recursive
-- mkdir build
-- cd build
-- if [ $TRAVIS_OS_NAME == osx ]; then cmake -Wno-dev -DWITH_TESTS=ON -DBUILD_SHARED_LIBS=ON -DOPENSSL_ROOT_DIR=$(brew --prefix openssl) -DCMAKE_INSTALL_PREFIX=/usr/local ..; fi
-- if [ $TRAVIS_OS_NAME == linux ]; then cmake -DWITH_TESTS=ON -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=/usr/local ..; fi
+  - cd ${TRAVIS_BUILD_DIR}
+  - git submodule update --init --recursive
+  - mkdir build
+  - cd build
+  - if [ $TRAVIS_OS_NAME == osx ]; then cmake -Wno-dev -DWITH_TESTS=ON -DBUILD_SHARED_LIBS=ON -DOPENSSL_ROOT_DIR=$(brew --prefix openssl) -DCMAKE_INSTALL_PREFIX=/usr/local ..; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then cmake -DWITH_TESTS=ON -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=/usr/local ..; fi
 script:
-- make
-- ./josepp_test
-- sudo make install
+  - make
+  - cd ..
+  - ./build/josepp_test
+  - cd build
+  - sudo make install
 branches:
   only:
   - master

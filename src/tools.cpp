@@ -25,13 +25,9 @@
 #include <josepp/tools.hpp>
 #include <josepp/b64.hpp>
 
-//#include <json/writer.h>
-//#include <json/reader.h>
-
 namespace jose {
 
-std::string marshal(const Json::Value &json)
-{
+std::string marshal(const Json::Value &json) {
 	Json::StreamWriterBuilder builder;
 	builder["commentStyle"] = "None";
 	builder["indentation"] = ""; // Write in one line
@@ -39,25 +35,19 @@ std::string marshal(const Json::Value &json)
 	return out;
 }
 
-std::string marshal_b64(const Json::Value &json)
-{
+std::string marshal_b64(const Json::Value &json) {
 	std::string s = marshal(json);
 	return b64::encode_uri(s);
 }
 
-Json::Value unmarshal(const std::string &in)
-{
+Json::Value unmarshal(const std::string &in) {
 	Json::Value j;
-	Json::Reader reader;
-	if (!reader.parse(in, j)) {
-		throw std::runtime_error("Invalid JSON input");
-	}
+	std::stringstream(in) >> j;
 
 	return j;
 }
 
-Json::Value unmarshal_b64(const std::string &b64)
-{
+Json::Value unmarshal_b64(const std::string &b64) {
 	std::string decoded;
 	decoded = b64::decode(b64);
 	return unmarshal(decoded);

@@ -108,9 +108,9 @@ std::string b64::encode(const uint8_t * const stream, size_t in_len)
 			out += base64_chars[array_4[j]];
 		}
 
-		while ((i++ < 3)) {
-			out += '=';
-		}
+//		while ((i++ < 3)) {
+//			out += '=';
+//		}
 	}
 
 	return out;

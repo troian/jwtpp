@@ -84,7 +84,7 @@ public:
 	 * \return
 	 */
 	class claims &claims() {
-		return *(claims_.get());
+		return *(_claims.get());
 	}
 
 public:
@@ -121,10 +121,10 @@ private:
 	static std::vector<std::string> tokenize(const std::string &text, char sep);
 
 private:
-	jose::alg    alg_;
-	std::string  data_;
-	sp_claims    claims_;
-	std::string  sig_;
+	jose::alg    _alg;
+	std::string  _data;
+	sp_claims    _claims;
+	std::string  _sig;
 };
 
 } // namespace jose

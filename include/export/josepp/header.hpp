@@ -43,10 +43,7 @@ public:
 	std::string b64();
 
 private:
-	static const char *alg2str(jose::alg alg);
-
-private:
-	Json::Value h_;
+	Json::Value _h;
 };
 
 } // namespace jose

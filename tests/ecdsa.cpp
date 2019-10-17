@@ -27,8 +27,7 @@
 #include <josepp/crypto.hpp>
 #include <josepp/jws.hpp>
 
-TEST(JosePP, sign_ecdsa256)
-{
+TEST(JosePP, sign_verify_ecdsa256) {
 	jose::claims cl;
 
 	jose::sp_ecdsa_key key;
@@ -41,7 +40,7 @@ TEST(JosePP, sign_ecdsa256)
 	const EC_POINT *p = EC_KEY_get0_public_key(key.get());
 
 	EXPECT_EQ(EC_KEY_set_group(pubkey.get(), group), 1);
-	EXPECT_TRUE(p != NULL);
+	EXPECT_TRUE(p != nullptr);
 	EXPECT_EQ(EC_KEY_set_public_key(pubkey.get(), p), 1);
 
 	jose::sp_crypto e256;

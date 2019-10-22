@@ -85,7 +85,7 @@ before_install:
       brew install cmake || brew upgrade cmake
     fi
   - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update && sudo apt-get install libssl-dev; fi
-  - if [ $TRAVIS_OS_NAME == linux ]; then git clone htt:wps://github.com/open-source-parsers/jsoncpp.git ~/jsoncpp; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then git clone https://github.com/open-source-parsers/jsoncpp.git ~/jsoncpp; fi
   - if [ $TRAVIS_OS_NAME == linux ]; then export BLD_PATH=`pwd`; cd ~/jsoncpp; mkdir build && cd build; fi
   - if [ $TRAVIS_OS_NAME == linux ]; then cmake -DJSONCPP_WITH_TESTS=OFF -DJSONCPP_WITH_POST_BUILD_UNITTEST=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release ..; fi
   - if [ $TRAVIS_OS_NAME == linux ]; then make && sudo make install && cd $BLD_PATH; fi

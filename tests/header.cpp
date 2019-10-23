@@ -20,43 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <gtest/gtest.h>
+
+#include <algorithm>
+#include <random>
+#include <functional>
+
 #include <josepp/header.hpp>
-#include <josepp/tools.hpp>
-#include <josepp/crypto.hpp>
 
-namespace jose {
+TEST(JosePP, header_decode_valid) {
+	EXPECT_NO_THROW(jose::hdr("{\"typ\":\"JWT\",\"alg\":\"RS256\"}"));
 
-hdr::hdr(jose::alg alg)
-	: _h()
-{
-	_h["typ"] = "JWT";
-	_h["alg"]  = crypto::alg2str(alg);
+	EXPECT_THROW(jose::hdr("{\"typ\":\"Jwt\",\"alg\":\"RS256\"}"), std::exception);
+	EXPECT_THROW(jose::hdr("{,\"alg\":\"RS256\"}"), std::exception);
+	EXPECT_THROW(jose::hdr("{\"alg\":\"RS256\"}"), std::exception);
+	EXPECT_THROW(jose::hdr("{\"alg\":\"BB6\"}"), std::exception);
 }
 
-hdr::hdr(const std::string &data)
-	: _h()
-{
-	std::stringstream(data) >> _h;
-
-	if (!_h.isMember("typ") || !_h["typ"].isString()) {
-		throw std::runtime_error("stream does not have valid \"typ\" field");
-	}
-
-	if (_h["typ"].asString() != "JWT") {
-		throw std::runtime_error("invalid \"typ\" value");
-	}
-
-	if (!_h.isMember("alg") || !_h["alg"].isString()) {
-		throw std::runtime_error("stream does not have valid \"alg\" field");
-	}
-
-	if (jose::crypto::str2alg(_h["alg"].asString()) == jose::alg::UNKNOWN) {
-		throw std::runtime_error("invalid \"alg\" value");
-	}
+TEST(JosePP, header_decode_invalid_typ) {
+	EXPECT_THROW(jose::hdr("{\"typ\":\"Jwt\",\"alg\":\"RS256\"}"), std::exception);
 }
 
-std::string hdr::b64() {
-	return marshal_b64(_h);
+TEST(JosePP, header_invalid_json) {
+	EXPECT_THROW(jose::hdr("{,\"alg\":\"RS256\"}"), std::exception);
 }
 
-} // namespace jose
+
+TEST(JosePP, header_no_typ) {
+	EXPECT_THROW(jose::hdr("{\"alg\":\"RS256\"}"), std::exception);
+}
+
+TEST(JosePP, header_no_alg) {
+	EXPECT_THROW(jose::hdr("{\"typ\":\"JWT\"}"), std::exception);
+}
+
+TEST(JosePP, header_invalid_alg) {
+	EXPECT_THROW(jose::hdr("{\"typ\":\"JWT\",\"alg\":\"BBs\"}"), std::exception);
+}

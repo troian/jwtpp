@@ -27,8 +27,13 @@
 #include <josepp/jws.hpp>
 #include <openssl/err.h>
 
-TEST(JosePP, create_close_rsa_crypto)
-{
+TEST(JosePP, rsa_gen_invalid_size) {
+	jose::sp_rsa_key key;
+
+	EXPECT_THROW(key = jose::rsa::gen(1023), std::exception);
+}
+
+TEST(JosePP, create_close_rsa_crypto) {
 	jose::sp_rsa_key key;
 
 	EXPECT_NO_THROW(key = jose::rsa::gen(1024));

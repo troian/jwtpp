@@ -31,12 +31,7 @@ namespace jose {
 
 digest::digest(digest::type type, const uint8_t *in_data, size_t in_size)
 	: _size(SHA256_DIGEST_LENGTH)
-	, _data(nullptr) {
-	try {
-		_data = std::shared_ptr<uint8_t>(new uint8_t[SHA512_DIGEST_LENGTH], std::default_delete<uint8_t[]>());
-	} catch (...) {
-		throw;
-	}
+	, _data(new uint8_t[SHA512_DIGEST_LENGTH], std::default_delete<uint8_t[]>()) {
 
 	switch (type) {
 	case digest::type::SHA256: {

@@ -169,6 +169,7 @@ if (WITH_TESTS)
 		tests/hmac.cpp
 		tests/rsa.cpp
 		tests/pss.cpp
+		tests/digest.cpp
 	)
 
 	add_executable(josepp_test ${JOSEPP_TEST_SRS})

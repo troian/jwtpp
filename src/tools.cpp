@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include <iostream>
+#include <sstream>
 
 #include <josepp/tools.hpp>
 #include <josepp/b64.hpp>

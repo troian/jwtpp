@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2016 Artur Troian
+// Copyright (c) 2016-2020 Artur Troian
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@
 #include <random>
 #include <functional>
 
-#include <josepp/b64.hpp>
+#include <jwtpp/jwtpp.hh>
 
 TEST(JosePP, b64)
 {
@@ -44,11 +44,11 @@ TEST(JosePP, b64)
 
 	std::generate(std::begin(in), std::end(in), gen);
 
-	b64 = jose::b64::encode(in);
+	b64 = jwtpp::b64::encode(in);
 
 	std::vector<uint8_t> out;
 
-	out = jose::b64::decode(b64.data(), b64.length());
+	out = jwtpp::b64::decode(b64.data(), b64.length());
 
 	EXPECT_EQ(in.size(), out.size());
 	EXPECT_EQ(in, out);
@@ -56,8 +56,8 @@ TEST(JosePP, b64)
 	b64.clear();
 	out.clear();
 
-	b64 = jose::b64::encode_uri(in);
-	out = jose::b64::decode_uri(b64.data(), b64.length());
+	b64 = jwtpp::b64::encode_uri(in);
+	out = jwtpp::b64::decode_uri(b64.data(), b64.length());
 
 	EXPECT_EQ(in.size(), out.size());
 	EXPECT_EQ(in, out);

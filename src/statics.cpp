@@ -2,9 +2,9 @@
 // Created by Artur Troian on 16.10.2019
 //
 
-#include <josepp/statics.hh>
+#include <jwtpp/statics.hh>
 
-namespace jose {
+namespace jwtpp {
 
 //#if defined(__GNUC__)
 //__attribute__((used))
@@ -13,4 +13,4 @@ namespace jose {
 
 static_init &static_instance = static_init::inst();
 
-} // namespace jose
+} // namespace jwtpp

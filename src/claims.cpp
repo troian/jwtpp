@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2016 Artur Troian
+// Copyright (c) 2016-2020 Artur Troian
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,14 +22,11 @@
 
 #include <sstream>
 
-#include <josepp/claims.hpp>
-#include <josepp/b64.hpp>
-#include <josepp/tools.hpp>
+#include <jwtpp/jwtpp.hh>
 
-namespace jose {
+namespace jwtpp {
 
-void claims::set::any(const std::string &key, const std::string &value)
-{
+void claims::set::any(const std::string &key, const std::string &value) {
 	if (key.empty() || value.empty())
 		throw std::invalid_argument("Invalid params");
 
@@ -66,9 +63,8 @@ claims::claims(const std::string &d, bool b64) :
 	}
 }
 
-std::string claims::b64()
-{
+std::string claims::b64() {
 	return marshal_b64(_claims);
 }
 
-} // namespace jose
+} // namespace jwtpp

@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2016 Artur Troian
+// Copyright (c) 2016-2020 Artur Troian
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,38 +22,36 @@
 
 #include <gtest/gtest.h>
 
-#include <algorithm>
-#include <random>
 #include <functional>
 
-#include <josepp/header.hpp>
+#include <jwtpp/jwtpp.hh>
 
 TEST(JosePP, header_decode_valid) {
-	EXPECT_NO_THROW(jose::hdr("{\"typ\":\"JWT\",\"alg\":\"RS256\"}"));
+	EXPECT_NO_THROW(jwtpp::hdr("{\"typ\":\"JWT\",\"alg\":\"RS256\"}"));
 
-	EXPECT_THROW(jose::hdr("{\"typ\":\"Jwt\",\"alg\":\"RS256\"}"), std::exception);
-	EXPECT_THROW(jose::hdr("{,\"alg\":\"RS256\"}"), std::exception);
-	EXPECT_THROW(jose::hdr("{\"alg\":\"RS256\"}"), std::exception);
-	EXPECT_THROW(jose::hdr("{\"alg\":\"BB6\"}"), std::exception);
+	EXPECT_THROW(jwtpp::hdr("{\"typ\":\"Jwt\",\"alg\":\"RS256\"}"), std::exception);
+	EXPECT_THROW(jwtpp::hdr("{,\"alg\":\"RS256\"}"), std::exception);
+	EXPECT_THROW(jwtpp::hdr("{\"alg\":\"RS256\"}"), std::exception);
+	EXPECT_THROW(jwtpp::hdr("{\"alg\":\"BB6\"}"), std::exception);
 }
 
 TEST(JosePP, header_decode_invalid_typ) {
-	EXPECT_THROW(jose::hdr("{\"typ\":\"Jwt\",\"alg\":\"RS256\"}"), std::exception);
+	EXPECT_THROW(jwtpp::hdr("{\"typ\":\"Jwt\",\"alg\":\"RS256\"}"), std::exception);
 }
 
 TEST(JosePP, header_invalid_json) {
-	EXPECT_THROW(jose::hdr("{,\"alg\":\"RS256\"}"), std::exception);
+	EXPECT_THROW(jwtpp::hdr("{,\"alg\":\"RS256\"}"), std::exception);
 }
 
 
 TEST(JosePP, header_no_typ) {
-	EXPECT_THROW(jose::hdr("{\"alg\":\"RS256\"}"), std::exception);
+	EXPECT_THROW(jwtpp::hdr("{\"alg\":\"RS256\"}"), std::exception);
 }
 
 TEST(JosePP, header_no_alg) {
-	EXPECT_THROW(jose::hdr("{\"typ\":\"JWT\"}"), std::exception);
+	EXPECT_THROW(jwtpp::hdr("{\"typ\":\"JWT\"}"), std::exception);
 }
 
 TEST(JosePP, header_invalid_alg) {
-	EXPECT_THROW(jose::hdr("{\"typ\":\"JWT\",\"alg\":\"BBs\"}"), std::exception);
+	EXPECT_THROW(jwtpp::hdr("{\"typ\":\"JWT\",\"alg\":\"BBs\"}"), std::exception);
 }

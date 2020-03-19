@@ -2,23 +2,23 @@
 // Created by Artur Troian on 2019-08-14
 //
 
-#include <josepp/crypto.hpp>
-#include <josepp/b64.hpp>
 #include <iostream>
 
-namespace jose {
+#include <jwtpp/jwtpp.hh>
 
-pss::pss(jose::alg a, sp_rsa_key key)
+namespace jwtpp {
+
+pss::pss(alg_t a, sp_rsa_key key)
 	: crypto(a)
 	, _r(key)
 {
-	if (a != jose::alg::PS256 && a != jose::alg::PS384 && a != jose::alg::PS512) {
+	if (a != alg_t::PS256 && a != alg_t::PS384 && a != alg_t::PS512) {
 		throw std::invalid_argument("Invalid algorithm");
 	}
 
 	_key_size = static_cast<size_t>(RSA_size(_r.get()));
 
-	if (_alg == jose::alg::PS512 && (_key_size < 256)) {
+	if (_alg == alg_t::PS512 && (_key_size < 256)) {
 		throw std::runtime_error("insufficient key size");
 	}
 }
@@ -54,4 +54,4 @@ bool pss::verify(const std::string &data, const std::string &sig) {
 	return RSA_verify_PKCS1_PSS(_r.get(), d.data(), digest::md(_hash_type), decrypted_sig.get(), -1) == 1;
 }
 
-} // namespace jose
+} // namespace jwtpp

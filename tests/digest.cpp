@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2016 Artur Troian
+// Copyright (c) 2016-2020 Artur Troian
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,11 +22,9 @@
 
 #include <gtest/gtest.h>
 
-#include <algorithm>
-#include <random>
 #include <functional>
 
-#include <josepp/digest.hpp>
+#include <jwtpp/jwtpp.hh>
 
 static const uint32_t test_payload_size = 4080;
 
@@ -35,15 +33,15 @@ extern unsigned char test_payload[test_payload_size];
 static std::string payload_hash("71fca3dd7c9d12dd33dc1979a72829de5f3fe9e1d77ec205cf6517d125f7c8f8");
 
 TEST(JosePP, digest_to_string_valid) {
-	EXPECT_NO_THROW(jose::digest d(jose::digest::type::SHA256, test_payload, test_payload_size));
+	EXPECT_NO_THROW(jwtpp::digest d(jwtpp::digest::type::SHA256, test_payload, test_payload_size));
 
-	jose::digest d(jose::digest::type::SHA256, test_payload, test_payload_size);
+	jwtpp::digest d(jwtpp::digest::type::SHA256, test_payload, test_payload_size);
 
 	EXPECT_EQ(payload_hash, d.to_string());
 }
 
 TEST(JosePP, digest_to_string_invalid) {
-	jose::digest d(jose::digest::type::SHA384, test_payload, test_payload_size);
+	jwtpp::digest d(jwtpp::digest::type::SHA384, test_payload, test_payload_size);
 
 	EXPECT_NE(payload_hash, d.to_string());
 }

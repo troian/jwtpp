@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2016 Artur Troian
+// Copyright (c) 2016-2020 Artur Troian
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,17 +22,16 @@
 
 #include <iostream>
 
-#include <josepp/crypto.hpp>
-#include <josepp/b64.hpp>
-#include <josepp/statics.hh>
+#include <jwtpp/jwtpp.hh>
+#include <jwtpp/statics.hh>
 
-namespace jose {
+namespace jwtpp {
 
-rsa::rsa(jose::alg alg, sp_rsa_key key)
-	: crypto(alg)
+rsa::rsa(alg_t a, sp_rsa_key key)
+	: crypto(a)
 	, _r(key)
 {
-	if (alg != jose::alg::RS256 && alg != jose::alg::RS384 && alg != jose::alg::RS512) {
+	if (a != alg_t::RS256 && a != alg_t::RS384 && a != alg_t::RS512) {
 		throw std::invalid_argument("Invalid algorithm");
 	}
 
@@ -124,4 +123,4 @@ int rsa::password_loader(char *buf, int size, int rwflag, void *u) {
 	return pass_size;
 }
 
-} // namespace jose
+} // namespace jwtpp

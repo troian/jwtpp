@@ -1,12 +1,19 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(josepp LANGUAGES C CXX)
+project(jwtpp LANGUAGES C CXX)
 
 set(VERSION 0.1.0)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
-include(CodeCoverage)
+option(WITH_TESTS "Build tests" OFF)
+option(WITH_INSTALL "Allow root targets to not issue install" ON)
+option(BUILD_SHARED_LIBS "Build shared library" OFF)
+
+if(WITH_TESTS AND (CMAKE_BUILD_TYPE STREQUAL "Debug"))
+	include(CodeCoverage)
+endif ()
+
 include(CheckCSourceCompiles)
 include(CheckCCompilerFlag)
 include(CheckCXXSourceCompiles)
@@ -16,10 +23,6 @@ include(CheckFunctionExists)
 include(CheckTypeSize)
 include(CheckIncludeFiles)
 include(CheckIncludeFileCXX)
-
-option(WITH_TESTS "Build tests" OFF)
-option(WITH_INSTALL "Allow root targets to not issue install" ON)
-option(BUILD_SHARED_LIBS "Build shared library" OFF)
 
 set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "Installation directory for libraries")
 set(INSTALL_INC_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH "Installation directory for headers")
@@ -43,7 +46,10 @@ check_include_file_cxx(mutex HAVE_MUTEX)
 check_include_file_cxx(exception HAVE_EXCEPTION)
 check_include_file_cxx(stdexcept HAVE_STDEXCEPT)
 
-set(CMAKE_CXX_STANDARD 11)
+if (NOT CMAKE_CXX_STANDARD)
+	set(CMAKE_CXX_STANDARD 11)
+endif()
+
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (NOT MSVC)
@@ -58,22 +64,13 @@ set(LIB_SOURCES
 	src/ecdsa.cpp
 	src/header.cpp
 	src/hmac.cpp
-	src/jws.cpp
+	src/jwtpp.cpp
 	src/rsa.cpp
 	src/tools.cpp
 	src/pss.cpp
 	src/statics.cpp
-
-	include/export/josepp/b64.hpp
-	include/export/josepp/claims.hpp
-	include/export/josepp/crypto.hpp
-	include/export/josepp/digest.hpp
-	include/export/josepp/header.hpp
-	include/export/josepp/jws.hpp
-	include/export/josepp/tools.hpp
-	include/export/josepp/types.hpp
-	include/export/josepp/sstring.hh
-	include/local/josepp/statics.hh
+	include/export/jwtpp/jwtpp.hh
+	include/local/jwtpp/statics.hh
 )
 
 add_library(${PROJECT_NAME}-static STATIC ${LIB_SOURCES})
@@ -138,7 +135,7 @@ endif ()
 if (WITH_INSTALL)
 	install(
 		DIRECTORY
-		include/export/josepp
+		include/export/jwtpp
 		DESTINATION include
 		FILES_MATCHING PATTERN "*.hpp"
 	)
@@ -173,25 +170,32 @@ if (WITH_TESTS)
 		tests/header.cpp
 	)
 
-	add_executable(josepp_test ${JOSEPP_TEST_SRS})
+	add_executable(jwtpp_test ${JOSEPP_TEST_SRS})
 
 	if (WIN32)
 		set(WIN32_DEP_LIBS crypt32.lib ws2_32.lib)
 	endif (WIN32)
 
 	target_link_libraries(
-		josepp_test
+		jwtpp_test
 		gtest_main
 		${PROJECT_NAME}-static
 		${WIN32_DEP_LIBS}
 	)
 
-	add_test(UnitTests josepp_test)
+	add_test(UnitTests jwtpp_test)
 
-	append_coverage_compiler_flags()
-
-	setup_target_for_coverage_lcov(
-		NAME coverage
-		EXECUTABLE josepp_test
+	target_compile_definitions(
+		jwtpp_test
+		PRIVATE
+			-DTEST_RSA_KEY_PATH=\"${CMAKE_SOURCE_DIR}/tests/rsa.pem\"
 	)
+	if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+		append_coverage_compiler_flags()
+
+		setup_target_for_coverage_lcov(
+			NAME coverage
+			EXECUTABLE jwtpp_test
+		)
+	endif ()
 endif ()

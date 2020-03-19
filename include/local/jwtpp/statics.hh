@@ -12,7 +12,7 @@
 #include <openssl/err.h>
 #include <openssl/evp.h>
 
-namespace jose {
+namespace jwtpp {
 
 template<typename T, typename ... Args>
 T *instantiate(Args && ...args) noexcept {
@@ -44,4 +44,4 @@ public:
 
 extern static_init &static_instance;
 
-} // namespace jose
+} // namespace jwtpp

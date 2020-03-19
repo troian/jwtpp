@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2016 Artur Troian
+// Copyright (c) 2016-2020 Artur Troian
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,17 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <josepp/header.hpp>
-#include <josepp/tools.hpp>
-#include <josepp/crypto.hpp>
+#include <jwtpp/jwtpp.hh>
 
-namespace jose {
+namespace jwtpp {
 
-hdr::hdr(jose::alg alg)
+hdr::hdr(alg_t a)
 	: _h()
 {
 	_h["typ"] = "JWT";
-	_h["alg"]  = crypto::alg2str(alg);
+	_h["alg"]  = crypto::alg2str(a);
 }
 
 hdr::hdr(const std::string &data)
@@ -50,7 +48,7 @@ hdr::hdr(const std::string &data)
 		throw std::runtime_error("stream does not have valid \"alg\" field");
 	}
 
-	if (jose::crypto::str2alg(_h["alg"].asString()) == jose::alg::UNKNOWN) {
+	if (crypto::str2alg(_h["alg"].asString()) == alg_t::UNKNOWN) {
 		throw std::runtime_error("invalid \"alg\" value");
 	}
 }
@@ -59,4 +57,4 @@ std::string hdr::b64() {
 	return marshal_b64(_h);
 }
 
-} // namespace jose
+} // namespace jwtpp

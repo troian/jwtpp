@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2016 Artur Troian
+// Copyright (c) 2016-2020 Artur Troian
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,18 +22,18 @@
 
 #include <gtest/gtest.h>
 
-#include <josepp/claims.hpp>
+#include <jwtpp/jwtpp.hh>
 
 TEST(JosePP, create_close_claims)
 {
-	EXPECT_NO_THROW(jose::claims cl);
-	EXPECT_THROW(jose::claims cl(""), std::exception);
-	EXPECT_THROW(jose::claims cl("", true), std::exception);
-	EXPECT_THROW(jose::claims cl("jkhfkjsgdfg"), std::exception);
+	EXPECT_NO_THROW(jwtpp::claims cl);
+	EXPECT_THROW(jwtpp::claims cl(""), std::exception);
+	EXPECT_THROW(jwtpp::claims cl("", true), std::exception);
+	EXPECT_THROW(jwtpp::claims cl("jkhfkjsgdfg"), std::exception);
 
-	jose::sp_claims cl;
+	jwtpp::sp_claims cl;
 
-	EXPECT_NO_THROW(cl = std::make_shared<jose::claims>());
+	EXPECT_NO_THROW(cl = std::make_shared<jwtpp::claims>());
 
 	EXPECT_NO_THROW(cl->set().iss("troian"));
 	EXPECT_NO_THROW(cl->set().iss("troian"));

@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2016 Artur Troian
+// Copyright (c) 2016-2020 Artur Troian
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,22 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <josepp/types.hpp>
-#include <josepp/crypto.hpp>
-#include <josepp/b64.hpp>
+#include <jwtpp/jwtpp.hh>
 
-namespace jose {
+namespace jwtpp {
 
-crypto::crypto(jose::alg alg)
-	: _alg(alg)
+crypto::crypto(alg_t a)
+	: _alg(a)
 	, _hdr()
 	, _hash_type(digest::type::SHA256)
 {
-	if (alg == jose::alg::HS256 || alg == jose::alg::RS256 || alg == jose::alg::ES256 || alg == jose::alg::PS256) {
+	if (a == alg_t::HS256 || a == alg_t::RS256 || a == alg_t::ES256 || a == alg_t::PS256) {
 		_hash_type = digest::type::SHA256;
-	} else if (alg == jose::alg::HS384 || alg == jose::alg::RS384 || alg == jose::alg::ES384 || alg == jose::alg::PS384) {
+	} else if (a == alg_t::HS384 || a == alg_t::RS384 || a == alg_t::ES384 || a == alg_t::PS384) {
 		_hash_type = digest::type::SHA384;
-	} else if (alg == jose::alg::HS512 || alg == jose::alg::RS512 || alg == jose::alg::ES512 || alg == jose::alg::PS512) {
+	} else if (a == alg_t::HS512 || a == alg_t::RS512 || a == alg_t::ES512 || a == alg_t::PS512) {
 		_hash_type = digest::type::SHA512;
 	} else {
 		throw std::runtime_error("invalid algorithm");
@@ -44,68 +42,68 @@ crypto::crypto(jose::alg alg)
 
 crypto::~crypto() {}
 
-const char *crypto::alg2str(jose::alg alg) {
-	switch (alg) {
-	case jose::alg::NONE:
+const char *crypto::alg2str(alg_t a) {
+	switch (a) {
+	case alg_t::NONE:
 		return "none";
-	case jose::alg::HS256:
+	case alg_t::HS256:
 		return "HS256";
-	case jose::alg::HS384:
+	case alg_t::HS384:
 		return "HS384";
-	case jose::alg::HS512:
+	case alg_t::HS512:
 		return "HS512";
-	case jose::alg::RS256:
+	case alg_t::RS256:
 		return "RS256";
-	case jose::alg::RS384:
+	case alg_t::RS384:
 		return "RS384";
-	case jose::alg::RS512:
+	case alg_t::RS512:
 		return "RS512";
-	case jose::alg::ES256:
+	case alg_t::ES256:
 		return "ES256";
-	case jose::alg::ES384:
+	case alg_t::ES384:
 		return "ES384";
-	case jose::alg::ES512:
+	case alg_t::ES512:
 		return "ES512";
-	case jose::alg::PS256:
+	case alg_t::PS256:
 		return "PS256";
-	case jose::alg::PS384:
+	case alg_t::PS384:
 		return "PS384";
-	case jose::alg::PS512:
+	case alg_t::PS512:
 		return "PS512";
 	default:
 		return nullptr;
 	}
 }
 
-jose::alg crypto::str2alg(const std::string &a) {
+alg_t crypto::str2alg(const std::string &a) {
 	if (a == "none") {
-		return jose::alg::NONE;
+		return alg_t::NONE;
 	} else if (a == "HS256") {
-		return jose::alg::HS256;
+		return alg_t::HS256;
 	} else if (a == "HS384") {
-		return jose::alg::HS384;
+		return alg_t::HS384;
 	} else if (a == "HS512") {
-		return jose::alg::HS512;
+		return alg_t::HS512;
 	} else if (a == "RS256") {
-		return jose::alg::RS256;
+		return alg_t::RS256;
 	} else if (a == "RS384") {
-		return jose::alg::RS384;
+		return alg_t::RS384;
 	} else if (a == "RS512") {
-		return jose::alg::RS512;
+		return alg_t::RS512;
 	} else if (a == "ES256") {
-		return jose::alg::ES256;
+		return alg_t::ES256;
 	} else if (a == "ES384") {
-		return jose::alg::ES384;
+		return alg_t::ES384;
 	} else if (a == "ES512") {
-		return jose::alg::ES512;
+		return alg_t::ES512;
 	} else if (a == "PS256") {
-		return jose::alg::PS256;
+		return alg_t::PS256;
 	} else if (a == "PS384") {
-		return jose::alg::PS384;
+		return alg_t::PS384;
 	} else if (a == "PS512") {
-		return jose::alg::PS512;
+		return alg_t::PS512;
 	} else {
-		return jose::alg::UNKNOWN;
+		return alg_t::UNKNOWN;
 	}
 }
 
@@ -127,4 +125,4 @@ int crypto::hash2nid(digest::type type) {
 	return ret;
 }
 
-} // namespace jose
+} // namespace jwtpp

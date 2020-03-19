@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2016 Artur Troian
+// Copyright (c) 2016-2020 Artur Troian
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,16 +22,15 @@
 
 #include <openssl/err.h>
 
-#include <josepp/crypto.hpp>
-#include <josepp/b64.hpp>
+#include <jwtpp/jwtpp.hh>
 
-namespace jose {
+namespace jwtpp {
 
-ecdsa::ecdsa(jose::alg alg, sp_ecdsa_key key) :
-	  crypto(alg)
+ecdsa::ecdsa(alg_t a, sp_ecdsa_key key)
+	: crypto(a)
 	, _e(key)
 {
-	if (alg != jose::alg::ES256 && alg != jose::alg::ES384 && alg != jose::alg::ES512) {
+	if (a != alg_t::ES256 && a != alg_t::ES384 && a != alg_t::ES512) {
 		throw std::invalid_argument("Invalid algorithm");
 	}
 }
@@ -101,4 +100,4 @@ sp_ecdsa_key ecdsa::gen(int nid) {
 	return key;
 }
 
-} // namespace jose
+} // namespace jwtpp

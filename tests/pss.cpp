@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2016 Artur Troian
+// Copyright (c) 2016-2020 Artur Troian
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,54 +22,52 @@
 
 #include <gtest/gtest.h>
 
-#include <josepp/claims.hpp>
-#include <josepp/crypto.hpp>
-#include <josepp/jws.hpp>
+#include <jwtpp/jwtpp.hh>
 
 TEST(JosePP, create_close_pss_crypto) {
-	jose::sp_rsa_key key;
+	jwtpp::sp_rsa_key key;
 
-	EXPECT_NO_THROW(key = jose::rsa::gen(1024));
+	EXPECT_NO_THROW(key = jwtpp::rsa::gen(1024));
 
-	EXPECT_NO_THROW(std::make_shared<jose::pss>(jose::alg::PS256, key));
-	EXPECT_NO_THROW(std::make_shared<jose::pss>(jose::alg::PS384, key));
-	EXPECT_THROW(std::make_shared<jose::pss>(jose::alg::PS512, key), std::exception);
+	EXPECT_NO_THROW(std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS256, key));
+	EXPECT_NO_THROW(std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS384, key));
+	EXPECT_THROW(std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS512, key), std::exception);
 
-	EXPECT_THROW(std::make_shared<jose::pss>(jose::alg::HS256, key), std::exception);
-	EXPECT_THROW(std::make_shared<jose::pss>(jose::alg::ES384, key), std::exception);
+	EXPECT_THROW(std::make_shared<jwtpp::pss>(jwtpp::alg_t::HS256, key), std::exception);
+	EXPECT_THROW(std::make_shared<jwtpp::pss>(jwtpp::alg_t::ES384, key), std::exception);
 }
 
 TEST(JosePP, sign_verify_pss256) {
-	jose::claims cl;
+	jwtpp::claims cl;
 
-	jose::sp_rsa_key key;
-	jose::sp_rsa_key pubkey;
-	jose::sp_crypto r256;
-	jose::sp_crypto r256_pub;
-	jose::sp_crypto r384;
-	jose::sp_crypto r384_pub;
-	jose::sp_crypto r512;
-	jose::sp_crypto r512_pub;
+	jwtpp::sp_rsa_key key;
+	jwtpp::sp_rsa_key pubkey;
+	jwtpp::sp_crypto r256;
+	jwtpp::sp_crypto r256_pub;
+	jwtpp::sp_crypto r384;
+	jwtpp::sp_crypto r384_pub;
+	jwtpp::sp_crypto r512;
+	jwtpp::sp_crypto r512_pub;
 
-	EXPECT_NO_THROW(key = jose::rsa::gen(1024));
-	EXPECT_NO_THROW(pubkey = jose::sp_rsa_key(RSAPublicKey_dup(key.get()), ::RSA_free));
-	EXPECT_NO_THROW(r256 = std::make_shared<jose::pss>(jose::alg::PS256, key));
-	EXPECT_NO_THROW(r256_pub = std::make_shared<jose::pss>(jose::alg::PS256, pubkey));
-	EXPECT_NO_THROW(r384 = std::make_shared<jose::pss>(jose::alg::PS384, key));
-	EXPECT_NO_THROW(r384_pub = std::make_shared<jose::pss>(jose::alg::PS384, pubkey));
-	EXPECT_THROW(r512 = std::make_shared<jose::pss>(jose::alg::PS512, key), std::exception);
-	EXPECT_THROW(r512_pub = std::make_shared<jose::pss>(jose::alg::PS512, pubkey), std::exception);
+	EXPECT_NO_THROW(key = jwtpp::rsa::gen(1024));
+	EXPECT_NO_THROW(pubkey = jwtpp::sp_rsa_key(RSAPublicKey_dup(key.get()), ::RSA_free));
+	EXPECT_NO_THROW(r256 = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS256, key));
+	EXPECT_NO_THROW(r256_pub = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS256, pubkey));
+	EXPECT_NO_THROW(r384 = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS384, key));
+	EXPECT_NO_THROW(r384_pub = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS384, pubkey));
+	EXPECT_THROW(r512 = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS512, key), std::exception);
+	EXPECT_THROW(r512_pub = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS512, pubkey), std::exception);
 
-	std::string bearer = jose::jws::sign_bearer(cl, r256);
+	std::string bearer = jwtpp::jws::sign_bearer(cl, r256);
 
-	jose::sp_jws jws;
+	jwtpp::sp_jws jws;
 
-	EXPECT_NO_THROW(jws = jose::jws::parse(bearer));
+	EXPECT_NO_THROW(jws = jwtpp::jws::parse(bearer));
 
 	EXPECT_TRUE(jws->verify(r256));
 	EXPECT_TRUE(jws->verify(r256_pub));
 
-	auto vf = [](jose::sp_claims cl) {
+	auto vf = [](jwtpp::sp_claims cl) {
 		return !cl->check().iss("troian");
 	};
 
@@ -78,45 +76,45 @@ TEST(JosePP, sign_verify_pss256) {
 	EXPECT_THROW(jws->verify(r512_pub, vf), std::exception);
 
 	bearer = "ghdfgddf";
-	EXPECT_THROW(jws = jose::jws::parse(bearer), std::exception);
+	EXPECT_THROW(jws = jwtpp::jws::parse(bearer), std::exception);
 
 	bearer = "Bearer ";
-	EXPECT_THROW(jws = jose::jws::parse(bearer), std::exception);
+	EXPECT_THROW(jws = jwtpp::jws::parse(bearer), std::exception);
 
 	bearer = "Bearer bla.bla.bla";
-	EXPECT_THROW(jws = jose::jws::parse(bearer), std::exception);
+	EXPECT_THROW(jws = jwtpp::jws::parse(bearer), std::exception);
 }
 
 TEST(JosePP, sign_verify_pss384) {
-	jose::claims cl;
+	jwtpp::claims cl;
 
-	jose::sp_rsa_key key;
-	jose::sp_rsa_key pubkey;
-	jose::sp_crypto r256;
-	jose::sp_crypto r256_pub;
-	jose::sp_crypto r384;
-	jose::sp_crypto r384_pub;
-	jose::sp_crypto r512;
-	jose::sp_crypto r512_pub;
+	jwtpp::sp_rsa_key key;
+	jwtpp::sp_rsa_key pubkey;
+	jwtpp::sp_crypto r256;
+	jwtpp::sp_crypto r256_pub;
+	jwtpp::sp_crypto r384;
+	jwtpp::sp_crypto r384_pub;
+	jwtpp::sp_crypto r512;
+	jwtpp::sp_crypto r512_pub;
 
-	EXPECT_NO_THROW(key = jose::rsa::gen(1024));
-	EXPECT_NO_THROW(pubkey = jose::sp_rsa_key(RSAPublicKey_dup(key.get()), ::RSA_free));
-	EXPECT_NO_THROW(r256 = std::make_shared<jose::pss>(jose::alg::PS256, key));
-	EXPECT_NO_THROW(r256_pub = std::make_shared<jose::pss>(jose::alg::PS256, pubkey));
-	EXPECT_NO_THROW(r384 = std::make_shared<jose::pss>(jose::alg::PS384, key));
-	EXPECT_NO_THROW(r384_pub = std::make_shared<jose::pss>(jose::alg::PS384, pubkey));
-	EXPECT_THROW(r512 = std::make_shared<jose::pss>(jose::alg::PS512, key), std::exception);
-	EXPECT_THROW(r512_pub = std::make_shared<jose::pss>(jose::alg::PS512, pubkey), std::exception);
+	EXPECT_NO_THROW(key = jwtpp::rsa::gen(1024));
+	EXPECT_NO_THROW(pubkey = jwtpp::sp_rsa_key(RSAPublicKey_dup(key.get()), ::RSA_free));
+	EXPECT_NO_THROW(r256 = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS256, key));
+	EXPECT_NO_THROW(r256_pub = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS256, pubkey));
+	EXPECT_NO_THROW(r384 = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS384, key));
+	EXPECT_NO_THROW(r384_pub = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS384, pubkey));
+	EXPECT_THROW(r512 = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS512, key), std::exception);
+	EXPECT_THROW(r512_pub = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS512, pubkey), std::exception);
 
-	std::string bearer = jose::jws::sign_bearer(cl, r384);
+	std::string bearer = jwtpp::jws::sign_bearer(cl, r384);
 
-	jose::sp_jws jws;
+	jwtpp::sp_jws jws;
 
-	EXPECT_NO_THROW(jws = jose::jws::parse(bearer));
+	EXPECT_NO_THROW(jws = jwtpp::jws::parse(bearer));
 
 	EXPECT_TRUE(jws->verify(r384_pub));
 
-	auto vf = [](jose::sp_claims cl) {
+	auto vf = [](jwtpp::sp_claims cl) {
 		return !cl->check().iss("troian");
 	};
 
@@ -125,45 +123,45 @@ TEST(JosePP, sign_verify_pss384) {
 	EXPECT_THROW(jws->verify(r512_pub, vf), std::exception);
 
 	bearer = "ghdfgddf";
-	EXPECT_THROW(jws = jose::jws::parse(bearer), std::exception);
+	EXPECT_THROW(jws = jwtpp::jws::parse(bearer), std::exception);
 
 	bearer = "Bearer ";
-	EXPECT_THROW(jws = jose::jws::parse(bearer), std::exception);
+	EXPECT_THROW(jws = jwtpp::jws::parse(bearer), std::exception);
 
 	bearer = "Bearer bla.bla.bla";
-	EXPECT_THROW(jws = jose::jws::parse(bearer), std::exception);
+	EXPECT_THROW(jws = jwtpp::jws::parse(bearer), std::exception);
 }
 
 TEST(JosePP, sign_verify_pss512) {
-	jose::claims cl;
+	jwtpp::claims cl;
 
-	jose::sp_rsa_key key;
-	jose::sp_rsa_key pubkey;
-	jose::sp_crypto r256;
-	jose::sp_crypto r256_pub;
-	jose::sp_crypto r384;
-	jose::sp_crypto r384_pub;
-	jose::sp_crypto r512;
-	jose::sp_crypto r512_pub;
+	jwtpp::sp_rsa_key key;
+	jwtpp::sp_rsa_key pubkey;
+	jwtpp::sp_crypto r256;
+	jwtpp::sp_crypto r256_pub;
+	jwtpp::sp_crypto r384;
+	jwtpp::sp_crypto r384_pub;
+	jwtpp::sp_crypto r512;
+	jwtpp::sp_crypto r512_pub;
 
-	EXPECT_NO_THROW(key = jose::rsa::gen(2048));
-	EXPECT_NO_THROW(pubkey = jose::sp_rsa_key(RSAPublicKey_dup(key.get()), ::RSA_free));
-	EXPECT_NO_THROW(r256 = std::make_shared<jose::pss>(jose::alg::PS256, key));
-	EXPECT_NO_THROW(r256_pub = std::make_shared<jose::pss>(jose::alg::PS256, pubkey));
-	EXPECT_NO_THROW(r384 = std::make_shared<jose::pss>(jose::alg::PS384, key));
-	EXPECT_NO_THROW(r384_pub = std::make_shared<jose::pss>(jose::alg::PS384, pubkey));
-	EXPECT_NO_THROW(r512 = std::make_shared<jose::pss>(jose::alg::PS512, key));
-	EXPECT_NO_THROW(r512_pub = std::make_shared<jose::pss>(jose::alg::PS512, pubkey));
+	EXPECT_NO_THROW(key = jwtpp::rsa::gen(2048));
+	EXPECT_NO_THROW(pubkey = jwtpp::sp_rsa_key(RSAPublicKey_dup(key.get()), ::RSA_free));
+	EXPECT_NO_THROW(r256 = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS256, key));
+	EXPECT_NO_THROW(r256_pub = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS256, pubkey));
+	EXPECT_NO_THROW(r384 = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS384, key));
+	EXPECT_NO_THROW(r384_pub = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS384, pubkey));
+	EXPECT_NO_THROW(r512 = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS512, key));
+	EXPECT_NO_THROW(r512_pub = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS512, pubkey));
 
-	std::string bearer = jose::jws::sign_bearer(cl, r512);
+	std::string bearer = jwtpp::jws::sign_bearer(cl, r512);
 
-	jose::sp_jws jws;
+	jwtpp::sp_jws jws;
 
-	EXPECT_NO_THROW(jws = jose::jws::parse(bearer));
+	EXPECT_NO_THROW(jws = jwtpp::jws::parse(bearer));
 
 	EXPECT_TRUE(jws->verify(r512_pub));
 
-	auto vf = [](jose::sp_claims cl) {
+	auto vf = [](jwtpp::sp_claims cl) {
 		return !cl->check().iss("troian");
 	};
 
@@ -172,11 +170,11 @@ TEST(JosePP, sign_verify_pss512) {
 	EXPECT_THROW(jws->verify(r256_pub, vf), std::exception);
 
 	bearer = "ghdfgddf";
-	EXPECT_THROW(jws = jose::jws::parse(bearer), std::exception);
+	EXPECT_THROW(jws = jwtpp::jws::parse(bearer), std::exception);
 
 	bearer = "Bearer ";
-	EXPECT_THROW(jws = jose::jws::parse(bearer), std::exception);
+	EXPECT_THROW(jws = jwtpp::jws::parse(bearer), std::exception);
 
 	bearer = "Bearer bla.bla.bla";
-	EXPECT_THROW(jws = jose::jws::parse(bearer), std::exception);
+	EXPECT_THROW(jws = jwtpp::jws::parse(bearer), std::exception);
 }

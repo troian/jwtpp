@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2016 Artur Troian
+// Copyright (c) 2016-2020 Artur Troian
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,11 +23,11 @@
 #include <sstream>
 #include <iomanip>
 
-#include <josepp/digest.hpp>
+#include <jwtpp/jwtpp.hh>
 
 #include <openssl/sha.h>
 
-namespace jose {
+namespace jwtpp {
 
 digest::digest(digest::type type, const uint8_t *in_data, size_t in_size)
 	: _size(SHA256_DIGEST_LENGTH)
@@ -108,4 +108,4 @@ std::string digest::to_string() const {
 	return s.str();
 }
 
-} // namespace jose
+} // namespace jwtpp

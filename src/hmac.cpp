@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2016 Artur Troian
+// Copyright (c) 2016-2020 Artur Troian
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +22,15 @@
 
 #include <openssl/hmac.h>
 
-#include <cstring>
+#include <jwtpp/jwtpp.hh>
 
-#include <josepp/crypto.hpp>
-#include <josepp/b64.hpp>
-#include <josepp/tools.hpp>
+namespace jwtpp {
 
-namespace jose {
-
-hmac::hmac(jose::alg alg, const secure_string &secret)
-	: crypto(alg)
+hmac::hmac(alg_t a, const secure_string &secret)
+	: crypto(a)
 	, _secret(secret)
 {
-	if (alg != jose::alg::HS256 && alg != jose::alg::HS384 && alg != jose::alg::HS512) {
+	if (a != alg_t::HS256 && a != alg_t::HS384 && a != alg_t::HS512) {
 		throw std::invalid_argument("Invalid algorithm");
 	}
 
@@ -51,9 +47,9 @@ std::string hmac::sign(const std::string &data) {
 	const EVP_MD *evp;
 
 	switch (_alg) {
-	case jose::alg::HS256: evp = EVP_sha256(); break;
-	case jose::alg::HS384: evp = EVP_sha384(); break;
-	case jose::alg::HS512: evp = EVP_sha512(); break;
+	case alg_t::HS256: evp = EVP_sha256(); break;
+	case alg_t::HS384: evp = EVP_sha384(); break;
+	case alg_t::HS512: evp = EVP_sha512(); break;
 	default:
 		// Should never happen
 		throw std::runtime_error("Invalid alg");
@@ -90,4 +86,4 @@ bool hmac::verify(const std::string &data, const std::string &sig) {
 	return sig == sign(data);
 }
 
-} // namespace jose
+} // namespace jwtpp

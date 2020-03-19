@@ -1,9 +1,9 @@
-# josepp
+# jwtpp
 JSON Object Signing and Encryption library for C++
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/da9665fd01ba4c759cef755d1ff03d2c)](https://www.codacy.com/app/troian/josepp?utm_source=github.com&utm_medium=referral&utm_content=troian/josepp&utm_campaign=badger)
-[![Build Status](https://travis-ci.com/troian/josepp.svg?branch=master)](https://travis-ci.com/troian/josepp)
-[![Codecov](https://codecov.io/gh/troian/josepp/branch/master/graph/badge.svg)](https://codecov.io/gh/troian/josepp)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/da9665fd01ba4c759cef755d1ff03d2c)](https://www.codacy.com/app/troian/jwtpp?utm_source=github.com&utm_medium=referral&utm_content=troian/jwtpp&utm_campaign=badger)
+[![Build Status](https://travis-ci.com/troian/jwtpp.svg?branch=master)](https://travis-ci.com/troian/jwtpp)
+[![Codecov](https://codecov.io/gh/troian/jwtpp/branch/master/graph/badge.svg)](https://codecov.io/gh/troian/jwtpp)
 <a href="https://jwt.io"> <img src="https://jwt.io/img/badge-compatible.svg?sanitize=true" width="80"/></a>
 
 #### Dependencies:
@@ -11,8 +11,14 @@ JSON Object Signing and Encryption library for C++
   - OpenSSL
 
 #### Built and tested with:
-  - GCC, C++11
-  - MS VS2010
+  - GCC
+    - C++11
+    - С++14
+    - С++17
+  - СLang
+    - C++11
+    - С++14
+    - С++17
 
 #### Supported features:
   - Sign
@@ -53,7 +59,7 @@ Refer to tests dir
 add_subdirectory(<path to>)
 #### System-wide installation
 ```bash
-git clone https://github.com/troian/josepp
+git clone https://github.com/troian/jwtpp
 mkdir build && cd build
 cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=<install prefix> ..
 make install
@@ -61,7 +67,7 @@ make install
 #### Homebrew
 ```
 brew tap troian/tap
-brew install josepp
+brew install jwtpp
 ```
 
 ### TODO

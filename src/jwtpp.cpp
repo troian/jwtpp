@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2016 Artur Troian
+// Copyright (c) 2016-2020 Artur Troian
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,15 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <josepp/jws.hpp>
-#include <josepp/tools.hpp>
+#include <jwtpp/jwtpp.hh>
 
-namespace jose {
+namespace jwtpp {
 
 static const std::string bearer_hdr("bearer ");
 
-jws::jws(jose::alg alg, const std::string &data, sp_claims cl, const std::string &sig)
-	: _alg(alg)
+jws::jws(alg_t a, const std::string &data, sp_claims cl, const std::string &sig)
+	: _alg(a)
 	, _data(data)
 	, _claims(cl)
 	, _sig(sig) {
@@ -92,8 +91,8 @@ sp_jws jws::parse(const std::string &full_bearer) {
 		throw std::runtime_error("Is not JWT");
 	}
 
-	jose::alg alg = crypto::str2alg(hdr["alg"].asString());
-	if (alg >= jose::alg::UNKNOWN) {
+	alg_t a = crypto::str2alg(hdr["alg"].asString());
+	if (a >= alg_t::UNKNOWN) {
 		throw std::runtime_error("Invalid alg");
 	}
 
@@ -112,7 +111,7 @@ sp_jws jws::parse(const std::string &full_bearer) {
 	jws *j;
 
 	try {
-		j = new jws(alg, d, cl, tokens[2]);
+		j = new jws(a, d, cl, tokens[2]);
 	} catch (...) {
 		throw;
 	}
@@ -161,4 +160,4 @@ std::vector<std::string> jws::tokenize(const std::string &text, char sep) {
 	return tokens;
 }
 
-} // namespace jose
+} // namespace jwtpp

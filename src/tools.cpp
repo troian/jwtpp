@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2016 Artur Troian
+// Copyright (c) 2016-2020 Artur Troian
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,12 +21,10 @@
 // SOFTWARE.
 
 #include <iostream>
-#include <sstream>
 
-#include <josepp/tools.hpp>
-#include <josepp/b64.hpp>
+#include <jwtpp/jwtpp.hh>
 
-namespace jose {
+namespace jwtpp {
 
 std::string marshal(const Json::Value &json) {
 	Json::StreamWriterBuilder builder;
@@ -54,4 +52,4 @@ Json::Value unmarshal_b64(const std::string &b64) {
 	return unmarshal(decoded);
 }
 
-} // namespace jose
+} // namespace jwtpp

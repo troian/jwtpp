@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2016 Artur Troian
+// Copyright (c) 2016-2020 Artur Troian
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,17 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <josepp/b64.hpp>
+#include <jwtpp/jwtpp.hh>
 
-namespace jose {
+namespace jwtpp {
 
 const std::string b64::base64_chars =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	"abcdefghijklmnopqrstuvwxyz"
 	"0123456789+/";
 
-void b64::uri_enc(char *buf, size_t len)
-{
+void b64::uri_enc(char *buf, size_t len) {
 	size_t i, t;
 
 	for (i = t = 0; i < len; i++) {
@@ -50,8 +49,7 @@ void b64::uri_enc(char *buf, size_t len)
 	}
 }
 
-void b64::uri_dec(char *buf, size_t len)
-{
+void b64::uri_dec(char *buf, size_t len) {
 	size_t i, t;
 
 	for (i = t = 0; i < len; i++) {
@@ -71,8 +69,7 @@ void b64::uri_dec(char *buf, size_t len)
 	}
 }
 
-std::string b64::encode(const uint8_t * const stream, size_t in_len)
-{
+std::string b64::encode(const uint8_t * const stream, size_t in_len) {
 	int i = 0;
 	int k = 0;
 	uint8_t array_3[3];
@@ -116,46 +113,38 @@ std::string b64::encode(const uint8_t * const stream, size_t in_len)
 	return out;
 }
 
-std::string b64::encode(const std::vector<uint8_t> &stream)
-{
+std::string b64::encode(const std::vector<uint8_t> &stream) {
 	return encode(stream.data(), stream.size());
 }
 
-std::string b64::encode(const std::vector<uint8_t> * const stream)
-{
+std::string b64::encode(const std::vector<uint8_t> * const stream) {
 	return encode(stream->data(), stream->size());
 }
 
-std::string b64::encode(const std::string &stream)
-{
+std::string b64::encode(const std::string &stream) {
 	return encode(reinterpret_cast<const uint8_t *>(stream.c_str()), stream.size());
 }
 
-std::string b64::encode_uri(const uint8_t * const stream, size_t in_len)
-{
+std::string b64::encode_uri(const uint8_t * const stream, size_t in_len) {
 	std::string out = encode(stream, in_len);
 	uri_enc(const_cast<char *>(out.data()), out.length());
 
 	return out;
 }
 
-std::string b64::encode_uri(const std::string &stream)
-{
+std::string b64::encode_uri(const std::string &stream) {
 	return encode_uri(reinterpret_cast<const uint8_t *>(stream.data()), stream.length());
 }
 
-std::string b64::encode_uri(const std::vector<uint8_t> &stream)
-{
+std::string b64::encode_uri(const std::vector<uint8_t> &stream) {
 	return encode_uri(stream.data(), stream.size());
 }
 
-std::string b64::encode_uri(const std::vector<uint8_t> * const stream)
-{
+std::string b64::encode_uri(const std::vector<uint8_t> * const stream) {
 	return encode_uri(stream->data(), stream->size());
 }
 
-std::vector<uint8_t> b64::decode(const char *in, size_t in_size)
-{
+std::vector<uint8_t> b64::decode(const char *in, size_t in_size) {
 	size_t      in_len = in_size;
 	size_t      i = 0;
 	size_t      in_ = 0;
@@ -204,14 +193,12 @@ std::vector<uint8_t> b64::decode(const char *in, size_t in_size)
 	return ret;
 }
 
-std::string b64::decode(const std::string &in)
-{
+std::string b64::decode(const std::string &in) {
 	std::vector<uint8_t> tmp = decode(in.data(), in.length());
 	return std::string(tmp.data(), tmp.data() + tmp.size());
 }
 
-std::string b64::decode_uri(const std::string &in)
-{
+std::string b64::decode_uri(const std::string &in) {
 	std::string tmp(in);
 	uri_dec(const_cast<char *>(tmp.data()), tmp.length());
 
@@ -219,12 +206,11 @@ std::string b64::decode_uri(const std::string &in)
 	return std::string(tmpd.data(), tmpd.data() + tmpd.size());
 }
 
-std::vector<uint8_t> b64::decode_uri(const char *in, size_t in_size)
-{
+std::vector<uint8_t> b64::decode_uri(const char *in, size_t in_size) {
 	std::string tmp(in, in_size);
 	uri_dec(const_cast<char *>(tmp.data()), tmp.length());
 
 	return decode(tmp.data(), tmp.length());
 }
 
-} // namespace jose
+} // namespace jwtpp

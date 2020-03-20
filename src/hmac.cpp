@@ -26,7 +26,7 @@
 
 namespace jwtpp {
 
-hmac::hmac(alg_t a, const secure_string &secret)
+hmac::hmac(const secure_string &secret, alg_t a)
 	: crypto(a)
 	, _secret(secret)
 {

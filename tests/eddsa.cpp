@@ -25,37 +25,33 @@
 
 #include <jwtpp/jwtpp.hh>
 
-TEST(JosePP, sign_verify_ecdsa256) {
+TEST(JosePP, sign_verify_eddsa) {
 	jwtpp::claims cl;
 
-	jwtpp::sp_ecdsa_key key;
-	jwtpp::sp_ecdsa_key pubkey;
+	jwtpp::sp_evp_key key;
+	jwtpp::sp_evp_key pubkey;
 
-	EXPECT_NO_THROW(key = jwtpp::ecdsa::gen(NID_secp256k1));
-	EXPECT_NO_THROW(pubkey = jwtpp::sp_ecdsa_key(EC_KEY_new(), ::EC_KEY_free));
+	jwtpp::sp_evp_key key_alien;
 
-	const EC_GROUP *group = EC_KEY_get0_group(key.get());
-	const EC_POINT *p = EC_KEY_get0_public_key(key.get());
+	// generating 2 keys.
+	// key used to sign/verify
+	// key_alien to is expected to fail when validating bearer signed by key
+	EXPECT_NO_THROW(key = jwtpp::eddsa::gen());
+	EXPECT_NO_THROW(pubkey = jwtpp::eddsa::get_pub(key));
+	EXPECT_NO_THROW(key_alien = jwtpp::eddsa::gen());
 
-	EXPECT_EQ(EC_KEY_set_group(pubkey.get(), group), 1);
-	EXPECT_TRUE(p != nullptr);
-	EXPECT_EQ(EC_KEY_set_public_key(pubkey.get(), p), 1);
+	jwtpp::sp_crypto ed;
+	jwtpp::sp_crypto ed_pub;
+	jwtpp::sp_crypto ed_alien;
 
-	jwtpp::sp_crypto e256;
-	jwtpp::sp_crypto e384;
-	jwtpp::sp_crypto e512;
-	jwtpp::sp_crypto e256_pub;
-	jwtpp::sp_crypto e384_pub;
-	jwtpp::sp_crypto e512_pub;
+	EXPECT_NO_THROW(ed = std::make_shared<jwtpp::eddsa>(key));
+	EXPECT_NO_THROW(ed_pub = std::make_shared<jwtpp::eddsa>(pubkey));
 
-	EXPECT_NO_THROW(e256 = std::make_shared<jwtpp::ecdsa>(key, jwtpp::alg_t::ES256));
-	EXPECT_NO_THROW(e384 = std::make_shared<jwtpp::ecdsa>(key, jwtpp::alg_t::ES256));
-	EXPECT_NO_THROW(e512 = std::make_shared<jwtpp::ecdsa>(key, jwtpp::alg_t::ES256));
-	EXPECT_NO_THROW(e256_pub = std::make_shared<jwtpp::ecdsa>(pubkey, jwtpp::alg_t::ES256));
-	EXPECT_NO_THROW(e384_pub = std::make_shared<jwtpp::ecdsa>(pubkey, jwtpp::alg_t::ES256));
-	EXPECT_NO_THROW(e512_pub = std::make_shared<jwtpp::ecdsa>(pubkey, jwtpp::alg_t::ES256));
+	EXPECT_NO_THROW(ed_alien = std::make_shared<jwtpp::eddsa>(key_alien));
 
-	std::string bearer = jwtpp::jws::sign_bearer(cl, e256);
+	std::string bearer;
+
+	EXPECT_NO_THROW(bearer = jwtpp::jws::sign_bearer(cl, ed));
 
 	EXPECT_TRUE(!bearer.empty());
 
@@ -63,16 +59,19 @@ TEST(JosePP, sign_verify_ecdsa256) {
 
 	EXPECT_NO_THROW(jws = jwtpp::jws::parse(bearer));
 
-	EXPECT_TRUE(jws->verify(e256_pub));
+	EXPECT_FALSE(jws->verify(ed_alien));
+
+	EXPECT_TRUE(jws->verify(ed));
+	EXPECT_TRUE(jws->verify(ed_pub));
 
 	auto vf = [](jwtpp::sp_claims cl) {
 		return !cl->check().iss("troian");
 	};
 
 #if defined(_MSC_VER) && (_MSC_VER < 1700)
-    EXPECT_TRUE(jws->verify(e256_pub, vf));
+    EXPECT_TRUE(jws->verify(ed, vf));
 #else
-	EXPECT_TRUE(jws->verify(e256_pub, std::bind<bool>(vf, std::placeholders::_1)));
+	EXPECT_TRUE(jws->verify(ed, std::bind<bool>(vf, std::placeholders::_1)));
 #endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 
 	bearer = "ghdfgddf";

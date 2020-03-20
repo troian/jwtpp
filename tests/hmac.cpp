@@ -26,18 +26,18 @@
 
 TEST(JosePP, create_close_hmac_crypto)
 {
-	EXPECT_NO_THROW(std::make_shared<jwtpp::hmac>(jwtpp::alg_t::HS256, "secret"));
-	EXPECT_NO_THROW(std::make_shared<jwtpp::hmac>(jwtpp::alg_t::HS384, "secret"));
-	EXPECT_NO_THROW(std::make_shared<jwtpp::hmac>(jwtpp::alg_t::HS512, "secret"));
+	EXPECT_NO_THROW(std::make_shared<jwtpp::hmac>("secret", jwtpp::alg_t::HS256));
+	EXPECT_NO_THROW(std::make_shared<jwtpp::hmac>("secret", jwtpp::alg_t::HS384));
+	EXPECT_NO_THROW(std::make_shared<jwtpp::hmac>("secret", jwtpp::alg_t::HS512));
 
-	EXPECT_THROW(std::make_shared<jwtpp::hmac>(jwtpp::alg_t::HS256, ""), std::exception);
-	EXPECT_THROW(std::make_shared<jwtpp::hmac>(jwtpp::alg_t::HS384, ""), std::exception);
-	EXPECT_THROW(std::make_shared<jwtpp::hmac>(jwtpp::alg_t::HS512, ""), std::exception);
-	EXPECT_THROW(std::make_shared<jwtpp::hmac>(jwtpp::alg_t::NONE, "secret"), std::exception);
-	EXPECT_THROW(std::make_shared<jwtpp::hmac>(jwtpp::alg_t::UNKNOWN, "secret"), std::exception);
+	EXPECT_THROW(std::make_shared<jwtpp::hmac>("", jwtpp::alg_t::HS256), std::exception);
+	EXPECT_THROW(std::make_shared<jwtpp::hmac>("", jwtpp::alg_t::HS384), std::exception);
+	EXPECT_THROW(std::make_shared<jwtpp::hmac>("", jwtpp::alg_t::HS512), std::exception);
+	EXPECT_THROW(std::make_shared<jwtpp::hmac>("secret", jwtpp::alg_t::NONE), std::exception);
+	EXPECT_THROW(std::make_shared<jwtpp::hmac>("secret", jwtpp::alg_t::UNKNOWN), std::exception);
 
-	EXPECT_THROW(std::make_shared<jwtpp::hmac>(jwtpp::alg_t::ES512, ""), std::exception);
-	EXPECT_THROW(std::make_shared<jwtpp::hmac>(jwtpp::alg_t::RS256, ""), std::exception);
+	EXPECT_THROW(std::make_shared<jwtpp::hmac>("", jwtpp::alg_t::ES512), std::exception);
+	EXPECT_THROW(std::make_shared<jwtpp::hmac>("", jwtpp::alg_t::RS256), std::exception);
 }
 
 TEST(JosePP, sign_verify_hmac256)
@@ -46,9 +46,9 @@ TEST(JosePP, sign_verify_hmac256)
 
 	cl.set().iss("troian");
 
-	jwtpp::sp_crypto h256 = std::make_shared<jwtpp::hmac>(jwtpp::alg_t::HS256, "secret");
-	jwtpp::sp_crypto h384 = std::make_shared<jwtpp::hmac>(jwtpp::alg_t::HS384, "secret");
-	jwtpp::sp_crypto h512 = std::make_shared<jwtpp::hmac>(jwtpp::alg_t::HS512, "secret");
+	jwtpp::sp_crypto h256 = std::make_shared<jwtpp::hmac>("secret", jwtpp::alg_t::HS256);
+	jwtpp::sp_crypto h384 = std::make_shared<jwtpp::hmac>("secret", jwtpp::alg_t::HS384);
+	jwtpp::sp_crypto h512 = std::make_shared<jwtpp::hmac>("secret", jwtpp::alg_t::HS512);
 
 	std::string bearer = jwtpp::jws::sign_bearer(cl, h256);
 
@@ -87,9 +87,9 @@ TEST(JosePP, sign_verify_hmac384)
 
 	cl.set().iss("troian");
 
-	jwtpp::sp_crypto h256 = std::make_shared<jwtpp::hmac>(jwtpp::alg_t::HS256, "secret");
-	jwtpp::sp_crypto h384 = std::make_shared<jwtpp::hmac>(jwtpp::alg_t::HS384, "secret");
-	jwtpp::sp_crypto h512 = std::make_shared<jwtpp::hmac>(jwtpp::alg_t::HS512, "secret");
+	jwtpp::sp_crypto h256 = std::make_shared<jwtpp::hmac>("secret", jwtpp::alg_t::HS256);
+	jwtpp::sp_crypto h384 = std::make_shared<jwtpp::hmac>("secret", jwtpp::alg_t::HS384);
+	jwtpp::sp_crypto h512 = std::make_shared<jwtpp::hmac>("secret", jwtpp::alg_t::HS512);
 
 	std::string bearer = jwtpp::jws::sign_bearer(cl, h384);
 
@@ -128,9 +128,9 @@ TEST(JosePP, sign_verify_hmac512)
 
 	cl.set().iss("troian");
 
-	jwtpp::sp_crypto h256 = std::make_shared<jwtpp::hmac>(jwtpp::alg_t::HS256, "secret");
-	jwtpp::sp_crypto h384 = std::make_shared<jwtpp::hmac>(jwtpp::alg_t::HS384, "secret");
-	jwtpp::sp_crypto h512 = std::make_shared<jwtpp::hmac>(jwtpp::alg_t::HS512, "secret");
+	jwtpp::sp_crypto h256 = std::make_shared<jwtpp::hmac>("secret", jwtpp::alg_t::HS256);
+	jwtpp::sp_crypto h384 = std::make_shared<jwtpp::hmac>("secret", jwtpp::alg_t::HS384);
+	jwtpp::sp_crypto h512 = std::make_shared<jwtpp::hmac>("secret", jwtpp::alg_t::HS512);
 
 	std::string bearer = jwtpp::jws::sign_bearer(cl, h512);
 

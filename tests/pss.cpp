@@ -29,12 +29,12 @@ TEST(JosePP, create_close_pss_crypto) {
 
 	EXPECT_NO_THROW(key = jwtpp::rsa::gen(1024));
 
-	EXPECT_NO_THROW(std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS256, key));
-	EXPECT_NO_THROW(std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS384, key));
-	EXPECT_THROW(std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS512, key), std::exception);
+	EXPECT_NO_THROW(std::make_shared<jwtpp::pss>(key, jwtpp::alg_t::PS256));
+	EXPECT_NO_THROW(std::make_shared<jwtpp::pss>(key, jwtpp::alg_t::PS384));
+	EXPECT_THROW(std::make_shared<jwtpp::pss>(key, jwtpp::alg_t::PS512), std::exception);
 
-	EXPECT_THROW(std::make_shared<jwtpp::pss>(jwtpp::alg_t::HS256, key), std::exception);
-	EXPECT_THROW(std::make_shared<jwtpp::pss>(jwtpp::alg_t::ES384, key), std::exception);
+	EXPECT_THROW(std::make_shared<jwtpp::pss>(key, jwtpp::alg_t::HS256), std::exception);
+	EXPECT_THROW(std::make_shared<jwtpp::pss>(key, jwtpp::alg_t::ES384), std::exception);
 }
 
 TEST(JosePP, sign_verify_pss256) {
@@ -51,12 +51,12 @@ TEST(JosePP, sign_verify_pss256) {
 
 	EXPECT_NO_THROW(key = jwtpp::rsa::gen(1024));
 	EXPECT_NO_THROW(pubkey = jwtpp::sp_rsa_key(RSAPublicKey_dup(key.get()), ::RSA_free));
-	EXPECT_NO_THROW(r256 = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS256, key));
-	EXPECT_NO_THROW(r256_pub = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS256, pubkey));
-	EXPECT_NO_THROW(r384 = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS384, key));
-	EXPECT_NO_THROW(r384_pub = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS384, pubkey));
-	EXPECT_THROW(r512 = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS512, key), std::exception);
-	EXPECT_THROW(r512_pub = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS512, pubkey), std::exception);
+	EXPECT_NO_THROW(r256 = std::make_shared<jwtpp::pss>(key, jwtpp::alg_t::PS256));
+	EXPECT_NO_THROW(r256_pub = std::make_shared<jwtpp::pss>(pubkey, jwtpp::alg_t::PS256));
+	EXPECT_NO_THROW(r384 = std::make_shared<jwtpp::pss>(key, jwtpp::alg_t::PS384));
+	EXPECT_NO_THROW(r384_pub = std::make_shared<jwtpp::pss>(pubkey, jwtpp::alg_t::PS384));
+	EXPECT_THROW(r512 = std::make_shared<jwtpp::pss>(key, jwtpp::alg_t::PS512), std::exception);
+	EXPECT_THROW(r512_pub = std::make_shared<jwtpp::pss>(pubkey, jwtpp::alg_t::PS512), std::exception);
 
 	std::string bearer = jwtpp::jws::sign_bearer(cl, r256);
 
@@ -99,12 +99,12 @@ TEST(JosePP, sign_verify_pss384) {
 
 	EXPECT_NO_THROW(key = jwtpp::rsa::gen(1024));
 	EXPECT_NO_THROW(pubkey = jwtpp::sp_rsa_key(RSAPublicKey_dup(key.get()), ::RSA_free));
-	EXPECT_NO_THROW(r256 = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS256, key));
-	EXPECT_NO_THROW(r256_pub = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS256, pubkey));
-	EXPECT_NO_THROW(r384 = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS384, key));
-	EXPECT_NO_THROW(r384_pub = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS384, pubkey));
-	EXPECT_THROW(r512 = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS512, key), std::exception);
-	EXPECT_THROW(r512_pub = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS512, pubkey), std::exception);
+	EXPECT_NO_THROW(r256 = std::make_shared<jwtpp::pss>(key, jwtpp::alg_t::PS256));
+	EXPECT_NO_THROW(r256_pub = std::make_shared<jwtpp::pss>(pubkey, jwtpp::alg_t::PS256));
+	EXPECT_NO_THROW(r384 = std::make_shared<jwtpp::pss>(key, jwtpp::alg_t::PS384));
+	EXPECT_NO_THROW(r384_pub = std::make_shared<jwtpp::pss>(pubkey, jwtpp::alg_t::PS384));
+	EXPECT_THROW(r512 = std::make_shared<jwtpp::pss>(key, jwtpp::alg_t::PS512), std::exception);
+	EXPECT_THROW(r512_pub = std::make_shared<jwtpp::pss>(pubkey, jwtpp::alg_t::PS512), std::exception);
 
 	std::string bearer = jwtpp::jws::sign_bearer(cl, r384);
 
@@ -146,12 +146,12 @@ TEST(JosePP, sign_verify_pss512) {
 
 	EXPECT_NO_THROW(key = jwtpp::rsa::gen(2048));
 	EXPECT_NO_THROW(pubkey = jwtpp::sp_rsa_key(RSAPublicKey_dup(key.get()), ::RSA_free));
-	EXPECT_NO_THROW(r256 = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS256, key));
-	EXPECT_NO_THROW(r256_pub = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS256, pubkey));
-	EXPECT_NO_THROW(r384 = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS384, key));
-	EXPECT_NO_THROW(r384_pub = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS384, pubkey));
-	EXPECT_NO_THROW(r512 = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS512, key));
-	EXPECT_NO_THROW(r512_pub = std::make_shared<jwtpp::pss>(jwtpp::alg_t::PS512, pubkey));
+	EXPECT_NO_THROW(r256 = std::make_shared<jwtpp::pss>(key, jwtpp::alg_t::PS256));
+	EXPECT_NO_THROW(r256_pub = std::make_shared<jwtpp::pss>(pubkey, jwtpp::alg_t::PS256));
+	EXPECT_NO_THROW(r384 = std::make_shared<jwtpp::pss>(key, jwtpp::alg_t::PS384));
+	EXPECT_NO_THROW(r384_pub = std::make_shared<jwtpp::pss>(pubkey, jwtpp::alg_t::PS384));
+	EXPECT_NO_THROW(r512 = std::make_shared<jwtpp::pss>(key, jwtpp::alg_t::PS512));
+	EXPECT_NO_THROW(r512_pub = std::make_shared<jwtpp::pss>(pubkey, jwtpp::alg_t::PS512));
 
 	std::string bearer = jwtpp::jws::sign_bearer(cl, r512);
 

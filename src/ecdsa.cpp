@@ -26,7 +26,7 @@
 
 namespace jwtpp {
 
-ecdsa::ecdsa(alg_t a, sp_ecdsa_key key)
+ecdsa::ecdsa(sp_ecdsa_key key, alg_t a)
 	: crypto(a)
 	, _e(key)
 {

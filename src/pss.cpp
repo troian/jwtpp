@@ -8,7 +8,7 @@
 
 namespace jwtpp {
 
-pss::pss(alg_t a, sp_rsa_key key)
+pss::pss(sp_rsa_key key, alg_t a)
 	: crypto(a)
 	, _r(key)
 {

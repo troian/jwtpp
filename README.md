@@ -39,6 +39,7 @@ JSON Object Signing and Encryption library for C++
 | PS256 | **Supported** |
 | PS384 | **Supported** |
 | PS512 | **Supported** |
+| EdDSA | **Supported** |
 
 #### Claims
 |Claim|Options|Status|

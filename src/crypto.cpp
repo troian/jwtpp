@@ -35,6 +35,10 @@ crypto::crypto(alg_t a)
 		_hash_type = digest::type::SHA384;
 	} else if (a == alg_t::HS512 || a == alg_t::RS512 || a == alg_t::ES512 || a == alg_t::PS512) {
 		_hash_type = digest::type::SHA512;
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+	} else if (a == alg_t::EdDSA) {
+		// ED25519 does not support digests
+#endif // OPENSSL_VERSION_NUMBER >= 0x10101000L
 	} else {
 		throw std::runtime_error("invalid algorithm");
 	}
@@ -70,6 +74,10 @@ const char *crypto::alg2str(alg_t a) {
 		return "PS384";
 	case alg_t::PS512:
 		return "PS512";
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+	case alg_t::EdDSA:
+		return "EdDSA";
+#endif // OPENSSL_VERSION_NUMBER >= 0x10101000L
 	default:
 		return nullptr;
 	}
@@ -102,6 +110,10 @@ alg_t crypto::str2alg(const std::string &a) {
 		return alg_t::PS384;
 	} else if (a == "PS512") {
 		return alg_t::PS512;
+	} else if (a == "EdDSA") {
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+		return alg_t::EdDSA;
+#endif // OPENSSL_VERSION_NUMBER >= 0x10101000L
 	} else {
 		return alg_t::UNKNOWN;
 	}

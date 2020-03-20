@@ -27,7 +27,7 @@
 
 namespace jwtpp {
 
-rsa::rsa(alg_t a, sp_rsa_key key)
+rsa::rsa(sp_rsa_key key, alg_t a)
 	: crypto(a)
 	, _r(key)
 {

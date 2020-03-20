@@ -71,6 +71,9 @@ enum class alg_t {
 	PS256,
 	PS384,
 	PS512,
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+	EdDSA,
+#endif // OPENSSL_VERSION_NUMBER >= 0x10101000L
 	UNKNOWN
 };
 
@@ -92,14 +95,18 @@ enum class alg_t {
 	typedef std::shared_ptr<RSA>            sp_rsa_key;
 	typedef std::shared_ptr<EC_KEY>         sp_ecdsa_key;
 #else
-	using sp_claims    = typename std::shared_ptr<class claims>;
-	using up_claims    = typename std::unique_ptr<class claims>;
-	using sp_crypto    = typename std::shared_ptr<class crypto>;
-	using sp_hmac      = typename std::shared_ptr<class hmac>;
-	using sp_rsa       = typename std::shared_ptr<class rsa>;
-	using sp_ecdsa     = typename std::shared_ptr<class ecdsa>;
-	using sp_rsa_key   = typename std::shared_ptr<RSA>;
-	using sp_ecdsa_key = typename std::shared_ptr<EC_KEY>;
+	using sp_claims       = typename std::shared_ptr<class claims>;
+	using up_claims       = typename std::unique_ptr<class claims>;
+	using sp_crypto       = typename std::shared_ptr<class crypto>;
+	using sp_hmac         = typename std::shared_ptr<class hmac>;
+	using sp_rsa          = typename std::shared_ptr<class rsa>;
+	using sp_ecdsa        = typename std::shared_ptr<class ecdsa>;
+	using sp_rsa_key      = typename std::shared_ptr<RSA>;
+	using sp_ecdsa_key    = typename std::shared_ptr<EC_KEY>;
+	using sp_evp_key      = typename std::shared_ptr<EVP_PKEY>;
+
+	using sp_evp_md_ctx   = typename std::shared_ptr<EVP_MD_CTX>;
+	using sp_evp_pkey_ctx = typename std::shared_ptr<EVP_PKEY_CTX>;
 #endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 
 template <class T>
@@ -559,7 +566,7 @@ protected:
 
 class hmac : public crypto {
 public:
-	explicit hmac(alg_t a, const secure_string &secret);
+	explicit hmac(const secure_string &secret, alg_t a = alg_t::HS256);
 
 	~hmac() override = default;
 
@@ -581,7 +588,7 @@ private:
 
 class rsa : public crypto {
 public:
-	explicit rsa(alg_t a, sp_rsa_key key);
+	explicit rsa(sp_rsa_key key, alg_t a = alg_t::RS256);
 
 	~rsa() override;
 
@@ -617,7 +624,7 @@ private:
 
 class ecdsa : public crypto {
 public:
-	explicit ecdsa(alg_t a, sp_ecdsa_key key);
+	explicit ecdsa(sp_ecdsa_key key, alg_t a = alg_t::ES256);
 
 	~ecdsa() override = default;
 
@@ -640,9 +647,37 @@ private:
 	sp_ecdsa_key _e;
 };
 
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+class eddsa : public crypto {
+public:
+	explicit eddsa(sp_evp_key key, alg_t a = alg_t::EdDSA);
+
+	~eddsa() override = default;
+
+public:
+	std::string sign(const std::string &data) override;
+	bool verify(const std::string &data, const std::string &sig) override;
+
+public:
+
+#if !(defined(_MSC_VER) && (_MSC_VER < 1700))
+	template <typename... _Args>
+	static sp_ecdsa make_shared(_Args&&... __args) {
+		return std::make_shared<class ecdsa>(__args...);
+	}
+#endif // !(defined(_MSC_VER) && (_MSC_VER < 1700))
+
+	static sp_evp_key gen();
+	static sp_evp_key get_pub(sp_evp_key priv);
+
+private:
+	sp_evp_key _e;
+};
+#endif // OPENSSL_VERSION_NUMBER >= 0x10101000L
+
 class pss : public crypto {
 public:
-	explicit pss(alg_t a, sp_rsa_key key);
+	explicit pss(sp_rsa_key key, alg_t a = alg_t::PS256);
 
 	~pss() override = default;
 

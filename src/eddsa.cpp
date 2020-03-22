@@ -20,11 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <jwtpp/jwtpp.hh>
+
+#if defined(JWTPP_SUPPORTED_EDDSA)
 #include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/crypto.h>
-
-#include <jwtpp/jwtpp.hh>
 
 namespace jwtpp {
 
@@ -38,6 +39,10 @@ eddsa::eddsa(sp_evp_key key, alg_t a)
 }
 
 std::string eddsa::sign(const std::string &data) {
+	if (data.empty()) {
+		throw std::invalid_argument("data is empty");
+	}
+
 	auto md = sp_evp_md_ctx(EVP_MD_CTX_new(), ::EVP_MD_CTX_free);
 
 	EVP_MD_CTX_init(md.get());
@@ -103,3 +108,5 @@ sp_evp_key eddsa::get_pub(sp_evp_key priv) {
 }
 
 } // namespace jwtpp
+
+#endif // defined(JWTPP_SUPPORTED_EDDSA)

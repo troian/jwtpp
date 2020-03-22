@@ -43,6 +43,10 @@ rsa::~rsa() {
 }
 
 std::string rsa::sign(const std::string &data) {
+	if (data.empty()) {
+		throw std::invalid_argument("data is empty");
+	}
+
 	std::shared_ptr<uint8_t> sig = std::shared_ptr<uint8_t>(new uint8_t[_key_size], std::default_delete<uint8_t[]>());
 
 	digest d(_hash_type, reinterpret_cast<const uint8_t *>(data.data()), data.length());

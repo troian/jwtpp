@@ -20,12 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <gtest/gtest.h>
-#include <openssl/err.h>
-
 #include <jwtpp/jwtpp.hh>
 
-TEST(JosePP, sign_verify_eddsa) {
+#if defined(JWTPP_SUPPORTED_EDDSA)
+
+#include <gtest/gtest.h>
+
+TEST(jwtpp, sign_verify_eddsa) {
 	jwtpp::claims cl;
 
 	jwtpp::sp_evp_key key;
@@ -83,3 +84,5 @@ TEST(JosePP, sign_verify_eddsa) {
 	bearer = "Bearer bla.bla.bla";
 	EXPECT_THROW(jws = jwtpp::jws::parse(bearer), std::exception);
 }
+
+#endif // defined(JWTPP_SUPPORTED_EDDSA)

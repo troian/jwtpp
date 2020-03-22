@@ -24,7 +24,7 @@
 
 #include <jwtpp/jwtpp.hh>
 
-TEST(JosePP, create_close_claims)
+TEST(jwtpp, create_close_claims)
 {
 	EXPECT_NO_THROW(jwtpp::claims cl);
 	EXPECT_THROW(jwtpp::claims cl(""), std::exception);
@@ -35,8 +35,12 @@ TEST(JosePP, create_close_claims)
 
 	EXPECT_NO_THROW(cl = std::make_shared<jwtpp::claims>());
 
+	EXPECT_THROW(cl->set().any("", "val"), std::exception);
+	EXPECT_THROW(cl->set().any("key", ""), std::exception);
+
 	EXPECT_NO_THROW(cl->set().iss("troian"));
 	EXPECT_NO_THROW(cl->set().iss("troian"));
+
 	EXPECT_FALSE(cl->has().aud());
 
 	EXPECT_EQ("troian", cl->get().iss());

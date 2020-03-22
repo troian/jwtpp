@@ -32,7 +32,7 @@ extern unsigned char test_payload[test_payload_size];
 
 static std::string payload_hash("71fca3dd7c9d12dd33dc1979a72829de5f3fe9e1d77ec205cf6517d125f7c8f8");
 
-TEST(JosePP, digest_to_string_valid) {
+TEST(jwtpp, digest_to_string_valid) {
 	EXPECT_NO_THROW(jwtpp::digest d(jwtpp::digest::type::SHA256, test_payload, test_payload_size));
 
 	jwtpp::digest d(jwtpp::digest::type::SHA256, test_payload, test_payload_size);
@@ -40,7 +40,7 @@ TEST(JosePP, digest_to_string_valid) {
 	EXPECT_EQ(payload_hash, d.to_string());
 }
 
-TEST(JosePP, digest_to_string_invalid) {
+TEST(jwtpp, digest_to_string_invalid) {
 	jwtpp::digest d(jwtpp::digest::type::SHA384, test_payload, test_payload_size);
 
 	EXPECT_NE(payload_hash, d.to_string());

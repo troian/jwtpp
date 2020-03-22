@@ -45,6 +45,10 @@
 #   define __NODISCARD
 #endif
 
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+#   define JWTPP_SUPPORTED_EDDSA
+#endif
+
 namespace jwtpp {
 
 class claims;
@@ -71,17 +75,11 @@ enum class alg_t {
 	PS256,
 	PS384,
 	PS512,
-#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+#if defined(JWTPP_SUPPORTED_EDDSA)
 	EdDSA,
-#endif // OPENSSL_VERSION_NUMBER >= 0x10101000L
+#endif // defined(JWTPP_SUPPORTED_EDDSA)
 	UNKNOWN
 };
-
-#if defined(_MSC_VER) && (_MSC_VER < 1700)
-
-#else
-
-#endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 
 #if defined(_MSC_VER) && (_MSC_VER < 1700)
 #   define final
@@ -647,7 +645,7 @@ private:
 	sp_ecdsa_key _e;
 };
 
-#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+#if defined(JWTPP_SUPPORTED_EDDSA)
 class eddsa : public crypto {
 public:
 	explicit eddsa(sp_evp_key key, alg_t a = alg_t::EdDSA);
@@ -673,7 +671,7 @@ public:
 private:
 	sp_evp_key _e;
 };
-#endif // OPENSSL_VERSION_NUMBER >= 0x10101000L
+#endif // defined(JWTPP_SUPPORTED_EDDSA)
 
 class pss : public crypto {
 public:
@@ -683,7 +681,6 @@ public:
 
 public:
 	std::string sign(const std::string &data) override;
-
 	bool verify(const std::string &data, const std::string &sig) override;
 
 private:

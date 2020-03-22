@@ -36,6 +36,10 @@ ecdsa::ecdsa(sp_ecdsa_key key, alg_t a)
 }
 
 std::string ecdsa::sign(const std::string &data) {
+	if (data.empty()) {
+		throw std::invalid_argument("data is empty");
+	}
+
 	auto sig = std::shared_ptr<uint8_t>(new uint8_t[ECDSA_size(_e.get())], std::default_delete<uint8_t[]>());
 
 	digest d(_hash_type, reinterpret_cast<const uint8_t *>(data.data()), data.length());

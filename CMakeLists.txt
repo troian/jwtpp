@@ -6,11 +6,12 @@ set(VERSION 0.1.0)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
-option(WITH_TESTS "Build tests" OFF)
-option(WITH_INSTALL "Allow root targets to not issue install" ON)
-option(BUILD_SHARED_LIBS "Build shared library" OFF)
+option(JWTPP_WITH_TESTS "Build tests" OFF)
+option(JWTPP_WITH_COVERAGE "Enable coverage tests" OFF)
+option(JWTPP_WITH_INSTALL "Allow root targets to not issue install" ON)
+option(JWTPP_WITH_SHARED_LIBS "Build shared library" OFF)
 
-if(WITH_TESTS AND (CMAKE_BUILD_TYPE STREQUAL "Debug"))
+if(JWTPP_WITH_TESTS AND (CMAKE_BUILD_TYPE STREQUAL "Debug"))
 	include(CodeCoverage)
 endif ()
 
@@ -29,18 +30,13 @@ set(INSTALL_INC_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH "Installation d
 set(INSTALL_PKGCONFIG_DIR "${CMAKE_INSTALL_PREFIX}/share/pkgconfig" CACHE PATH "Installation directory for pkgconfig (.pc) files")
 
 find_package(OpenSSL REQUIRED)
+
 if (NOT WIN32 AND NOT JsonCPP_FOUND)
 	find_package(PkgConfig REQUIRED)
 	pkg_check_modules(JsonCPP REQUIRED jsoncpp)
 endif ()
 
-set(eddsa_support OFF)
-
-if (OPENSSL_VERSION VERSION_GREATER_EQUAL 1.1.1)
-	set(eddsa_support ON)
-endif()
-
-include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
+include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR}/include)
 include_directories(SYSTEM ${JsonCPP_INCLUDE_DIRS})
 link_directories(${JsonCPP_LIBRARY_DIRS})
 
@@ -69,6 +65,7 @@ set(LIB_SOURCES
 	src/crypto.cpp
 	src/digest.cpp
 	src/ecdsa.cpp
+	src/eddsa.cpp
 	src/header.cpp
 	src/hmac.cpp
 	src/jwtpp.cpp
@@ -85,13 +82,6 @@ add_library(
 	${PROJECT_NAME}-static
 	STATIC ${LIB_SOURCES}
 )
-if (eddsa_support)
-	target_sources(
-		${PROJECT_NAME}-static
-		PRIVATE
-		src/eddsa.cpp
-	)
-endif()
 
 set_target_properties(${PROJECT_NAME}-static PROPERTIES OUTPUT_NAME ${PROJECT_NAME} CLEAN_DIRECT_OUTPUT 1)
 
@@ -110,7 +100,7 @@ target_link_libraries(
 	${JsonCPP_LIBRARIES}
 )
 
-if (WITH_INSTALL)
+if (JWTPP_WITH_INSTALL)
 	install(
 		TARGETS
 			${PROJECT_NAME}-static
@@ -120,15 +110,8 @@ if (WITH_INSTALL)
 	)
 endif ()
 
-if (BUILD_SHARED_LIBS)
+if (JWTPP_WITH_SHARED_LIBS)
 	add_library(${PROJECT_NAME}-shared SHARED ${LIB_SOURCES})
-	if (eddsa_support)
-		target_sources(
-			${PROJECT_NAME}-shared
-			PRIVATE
-			src/eddsa.cpp
-		)
-	endif()
 
 	set_target_properties(${PROJECT_NAME}-shared PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 	set_target_properties(${PROJECT_NAME}-shared PROPERTIES OUTPUT_NAME ${PROJECT_NAME} CLEAN_DIRECT_OUTPUT 1)
@@ -159,7 +142,7 @@ if (BUILD_SHARED_LIBS)
 	endif ()
 endif ()
 
-if (WITH_INSTALL)
+if (JWTPP_WITH_INSTALL)
 	install(
 		DIRECTORY
 		include/export/jwtpp
@@ -168,19 +151,19 @@ if (WITH_INSTALL)
 	)
 endif ()
 
-set(JOSEPP_PC ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc)
+set(JWTPP_PC ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc)
 
-if (WITH_INSTALL)
+if (JWTPP_WITH_INSTALL)
 	configure_file(
 		pkgconfig.pc.in
-		${JOSEPP_PC}
+		${JWTPP_PC}
 		@ONLY
 	)
 
-	install(FILES ${JOSEPP_PC} DESTINATION "${INSTALL_PKGCONFIG_DIR}")
+	install(FILES ${JWTPP_PC} DESTINATION "${INSTALL_PKGCONFIG_DIR}")
 endif ()
 
-if (WITH_TESTS)
+if (JWTPP_WITH_TESTS)
 	enable_testing()
 	add_subdirectory(gtest EXCLUDE_FROM_ALL)
 
@@ -189,21 +172,15 @@ if (WITH_TESTS)
 	add_executable(jwtpp_test
 		tests/b64.cpp
 		tests/claims.cpp
+		tests/crypto.cpp
 		tests/digest.cpp
 		tests/ecdsa.cpp
+		tests/eddsa.cpp
 		tests/header.cpp
 		tests/hmac.cpp
 		tests/pss.cpp
 		tests/rsa.cpp
 	)
-
-	if (eddsa_support)
-		target_sources(
-			jwtpp_test
-			PRIVATE
-			tests/eddsa.cpp
-		)
-	endif()
 
 	if (WIN32)
 		set(WIN32_DEP_LIBS crypt32.lib ws2_32.lib)
@@ -223,13 +200,15 @@ if (WITH_TESTS)
 		PRIVATE
 			-DTEST_RSA_KEY_PATH=\"${CMAKE_SOURCE_DIR}/tests/rsa.pem\"
 	)
-#
-#	if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-#		append_coverage_compiler_flags()
-#
-#		setup_target_for_coverage_lcov(
-#			NAME coverage
-#			EXECUTABLE jwtpp_test
-#		)
-#	endif ()
+
+	if (JWTPP_WITH_COVERAGE)
+		if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+			append_coverage_compiler_flags()
+
+			setup_target_for_coverage_lcov(
+				NAME coverage
+				EXECUTABLE jwtpp_test
+			)
+		endif ()
+	endif ()
 endif ()

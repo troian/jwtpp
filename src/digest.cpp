@@ -22,6 +22,7 @@
 
 #include <sstream>
 #include <iomanip>
+#include <cstring>
 
 #include <jwtpp/jwtpp.hh>
 

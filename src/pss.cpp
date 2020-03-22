@@ -24,6 +24,10 @@ pss::pss(sp_rsa_key key, alg_t a)
 }
 
 std::string pss::sign(const std::string &data) {
+	if (data.empty()) {
+		throw std::invalid_argument("data is empty");
+	}
+
 	digest d(_hash_type, reinterpret_cast<const uint8_t *>(data.data()), data.length());
 
 	auto padded = std::shared_ptr<uint8_t>(new uint8_t[_key_size], std::default_delete<uint8_t[]>());

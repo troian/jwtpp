@@ -26,7 +26,7 @@
 
 #include <jwtpp/jwtpp.hh>
 
-TEST(JosePP, header_decode_valid) {
+TEST(jwtpp, header_decode_valid) {
 	EXPECT_NO_THROW(jwtpp::hdr("{\"typ\":\"JWT\",\"alg\":\"RS256\"}"));
 
 	EXPECT_THROW(jwtpp::hdr("{\"typ\":\"Jwt\",\"alg\":\"RS256\"}"), std::exception);
@@ -35,23 +35,23 @@ TEST(JosePP, header_decode_valid) {
 	EXPECT_THROW(jwtpp::hdr("{\"alg\":\"BB6\"}"), std::exception);
 }
 
-TEST(JosePP, header_decode_invalid_typ) {
+TEST(jwtpp, header_decode_invalid_typ) {
 	EXPECT_THROW(jwtpp::hdr("{\"typ\":\"Jwt\",\"alg\":\"RS256\"}"), std::exception);
 }
 
-TEST(JosePP, header_invalid_json) {
+TEST(jwtpp, header_invalid_json) {
 	EXPECT_THROW(jwtpp::hdr("{,\"alg\":\"RS256\"}"), std::exception);
 }
 
 
-TEST(JosePP, header_no_typ) {
+TEST(jwtpp, header_no_typ) {
 	EXPECT_THROW(jwtpp::hdr("{\"alg\":\"RS256\"}"), std::exception);
 }
 
-TEST(JosePP, header_no_alg) {
+TEST(jwtpp, header_no_alg) {
 	EXPECT_THROW(jwtpp::hdr("{\"typ\":\"JWT\"}"), std::exception);
 }
 
-TEST(JosePP, header_invalid_alg) {
+TEST(jwtpp, header_invalid_alg) {
 	EXPECT_THROW(jwtpp::hdr("{\"typ\":\"JWT\",\"alg\":\"BBs\"}"), std::exception);
 }

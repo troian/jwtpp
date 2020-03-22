@@ -24,7 +24,7 @@
 
 #include <jwtpp/jwtpp.hh>
 
-TEST(JosePP, create_close_hmac_crypto)
+TEST(jwtpp, create_close_hmac_crypto)
 {
 	EXPECT_NO_THROW(std::make_shared<jwtpp::hmac>("secret", jwtpp::alg_t::HS256));
 	EXPECT_NO_THROW(std::make_shared<jwtpp::hmac>("secret", jwtpp::alg_t::HS384));
@@ -40,7 +40,7 @@ TEST(JosePP, create_close_hmac_crypto)
 	EXPECT_THROW(std::make_shared<jwtpp::hmac>("", jwtpp::alg_t::RS256), std::exception);
 }
 
-TEST(JosePP, sign_verify_hmac256)
+TEST(jwtpp, sign_verify_hmac256)
 {
 	jwtpp::claims cl;
 
@@ -81,7 +81,7 @@ TEST(JosePP, sign_verify_hmac256)
 	EXPECT_THROW(jws = jwtpp::jws::parse(bearer), std::exception);
 }
 
-TEST(JosePP, sign_verify_hmac384)
+TEST(jwtpp, sign_verify_hmac384)
 {
 	jwtpp::claims cl;
 
@@ -122,7 +122,7 @@ TEST(JosePP, sign_verify_hmac384)
 	EXPECT_THROW(jws = jwtpp::jws::parse(bearer), std::exception);
 }
 
-TEST(JosePP, sign_verify_hmac512)
+TEST(jwtpp, sign_verify_hmac512)
 {
 	jwtpp::claims cl;
 

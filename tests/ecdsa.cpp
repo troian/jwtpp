@@ -25,7 +25,7 @@
 
 #include <jwtpp/jwtpp.hh>
 
-TEST(JosePP, sign_verify_ecdsa256) {
+TEST(jwtpp, sign_verify_ecdsa256) {
 	jwtpp::claims cl;
 
 	jwtpp::sp_ecdsa_key key;
@@ -47,6 +47,8 @@ TEST(JosePP, sign_verify_ecdsa256) {
 	jwtpp::sp_crypto e256_pub;
 	jwtpp::sp_crypto e384_pub;
 	jwtpp::sp_crypto e512_pub;
+
+	EXPECT_THROW(e256 = std::make_shared<jwtpp::ecdsa>(key, jwtpp::alg_t::RS256), std::exception);
 
 	EXPECT_NO_THROW(e256 = std::make_shared<jwtpp::ecdsa>(key, jwtpp::alg_t::ES256));
 	EXPECT_NO_THROW(e384 = std::make_shared<jwtpp::ecdsa>(key, jwtpp::alg_t::ES256));

@@ -28,7 +28,7 @@
 
 #include <jwtpp/jwtpp.hh>
 
-TEST(JosePP, b64)
+TEST(jwtpp, b64)
 {
 	std::vector<uint8_t> in;
 	in.reserve(128);

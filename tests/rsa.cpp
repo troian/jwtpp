@@ -26,13 +26,13 @@
 
 #include <openssl/err.h>
 
-TEST(JosePP, rsa_gen_invalid_size) {
+TEST(jwtpp, rsa_gen_invalid_size) {
 	jwtpp::sp_rsa_key key;
 
 	EXPECT_THROW(key = jwtpp::rsa::gen(1023), std::exception);
 }
 
-TEST(JosePP, create_close_rsa_crypto) {
+TEST(jwtpp, create_close_rsa_crypto) {
 	jwtpp::sp_rsa_key key;
 
 	EXPECT_NO_THROW(key = jwtpp::rsa::gen(1024));
@@ -45,7 +45,7 @@ TEST(JosePP, create_close_rsa_crypto) {
 	EXPECT_THROW(std::make_shared<jwtpp::rsa>(key, jwtpp::alg_t::ES384), std::exception);
 }
 
-TEST(JosePP, sign_verify_rsa256) {
+TEST(jwtpp, sign_verify_rsa256) {
 	jwtpp::claims cl;
 
 	jwtpp::sp_rsa_key key;
@@ -92,7 +92,7 @@ TEST(JosePP, sign_verify_rsa256) {
 	EXPECT_THROW(jws = jwtpp::jws::parse(bearer), std::exception);
 }
 
-TEST(JosePP, sign_verify_rsa384) {
+TEST(jwtpp, sign_verify_rsa384) {
 	jwtpp::claims cl;
 
 	jwtpp::sp_rsa_key key;
@@ -139,7 +139,7 @@ TEST(JosePP, sign_verify_rsa384) {
 	EXPECT_THROW(jws = jwtpp::jws::parse(bearer), std::exception);
 }
 
-TEST(JosePP, sign_verify_rsa512) {
+TEST(jwtpp, sign_verify_rsa512) {
 	jwtpp::claims cl;
 
 	jwtpp::sp_rsa_key key;
@@ -186,7 +186,7 @@ TEST(JosePP, sign_verify_rsa512) {
 	EXPECT_THROW(jws = jwtpp::jws::parse(bearer), std::exception);
 }
 
-TEST(JosePP, load_rsa_from_file) {
+TEST(jwtpp, load_rsa_from_file) {
 	jwtpp::sp_rsa_key key;
 
 	EXPECT_NO_THROW(key = jwtpp::rsa::load_from_file(TEST_RSA_KEY_PATH, [](jwtpp::secure_string &pass, int rwflag) {

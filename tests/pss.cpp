@@ -24,7 +24,7 @@
 
 #include <jwtpp/jwtpp.hh>
 
-TEST(JosePP, create_close_pss_crypto) {
+TEST(jwtpp, create_close_pss_crypto) {
 	jwtpp::sp_rsa_key key;
 
 	EXPECT_NO_THROW(key = jwtpp::rsa::gen(1024));
@@ -37,7 +37,7 @@ TEST(JosePP, create_close_pss_crypto) {
 	EXPECT_THROW(std::make_shared<jwtpp::pss>(key, jwtpp::alg_t::ES384), std::exception);
 }
 
-TEST(JosePP, sign_verify_pss256) {
+TEST(jwtpp, sign_verify_pss256) {
 	jwtpp::claims cl;
 
 	jwtpp::sp_rsa_key key;
@@ -85,7 +85,7 @@ TEST(JosePP, sign_verify_pss256) {
 	EXPECT_THROW(jws = jwtpp::jws::parse(bearer), std::exception);
 }
 
-TEST(JosePP, sign_verify_pss384) {
+TEST(jwtpp, sign_verify_pss384) {
 	jwtpp::claims cl;
 
 	jwtpp::sp_rsa_key key;
@@ -132,7 +132,7 @@ TEST(JosePP, sign_verify_pss384) {
 	EXPECT_THROW(jws = jwtpp::jws::parse(bearer), std::exception);
 }
 
-TEST(JosePP, sign_verify_pss512) {
+TEST(jwtpp, sign_verify_pss512) {
 	jwtpp::claims cl;
 
 	jwtpp::sp_rsa_key key;

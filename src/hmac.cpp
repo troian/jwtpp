@@ -41,7 +41,7 @@ hmac::hmac(const secure_string &secret, alg_t a)
 
 std::string hmac::sign(const std::string &data) {
 	if (data.empty()) {
-		throw std::invalid_argument("Data is empty");
+		throw std::invalid_argument("data is empty");
 	}
 
 	const EVP_MD *evp;

@@ -45,21 +45,21 @@ TEST(jwtpp, crypto_str2alg) {
 }
 
 TEST(jwtpp, crypto_alg2str) {
-	EXPECT_EQ(jwtpp::crypto::alg2str(jwtpp::alg_t::NONE),  "none");
-	EXPECT_EQ(jwtpp::crypto::alg2str(jwtpp::alg_t::HS256), "HS256");
-	EXPECT_EQ(jwtpp::crypto::alg2str(jwtpp::alg_t::HS384), "HS384");
-	EXPECT_EQ(jwtpp::crypto::alg2str(jwtpp::alg_t::HS512), "HS512");
-	EXPECT_EQ(jwtpp::crypto::alg2str(jwtpp::alg_t::RS256), "RS256");
-	EXPECT_EQ(jwtpp::crypto::alg2str(jwtpp::alg_t::RS384), "RS384");
-	EXPECT_EQ(jwtpp::crypto::alg2str(jwtpp::alg_t::RS512), "RS512");
-	EXPECT_EQ(jwtpp::crypto::alg2str(jwtpp::alg_t::ES256), "ES256");
-	EXPECT_EQ(jwtpp::crypto::alg2str(jwtpp::alg_t::ES384), "ES384");
-	EXPECT_EQ(jwtpp::crypto::alg2str(jwtpp::alg_t::ES512), "ES512");
-	EXPECT_EQ(jwtpp::crypto::alg2str(jwtpp::alg_t::PS256), "PS256");
-	EXPECT_EQ(jwtpp::crypto::alg2str(jwtpp::alg_t::PS384), "PS384");
-	EXPECT_EQ(jwtpp::crypto::alg2str(jwtpp::alg_t::PS512), "PS512");
+	EXPECT_EQ(std::string(jwtpp::crypto::alg2str(jwtpp::alg_t::NONE)),  std::string("none"));
+	EXPECT_EQ(std::string(jwtpp::crypto::alg2str(jwtpp::alg_t::HS256)), std::string("HS256"));
+	EXPECT_EQ(std::string(jwtpp::crypto::alg2str(jwtpp::alg_t::HS384)), std::string("HS384"));
+	EXPECT_EQ(std::string(jwtpp::crypto::alg2str(jwtpp::alg_t::HS512)), std::string("HS512"));
+	EXPECT_EQ(std::string(jwtpp::crypto::alg2str(jwtpp::alg_t::RS256)), std::string("RS256"));
+	EXPECT_EQ(std::string(jwtpp::crypto::alg2str(jwtpp::alg_t::RS384)), std::string("RS384"));
+	EXPECT_EQ(std::string(jwtpp::crypto::alg2str(jwtpp::alg_t::RS512)), std::string("RS512"));
+	EXPECT_EQ(std::string(jwtpp::crypto::alg2str(jwtpp::alg_t::ES256)), std::string("ES256"));
+	EXPECT_EQ(std::string(jwtpp::crypto::alg2str(jwtpp::alg_t::ES384)), std::string("ES384"));
+	EXPECT_EQ(std::string(jwtpp::crypto::alg2str(jwtpp::alg_t::ES512)), std::string("ES512"));
+	EXPECT_EQ(std::string(jwtpp::crypto::alg2str(jwtpp::alg_t::PS256)), std::string("PS256"));
+	EXPECT_EQ(std::string(jwtpp::crypto::alg2str(jwtpp::alg_t::PS384)), std::string("PS384"));
+	EXPECT_EQ(std::string(jwtpp::crypto::alg2str(jwtpp::alg_t::PS512)), std::string("PS512"));
 #if defined(JWTPP_SUPPORTED_EDDSA)
-	EXPECT_EQ(jwtpp::crypto::alg2str(jwtpp::alg_t::EdDSA), "EdDSA");
+	EXPECT_EQ(std::string(jwtpp::crypto::alg2str(jwtpp::alg_t::EdDSA)), std::string("EdDSA"));
 #endif // defined(JWTPP_SUPPORTED_EDDSA)
 	EXPECT_EQ(jwtpp::crypto::alg2str(jwtpp::alg_t::UNKNOWN), nullptr);
 }

@@ -36,7 +36,7 @@ if (NOT WIN32 AND NOT JsonCPP_FOUND)
 	pkg_check_modules(JsonCPP REQUIRED jsoncpp)
 endif ()
 
-include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR}/include)
+include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
 include_directories(SYSTEM ${JsonCPP_INCLUDE_DIRS})
 link_directories(${JsonCPP_LIBRARY_DIRS})
 

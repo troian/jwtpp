@@ -59,6 +59,8 @@ Refer to tests dir
 #### CMake sources deps
 add_subdirectory(<path to>)
 #### System-wide installation
+On MacOS OPENSSL_ROOT_DIR might need to be specified. Add `-DOPENSSL_ROOT_DIR=$(brew --prefix openssl)` to cmake stage
+
 ```bash
 git clone https://github.com/troian/jwtpp
 mkdir build && cd build

@@ -145,9 +145,9 @@ endif ()
 if (JWTPP_WITH_INSTALL)
 	install(
 		DIRECTORY
-		include/export/jwtpp
+			include/export/jwtpp
 		DESTINATION include
-		FILES_MATCHING PATTERN "*.hpp"
+			FILES_MATCHING PATTERN "*.hh"
 	)
 endif ()
 

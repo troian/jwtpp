@@ -26,12 +26,12 @@
 #include <jwtpp/jwtpp.hh>
 
 TEST(jwtpp, check_expire) {
-  auto future_t = std::chrono::system_clock::now() +  + std::chrono::seconds{10};
-  auto future = std::chrono::system_clock::to_time_t(future_t);
+	auto future_t = std::chrono::system_clock::now() +  + std::chrono::seconds{30};
+	auto future = std::chrono::system_clock::to_time_t(future_t);
 
 	jwtpp::claims cl;
 
-  cl->set().exp(std::to_string(future));
+	cl->set().exp(std::to_string(future));
   
 	jwtpp::sp_rsa_key key;
 	jwtpp::sp_rsa_key pubkey;
@@ -39,7 +39,7 @@ TEST(jwtpp, check_expire) {
 	jwtpp::sp_crypto r512;
 	jwtpp::sp_crypto r512_pub;
 
-	EXPECT_NO_THROW(key = jwtpp::rsa::gen(1024));
+	EXPECT_NO_THROW(key = jwtpp::rsa::gen(4096));
 	EXPECT_NO_THROW(pubkey = jwtpp::sp_rsa_key(RSAPublicKey_dup(key.get()), ::RSA_free));
 
 	EXPECT_NO_THROW(r512 = std::make_shared<jwtpp::rsa>(key, jwtpp::alg_t::RS512));
@@ -51,17 +51,19 @@ TEST(jwtpp, check_expire) {
 
 	EXPECT_NO_THROW(jws = jwtpp::jws::parse(bearer));
   
-  auto now_t = std::chrono::system_clock::now();
-  auto now =std::chrono::system_clock::to_time_t(now_t);
+	auto now_t = std::chrono::system_clock::now();
+	auto now =std::chrono::system_clock::to_time_t(now_t);
 
 	auto vf = [&now](jwtpp::sp_claims cl) {
-		return 0 < difftime(future, now);
+		time_t &&future_s = std::stoll(cl->get().exp());
+		return 0 < difftime(future_s, now);
 	};
 
 	EXPECT_TRUE(jws->verify(r512_pub, vf));
 
-  auto vf = [&now](jwtpp::sp_claims cl) {
-		return 0 > difftime(now, future);
+	auto vf = [&now](jwtpp::sp_claims cl) {
+		time_t &&future_s = std::stoll(cl->get().exp());
+		return 0 > difftime(now, future_s);
 	};
 
 	EXPECT_TRUE(jws->verify(r512_pub, vf));

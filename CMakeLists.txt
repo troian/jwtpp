@@ -180,6 +180,7 @@ if (JWTPP_WITH_TESTS)
 		tests/hmac.cpp
 		tests/pss.cpp
 		tests/rsa.cpp
+		tests/expire.cpp
 	)
 
 	if (WIN32)

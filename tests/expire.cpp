@@ -1,7 +1,7 @@
   
 // The MIT License (MIT)
 //
-// Copyright (c) 2020 ihm3jn09hk
+// Copyright (c) 2020 ihmc3jn09hk
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,3 +20,49 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
+#include <gtest/gtest.h>
+
+#include <jwtpp/jwtpp.hh>
+
+TEST(jwtpp, check_expire) {
+  auto future_t = std::chrono::system_clock::now() +  + std::chrono::seconds{10};
+  auto future = std::chrono::system_clock::to_time_t(future_t);
+
+	jwtpp::claims cl;
+
+  cl->set().exp(std::to_string(future));
+  
+	jwtpp::sp_rsa_key key;
+	jwtpp::sp_rsa_key pubkey;
+
+	jwtpp::sp_crypto r512;
+	jwtpp::sp_crypto r512_pub;
+
+	EXPECT_NO_THROW(key = jwtpp::rsa::gen(1024));
+	EXPECT_NO_THROW(pubkey = jwtpp::sp_rsa_key(RSAPublicKey_dup(key.get()), ::RSA_free));
+
+	EXPECT_NO_THROW(r512 = std::make_shared<jwtpp::rsa>(key, jwtpp::alg_t::RS512));
+	EXPECT_NO_THROW(r512_pub = std::make_shared<jwtpp::rsa>(pubkey, jwtpp::alg_t::RS512));
+
+	std::string bearer = jwtpp::jws::sign_bearer(cl, r512);
+
+	jwtpp::sp_jws jws;
+
+	EXPECT_NO_THROW(jws = jwtpp::jws::parse(bearer));
+  
+  auto now_t = std::chrono::system_clock::now();
+  auto now =std::chrono::system_clock::to_time_t(now_t);
+
+	auto vf = [&now](jwtpp::sp_claims cl) {
+		return 0 < difftime(future, now);
+	};
+
+	EXPECT_TRUE(jws->verify(r512_pub, vf));
+
+  auto vf = [&now](jwtpp::sp_claims cl) {
+		return 0 > difftime(now, future);
+	};
+
+	EXPECT_TRUE(jws->verify(r512_pub, vf));
+}

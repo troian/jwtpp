@@ -24,6 +24,7 @@
 #include <gtest/gtest.h>
 
 #include <jwtpp/jwtpp.hh>
+#include <chrono>
 
 TEST(jwtpp, check_expire) {
 	auto future_t = std::chrono::system_clock::now() + std::chrono::seconds{30};

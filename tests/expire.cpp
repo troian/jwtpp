@@ -26,7 +26,7 @@
 #include <jwtpp/jwtpp.hh>
 
 TEST(jwtpp, check_expire) {
-	auto future_t = std::chrono::system_clock::now() +  + std::chrono::seconds{30};
+	auto future_t = std::chrono::system_clock::now() + std::chrono::seconds{30};
 	auto future = std::chrono::system_clock::to_time_t(future_t);
 
 	jwtpp::claims cl;

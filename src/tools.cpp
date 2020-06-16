@@ -24,8 +24,6 @@
 
 #include <jwtpp/jwtpp.hh>
 
-#include <sstream>
-
 namespace jwtpp {
 
 std::string marshal(const Json::Value &json) {

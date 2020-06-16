@@ -22,8 +22,6 @@
 
 #include <jwtpp/jwtpp.hh>
 
-#include <sstream>
-
 namespace jwtpp {
 
 hdr::hdr(alg_t a)

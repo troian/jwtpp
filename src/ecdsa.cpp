@@ -24,8 +24,6 @@
 
 #include <jwtpp/jwtpp.hh>
 
-#include <sstream>
-
 namespace jwtpp {
 
 ecdsa::ecdsa(sp_ecdsa_key key, alg_t a)

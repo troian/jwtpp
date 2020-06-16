@@ -26,6 +26,7 @@
 #include <functional>
 #include <vector>
 #include <string>
+#include <sstream>
 
 #include <json/json.h>
 

@@ -218,6 +218,9 @@ private:
 
 /**
 * \brief
+*
+* TODO Make template class to allow set any claims value of type supported by Json::Value.
+*   Make std::string default template argument to keep compatability with older code.
 */
 class claims final {
 private:
@@ -295,6 +298,13 @@ private:
 	public:
 		explicit set(Json::Value *c) : _claims(c) {}
 	public:
+        void any(const std::string &key, Json::UInt value) { _claims->operator[](key) = value; }
+        void any(const std::string &key, Json::Int value) { _claims->operator[](key) = value; }
+        void any(const std::string &key, Json::UInt64 value) { _claims->operator[](key) = value; }
+        void any(const std::string &key, Json::Int64 value) { _claims->operator[](key) = value; }
+        void any(const std::string &key, Json::LargestInt value) { _claims->operator[](key) = value; }
+        void any(const std::string &key, Json::LargestUInt value) { _claims->operator[](key) = value; }
+        void any(const std::string &key, bool value) { _claims->operator[](key) = value; }
 		void any(const std::string &key, const std::string &value);
 		void iss(const std::string &value) { any("iss", value); }
 		void sub(const std::string &value) { any("sub", value); }

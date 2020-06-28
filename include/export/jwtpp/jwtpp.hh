@@ -283,6 +283,31 @@ private:
 		std::string any(const std::string &key) {
 			return _claims->operator[](key).asString();
 		}
+		
+        Json::Int anyInt(const std::string &key) {
+			return _claims->operator[](key).asInt();
+		}
+		
+		Json::UInt anyUInt(const std::string &key) {
+			return _claims->operator[](key).asUInt();
+		}
+		
+		Json::Int64 anyInt64(const std::string &key) {
+			return _claims->operator[](key).asInt64();
+		}
+		
+		Json::UInt64 anyUInt64(const std::string &key) {
+			return _claims->operator[](key).asUInt64();
+		}
+		
+		bool anyBool(const std::string &key) {
+			return _claims->operator[](key).asBool();
+		}
+		
+		double anyDouble(const std::string &key) {
+			return _claims->operator[](key).asDouble();
+		}
+		
 		std::string iss() { return any("iss"); }
 		std::string sub() { return any("sub"); }
 		std::string aud() { return any("aud"); }
@@ -302,10 +327,9 @@ private:
         void any(const std::string &key, Json::Int value) { _claims->operator[](key) = value; }
         void any(const std::string &key, Json::UInt64 value) { _claims->operator[](key) = value; }
         void any(const std::string &key, Json::Int64 value) { _claims->operator[](key) = value; }
-        void any(const std::string &key, Json::LargestInt value) { _claims->operator[](key) = value; }
-        void any(const std::string &key, Json::LargestUInt value) { _claims->operator[](key) = value; }
-        void any(const std::string &key, bool value) { _claims->operator[](key) = value; }
+        void any(const std::string &key, double value) { _claims->operator[](key) = value; }
 		void any(const std::string &key, const std::string &value);
+		
 		void iss(const std::string &value) { any("iss", value); }
 		void sub(const std::string &value) { any("sub", value); }
 		void aud(const std::string &value) { any("aud", value); }

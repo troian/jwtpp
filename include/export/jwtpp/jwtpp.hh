@@ -248,6 +248,13 @@ private:
 			std::string s = _claims->operator[](key).asString();
 			return s == value;
 		}
+		
+		bool any(const std::string &key, Json::UInt value) { return _claims->operator[](key).asUInt() == value; }
+        bool any(const std::string &key, Json::Int value) { return _claims->operator[](key).asInt() == value; }
+        bool any(const std::string &key, Json::UInt64 value) { return _claims->operator[](key).asUInt64() == value; }
+        bool any(const std::string &key, Json::Int64 value) { return _claims->operator[](key).asInt64() == value; }
+        bool any(const std::string &key, double value) { return _claims->operator[](key).asDouble() == value; }
+		
 		bool iss(const std::string &value) { return any("iss", value); }
 		bool sub(const std::string &value) { return any("sub", value); }
 		bool aud(const std::string &value) { return any("aud", value); }

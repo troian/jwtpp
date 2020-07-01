@@ -218,6 +218,8 @@ private:
 
 /**
 * \brief
+*
+* TODO https://github.com/troian/jwtpp/issues/38
 */
 class claims final {
 private:
@@ -245,6 +247,13 @@ private:
 			std::string s = _claims->operator[](key).asString();
 			return s == value;
 		}
+		
+		bool any(const std::string &key, Json::UInt value) { return _claims->operator[](key).asUInt() == value; }
+		bool any(const std::string &key, Json::Int value) { return _claims->operator[](key).asInt() == value; }
+		bool any(const std::string &key, Json::UInt64 value) { return _claims->operator[](key).asUInt64() == value; }
+		bool any(const std::string &key, Json::Int64 value) { return _claims->operator[](key).asInt64() == value; }
+		bool any(const std::string &key, double value) { return _claims->operator[](key).asDouble() == value; }
+		
 		bool iss(const std::string &value) { return any("iss", value); }
 		bool sub(const std::string &value) { return any("sub", value); }
 		bool aud(const std::string &value) { return any("aud", value); }
@@ -280,6 +289,31 @@ private:
 		std::string any(const std::string &key) {
 			return _claims->operator[](key).asString();
 		}
+		
+		Json::Int anyInt(const std::string &key) {
+			return _claims->operator[](key).asInt();
+		}
+		
+		Json::UInt anyUInt(const std::string &key) {
+			return _claims->operator[](key).asUInt();
+		}
+		
+		Json::Int64 anyInt64(const std::string &key) {
+			return _claims->operator[](key).asInt64();
+		}
+		
+		Json::UInt64 anyUInt64(const std::string &key) {
+			return _claims->operator[](key).asUInt64();
+		}
+		
+		bool anyBool(const std::string &key) {
+			return _claims->operator[](key).asBool();
+		}
+		
+		double anyDouble(const std::string &key) {
+			return _claims->operator[](key).asDouble();
+		}
+		
 		std::string iss() { return any("iss"); }
 		std::string sub() { return any("sub"); }
 		std::string aud() { return any("aud"); }
@@ -295,7 +329,13 @@ private:
 	public:
 		explicit set(Json::Value *c) : _claims(c) {}
 	public:
+		void any(const std::string &key, Json::UInt value) { _claims->operator[](key) = value; }
+		void any(const std::string &key, Json::Int value) { _claims->operator[](key) = value; }
+		void any(const std::string &key, Json::UInt64 value) { _claims->operator[](key) = value; }
+		void any(const std::string &key, Json::Int64 value) { _claims->operator[](key) = value; }
+		void any(const std::string &key, double value) { _claims->operator[](key) = value; }
 		void any(const std::string &key, const std::string &value);
+		
 		void iss(const std::string &value) { any("iss", value); }
 		void sub(const std::string &value) { any("sub", value); }
 		void aud(const std::string &value) { any("aud", value); }
@@ -395,15 +435,15 @@ private:
  * \brief
  */
 #if defined(_MSC_VER) && (_MSC_VER < 1700)
-    typedef std::shared_ptr<class jws> sp_jws;
+	typedef std::shared_ptr<class jws> sp_jws;
 #else
-    using sp_jws = typename std::shared_ptr<class jws>;
+	using sp_jws = typename std::shared_ptr<class jws>;
 #endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 
 class jws final {
 public:
 #if defined(_MSC_VER) && (_MSC_VER < 1700)
-    typedef std::function<bool (sp_claims cl)> verify_cb;
+	typedef std::function<bool (sp_claims cl)> verify_cb;
 #else
 	using verify_cb = typename std::function<bool (sp_claims cl)>;
 #endif // defined(_MSC_VER) && (_MSC_VER < 1700)

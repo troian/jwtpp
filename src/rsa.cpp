@@ -97,6 +97,8 @@ sp_rsa_key rsa::load_from_file(const std::string &path, password_cb on_password)
 	on_password_wrap wrap(on_password);
 
 	r = PEM_read_RSAPrivateKey(f, nullptr, password_loader, &wrap);
+	fclose(f);
+	
 	if (wrap.required) {
 		throw std::runtime_error("password required");
 	} else if (r == nullptr) {

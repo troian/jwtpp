@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "filehandle.h"
-
 #include <iostream>
 
 #include <jwtpp/jwtpp.hh>
@@ -91,8 +89,7 @@ sp_rsa_key rsa::gen(int size) {
 sp_rsa_key rsa::load_from_file(const std::string &path, password_cb on_password) {
 	RSA *r;
 
-	FileHandle filehandle(path.c_str(), "r");
-	FILE* f = filehandle.handle();
+	auto f = std::fopen(path.c_str(), "r");
 	if (!f) {
 		throw std::runtime_error("cannot open file");
 	}
@@ -100,6 +97,8 @@ sp_rsa_key rsa::load_from_file(const std::string &path, password_cb on_password)
 	on_password_wrap wrap(on_password);
 
 	r = PEM_read_RSAPrivateKey(f, nullptr, password_loader, &wrap);
+	fclose(f);
+	
 	if (wrap.required) {
 		throw std::runtime_error("password required");
 	} else if (r == nullptr) {

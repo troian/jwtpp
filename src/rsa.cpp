@@ -89,17 +89,14 @@ sp_rsa_key rsa::gen(int size) {
 sp_rsa_key rsa::load_from_file(const std::string &path, password_cb on_password) {
 	RSA *r;
 
-	auto f = std::fopen(path.c_str(), "r");
-	auto fl = std::shared_ptr<FILE>(f, std::fclose);
+	unique_file_ptr f = open_file(path.c_str(), "r");
 	if (!f) {
 		throw std::runtime_error("cannot open file");
 	}
 
 	on_password_wrap wrap(on_password);
 
-	r = PEM_read_RSAPrivateKey(f, nullptr, password_loader, &wrap);
-	// FIXME this fclose leads to segfault in other fclose call from shared_ptr
-	std::fclose(f);
+	r = PEM_read_RSAPrivateKey(f.get(), nullptr, password_loader, &wrap);
 	
 	if (wrap.required) {
 		throw std::runtime_error("password required");

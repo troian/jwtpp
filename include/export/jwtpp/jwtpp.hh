@@ -737,6 +737,12 @@ Json::Value unmarshal(const std::string &in);
 
 Json::Value unmarshal_b64(const std::string &b);
 
+typedef std::unique_ptr<std::FILE, int (*)(std::FILE *)> unique_file_ptr;
+static unique_file_ptr open_file(const char * filename, const char * flags)
+{
+  return unique_file_ptr(std::fopen(filename, flags), std::fclose);
+}
+
 #if defined(_MSC_VER) && (_MSC_VER < 1700)
 #   undef final
 #endif

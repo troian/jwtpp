@@ -85,14 +85,20 @@ enum class alg_t {
 #if defined(_MSC_VER) && (_MSC_VER < 1700)
 #   define final
 
-	typedef std::shared_ptr<class claims>   sp_claims;
-	typedef std::unique_ptr<class claims>   up_claims;
-	typedef std::shared_ptr<class crypto>   sp_crypto;
-	typedef std::shared_ptr<class hmac>     sp_hmac;
-	typedef std::shared_ptr<class rsa>      sp_rsa;
-	typedef std::shared_ptr<class ecdsa>    sp_ecdsa;
-	typedef std::shared_ptr<RSA>            sp_rsa_key;
-	typedef std::shared_ptr<EC_KEY>         sp_ecdsa_key;
+	typedef std::shared_ptr<class claims>                    sp_claims;
+	typedef std::unique_ptr<class claims>                    up_claims;
+	typedef std::shared_ptr<class crypto>                    sp_crypto;
+	typedef std::shared_ptr<class hmac>                      sp_hmac;
+	typedef std::shared_ptr<class rsa>                       sp_rsa;
+	typedef std::shared_ptr<class ecdsa>                     sp_ecdsa;
+	typedef std::shared_ptr<RSA>                             sp_rsa_key;
+	typedef std::shared_ptr<EC_KEY>                          sp_ecdsa_key;
+	typedef std::shared_ptr<EVP_PKEY>                        sp_evp_key;
+
+	typedef std::shared_ptr<EVP_MD_CTX>                      sp_evp_md_ctx;
+	typedef std::shared_ptr<EVP_PKEY_CTX>                    sp_evp_pkey_ctx;
+
+	typedef std::unique_ptr<std::FILE, int (*)(std::FILE *)> up_file;
 #else
 	using sp_claims       = typename std::shared_ptr<class claims>;
 	using up_claims       = typename std::unique_ptr<class claims>;
@@ -106,6 +112,8 @@ enum class alg_t {
 
 	using sp_evp_md_ctx   = typename std::shared_ptr<EVP_MD_CTX>;
 	using sp_evp_pkey_ctx = typename std::shared_ptr<EVP_PKEY_CTX>;
+
+	using up_file         = typename std::unique_ptr<std::FILE, int (*)(std::FILE *)>;
 #endif // defined(_MSC_VER) && (_MSC_VER < 1700)
 
 template <class T>

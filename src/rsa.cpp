@@ -89,14 +89,14 @@ sp_rsa_key rsa::gen(int size) {
 sp_rsa_key rsa::load_from_file(const std::string &path, password_cb on_password) {
 	RSA *r;
 
-	auto f = std::fopen(path.c_str(), "r");
+	auto f = up_file(::std::fopen(path.c_str(), "re"), ::std::fclose);
 	if (!f) {
-		throw std::runtime_error("cannot open file");
+		throw std::runtime_error("cannot open file " + path);
 	}
 
 	on_password_wrap wrap(on_password);
 
-	r = PEM_read_RSAPrivateKey(f, nullptr, password_loader, &wrap);
+	r = PEM_read_RSAPrivateKey(f.get(), nullptr, password_loader, &wrap);
 	if (wrap.required) {
 		throw std::runtime_error("password required");
 	} else if (r == nullptr) {

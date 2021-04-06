@@ -92,15 +92,15 @@ matrix:
         - CMAKE_CXX_STANDARD=17
 
     - os: osx
-      osx_image: xcode10
+      osx_image: xcode12.2
       env:
         - CMAKE_CXX_STANDARD=11
     - os: osx
-      osx_image: xcode10
+      osx_image: xcode12.2
       env:
         - CMAKE_CXX_STANDARD=14
     - os: osx
-      osx_image: xcode10
+      osx_image: xcode12.2
       env:
         - CMAKE_CXX_STANDARD=17
 

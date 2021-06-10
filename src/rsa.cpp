@@ -106,6 +106,23 @@ sp_rsa_key rsa::load_from_file(const std::string &path, password_cb on_password)
 	return std::shared_ptr<RSA>(r, ::RSA_free);
 }
 
+sp_rsa_key rsa::load_from_string(const std::string& str, password_cb on_password) {
+	RSA *r;
+	
+	auto bio = std::unique_ptr<BIO, BIODeleter>{BIO_new_mem_buf(str.data(), str.size())};
+	
+	on_password_wrap wrap(on_password);
+
+	r = PEM_read_bio_RSAPrivateKey(bio.get(), nullptr, password_loader, &wrap);
+	if (wrap.required) {
+		throw std::runtime_error("password required");
+	} else if (r == nullptr) {
+		throw std::runtime_error("read rsa key");
+	}	
+	
+	return std::shared_ptr<RSA>(r, ::RSA_free);
+}
+
 int rsa::password_loader(char *buf, int size, int rwflag, void *u) {
 	auto wrap = reinterpret_cast<on_password_wrap *>(u);
 

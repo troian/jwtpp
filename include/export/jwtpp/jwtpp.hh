@@ -655,11 +655,7 @@ public:
 
 	static sp_rsa_key load_from_file(const std::string &path, password_cb on_password = nullptr);
 
-	static sp_rsa_key load_from_string(const std::string &str) {
-		auto key = std::shared_ptr<RSA>(RSA_new(), ::RSA_free);
-
-		return key;
-	}
+	static sp_rsa_key load_from_string(const std::string &str, password_cb on_password = nullptr);
 
 private:
 	static int password_loader(char *buf, int size, int rwflag, void *u);
@@ -735,6 +731,13 @@ public:
 private:
 	sp_rsa_key _r;
 	size_t     _key_size;
+};
+
+class BIODeleter {
+public:
+	inline void operator()(BIO* bio) const {
+		(void)BIO_free(bio);
+	}
 };
 
 std::string marshal(const Json::Value &json);

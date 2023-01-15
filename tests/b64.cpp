@@ -31,7 +31,7 @@
 TEST(jwtpp, b64)
 {
 	std::vector<uint8_t> in;
-	in.reserve(128);
+	in.resize(128);
 
 	std::string b64;
 

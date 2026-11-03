@@ -54,17 +54,54 @@ std::string ecdsa::sign(const std::string &data) {
 }
 
 bool ecdsa::verify(const std::string &data, const std::string &sig) {
-	digest d(_hash_type, reinterpret_cast<const uint8_t *>(data.data()), data.length());
+    digest d(_hash_type, reinterpret_cast<const uint8_t *>(data.data()), data.length());
 
-	auto s = b64::decode_uri(sig.data(), sig.length());
+    auto raw = b64::decode_uri(sig.data(), sig.length());
 
-	return ECDSA_verify(
-		0
-		, d.data()
-		, static_cast<int>(d.size())
-		, reinterpret_cast<const uint8_t *>(s.data())
-		, static_cast<int>(s.size())
-		, _e.get()) == 1;
+    const EC_GROUP* group = EC_KEY_get0_group(_e.get());
+    if (!group) {
+        return false;
+    }
+
+    size_t half = (EC_GROUP_get_degree(group) + 7) / 8;
+
+    if (raw.size() != 2 * half) {
+        return false;
+    }
+
+    const unsigned char* p = reinterpret_cast<const unsigned char*>(raw.data());
+
+    BIGNUM* r = BN_bin2bn(p, half, nullptr);
+    BIGNUM* s = BN_bin2bn(p + half, half, nullptr);
+    if (!r || !s) {
+        BN_free(r);
+        BN_free(s);
+        return false;
+    }
+
+    ECDSA_SIG* sig_der = ECDSA_SIG_new();
+    if (!sig_der) {
+        BN_free(r);
+        BN_free(s);
+        return false;
+    }
+
+    if (ECDSA_SIG_set0(sig_der, r, s) != 1) {
+        BN_free(r);
+        BN_free(s);
+        ECDSA_SIG_free(sig_der);
+        return false;
+    }
+
+    int ret = ECDSA_do_verify(
+        d.data(),
+        static_cast<int>(d.size()),
+        sig_der,
+        _e.get()
+    );
+
+    ECDSA_SIG_free(sig_der);
+    return ret == 1;
 }
 
 sp_ecdsa_key ecdsa::gen(int nid) {
